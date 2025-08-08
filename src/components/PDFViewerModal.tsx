@@ -5,9 +5,14 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Attachment } from "@/data/mock";
 import { Document, Page, pdfjs } from "react-pdf";
 
-import workerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url';
-
-pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+// Configure PDF.js worker (Vite + pdfjs-dist v4)
+// Use a real module worker to avoid "fake worker" errors.
+// eslint-disable-next-line no-restricted-globals
+const pdfWorker = new Worker(
+  new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url),
+  { type: 'module' }
+);
+pdfjs.GlobalWorkerOptions.workerPort = pdfWorker as unknown as any;
 
 // Persist page position per attachment
 const pageMemory = new Map<string, number>();
