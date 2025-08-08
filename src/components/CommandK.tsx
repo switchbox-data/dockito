@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+
+const SEARCH_DELAY = 300;
+const sanitizeQuery = (s: string) => s.replace(/[,%]/g, " ").trim();
 
 const useModK = () => {
   const [open, setOpen] = useState(false);
@@ -25,18 +29,29 @@ export const CommandK = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const q = query.trim();
-    if (!open || !q) { setResults([]); return; }
+    const q = sanitizeQuery(query);
+    if (!open || q.length < 2) { setResults([]); return; }
+
     let cancelled = false;
-    supabase
-      .from("dockets")
-      .select("docket_govid,docket_title,docket_description")
-      .or(`docket_govid.ilike.%${q}%,docket_title.ilike.%${q}%`)
-      .limit(20)
-      .then(({ data, error }) => {
-        if (!cancelled && !error) setResults(data || []);
-      });
-    return () => { cancelled = true; };
+    const timer = setTimeout(() => {
+      supabase
+        .from("dockets")
+        .select("docket_govid,docket_title")
+        .or(`docket_govid.ilike.%${q}%,docket_title.ilike.%${q}%`)
+        .limit(20)
+        .then(({ data, error }) => {
+          if (cancelled) return;
+          if (error) {
+            console.error("CommandK search error", error);
+            toast({ title: "Search failed", description: "Unable to search right now. Please try again." });
+            setResults([]);
+            return;
+          }
+          setResults(data || []);
+        });
+    }, SEARCH_DELAY);
+
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [query, open]);
 
   return (
@@ -44,10 +59,11 @@ export const CommandK = () => {
       <CommandInput placeholder="Type a docket number or title… (Cmd/Ctrl + K)" value={query} onValueChange={setQuery} />
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
-        <CommandGroup heading="Dockets">
+        <CommandGroup heading={`Dockets${results.length ? ` (${results.length})` : ""}`}>
           {results.map((d) => (
             <CommandItem
               key={d.docket_govid}
+              value={`${d.docket_govid} ${d.docket_title ?? ""}`}
               onSelect={() => {
                 navigate(`/docket/${d.docket_govid}`);
                 setOpen(false);
