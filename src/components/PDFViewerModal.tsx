@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Attachment } from "@/data/mock";
 import { Document, Page, pdfjs } from "react-pdf";
 
-import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import workerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url';
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 
@@ -63,6 +63,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
       <DialogContent className="sm:max-w-[1000px] md:max-w-[1100px]">
         <DialogHeader>
           <DialogTitle className="text-base">{current?.attachment_title}</DialogTitle>
+          <DialogDescription className="sr-only">PDF preview with zoom, page navigation, and keyboard arrows.</DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-12 gap-3" ref={containerRef}>
           <aside className="col-span-3 hidden md:block max-h-[70vh] overflow-auto rounded border p-2">
