@@ -13,6 +13,8 @@ import { Link } from "react-router-dom";
 import { format, addMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { ChevronDown, Check } from "lucide-react";
 
@@ -64,9 +66,12 @@ export default function DocketsPage() {
   const [search, setSearch] = useState("");
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [industryOpen, setIndustryOpen] = useState(false);
-  const [docketType, setDocketType] = useState<string | undefined>();
-  const [petitioner, setPetitioner] = useState<string | undefined>();
+  const [docketTypes, setDocketTypes] = useState<string[]>([]);
+  const [petitioners, setPetitioners] = useState<string[]>([]);
+  const [typeOpen, setTypeOpen] = useState(false);
+  const [petOpen, setPetOpen] = useState(false);
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
 
   // Date slider uses month indices
   const { data: bounds } = useDateBounds();
