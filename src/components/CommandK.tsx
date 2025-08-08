@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useState } from "react";
-import { Search } from "lucide-react";
+
 import { MOCK_DOCKETS } from "@/data/mock";
 
 const useModK = () => {
@@ -31,10 +31,6 @@ export const CommandK = () => {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <div className="flex items-center gap-2 px-3 pt-3 text-muted-foreground">
-        <Search size={18} />
-        <span className="text-xs">Search dockets by ID or title</span>
-      </div>
       <CommandInput placeholder="Type a docket number or title… (Cmd/Ctrl + K)" value={query} onValueChange={setQuery} />
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
