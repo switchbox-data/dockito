@@ -69,141 +69,149 @@ export const FilingsList = ({ filings }: Props) => {
 
   return (
     <section className="mt-6">
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <div className="text-sm text-muted-foreground">Filter:</div>
+      <div className="mb-3 space-y-2">
+        {/* Row 1: controls */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="text-sm text-muted-foreground">Filter:</div>
 
-        {/* Organization filter (searchable) */}
-        <Popover open={orgOpen} onOpenChange={setOrgOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="min-w-[200px] justify-between">
-              {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
-              <ChevronDown size={14} />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="p-0 z-50">
-            <Command>
-              <CommandInput placeholder="Search organizations..." />
-              <CommandList>
-                <CommandEmpty>No results.</CommandEmpty>
-                <CommandGroup heading="Organizations">
-                  <CommandItem onSelect={() => setSelectedOrgs([])}>
-                    Clear
-                  </CommandItem>
-                  <CommandItem onSelect={() => setSelectedOrgs(organizations)}>
-                    Select all
-                  </CommandItem>
-                  {organizations.map((o) => {
-                    const selected = selectedOrgs.includes(o);
-                    return (
-                      <CommandItem
-                        key={o}
-                        onSelect={() =>
-                          setSelectedOrgs((prev) =>
-                            prev.includes(o) ? prev.filter((v) => v !== o) : [...prev, o]
-                          )
-                        }
-                      >
-                        <div className="flex items-center gap-2">
-                          <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                          <span>{o}</span>
-                        </div>
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+          {/* Organization filter (searchable) */}
+          <Popover open={orgOpen} onOpenChange={setOrgOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="min-w-[200px] justify-between">
+                {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
+                <ChevronDown size={14} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0 z-50">
+              <Command>
+                <CommandInput placeholder="Search organizations..." />
+                <CommandList>
+                  <CommandEmpty>No results.</CommandEmpty>
+                  <CommandGroup heading="Organizations">
+                    <CommandItem onSelect={() => setSelectedOrgs([])}>Clear</CommandItem>
+                    <CommandItem onSelect={() => setSelectedOrgs(organizations)}>Select all</CommandItem>
+                    {organizations.map((o) => {
+                      const selected = selectedOrgs.includes(o);
+                      return (
+                        <CommandItem
+                          key={o}
+                          onSelect={() =>
+                            setSelectedOrgs((prev) =>
+                              prev.includes(o) ? prev.filter((v) => v !== o) : [...prev, o]
+                            )
+                          }
+                        >
+                          <div className="flex items-center gap-2">
+                            <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                            <span>{o}</span>
+                          </div>
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
 
-        {/* Filing type filter (searchable) */}
-        <Popover open={typeOpen} onOpenChange={setTypeOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="min-w-[160px] justify-between">
-              {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
-              <ChevronDown size={14} />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="p-0 z-50">
-            <Command>
-              <CommandInput placeholder="Search types..." />
-              <CommandList>
-                <CommandEmpty>No results.</CommandEmpty>
-                <CommandGroup heading="Types">
-                  <CommandItem onSelect={() => setSelectedTypes([])}>
-                    Clear
-                  </CommandItem>
-                  <CommandItem onSelect={() => setSelectedTypes(types)}>
-                    Select all
-                  </CommandItem>
-                  {types.map((t) => {
-                    const selected = selectedTypes.includes(t);
-                    return (
-                      <CommandItem
-                        key={t}
-                        onSelect={() =>
-                          setSelectedTypes((prev) =>
-                            prev.includes(t) ? prev.filter((v) => v !== t) : [...prev, t]
-                          )
-                        }
-                      >
-                        <div className="flex items-center gap-2">
-                          <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                          <span>{t}</span>
-                        </div>
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+          {/* Filing type filter (searchable) */}
+          <Popover open={typeOpen} onOpenChange={setTypeOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="min-w-[160px] justify-between">
+                {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
+                <ChevronDown size={14} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0 z-50">
+              <Command>
+                <CommandInput placeholder="Search types..." />
+                <CommandList>
+                  <CommandEmpty>No results.</CommandEmpty>
+                  <CommandGroup heading="Types">
+                    <CommandItem onSelect={() => setSelectedTypes([])}>Clear</CommandItem>
+                    <CommandItem onSelect={() => setSelectedTypes(types)}>Select all</CommandItem>
+                    {types.map((t) => {
+                      const selected = selectedTypes.includes(t);
+                      return (
+                        <CommandItem
+                          key={t}
+                          onSelect={() =>
+                            setSelectedTypes((prev) =>
+                              prev.includes(t) ? prev.filter((v) => v !== t) : [...prev, t]
+                            )
+                          }
+                        >
+                          <div className="flex items-center gap-2">
+                            <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                            <span>{t}</span>
+                          </div>
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
 
-        <div className="ml-auto flex items-center gap-2 flex-wrap">
-          {/* Selected filters chips */}
-          {selectedOrgs.map((o) => (
-            <Badge key={`org-${o}`} variant="secondary" className="px-2 py-1">
-              <span className="mr-1">{o}</span>
-              <button
-                type="button"
-                onClick={() => setSelectedOrgs((prev) => prev.filter((v) => v !== o))}
-                aria-label={`Remove ${o}`}
-                className="inline-flex"
+          <div className="ml-auto flex items-center gap-2">
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search filings..."
+              className="w-56 md:w-72"
+            />
+            {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedOrgs([]);
+                  setSelectedTypes([]);
+                  setQuery("");
+                }}
               >
-                <X size={12} />
-              </button>
-            </Badge>
-          ))}
-          {selectedTypes.map((t) => (
-            <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
-              <span className="mr-1">{t}</span>
-              <button
-                type="button"
-                onClick={() => setSelectedTypes((prev) => prev.filter((v) => v !== t))}
-                aria-label={`Remove ${t}`}
-                className="inline-flex"
-              >
-                <X size={12} />
-              </button>
-            </Badge>
-          ))}
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search filings..."
-            className="w-56 md:w-72"
-          />
-          {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query) && (
-            <Button variant="ghost" size="sm" onClick={() => { setSelectedOrgs([]); setSelectedTypes([]); setQuery(""); }}>
-              Clear
+                Clear
+              </Button>
+            )}
+            <span className="text-sm text-muted-foreground">Sort:</span>
+            <Button variant="outline" size="sm" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+              Date {sortDir === "desc" ? "↓" : "↑"}
             </Button>
-          )}
-          <span className="text-sm text-muted-foreground">Sort:</span>
-          <Button variant="outline" size="sm" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
-            Date {sortDir === "desc" ? "↓" : "↑"}
-          </Button>
+          </div>
         </div>
+
+        {/* Row 2: selected chips */}
+        {(selectedOrgs.length > 0 || selectedTypes.length > 0) && (
+          <div className="flex flex-wrap items-center gap-2">
+            {selectedOrgs.map((o) => (
+              <Badge key={`org-${o}`} variant="secondary" className="px-2 py-1">
+                <span className="mr-1">{o}</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrgs((prev) => prev.filter((v) => v !== o))}
+                  aria-label={`Remove ${o}`}
+                  className="inline-flex"
+                >
+                  <X size={12} />
+                </button>
+              </Badge>
+            ))}
+            {selectedTypes.map((t) => (
+              <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
+                <span className="mr-1">{t}</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedTypes((prev) => prev.filter((v) => v !== t))}
+                  aria-label={`Remove ${t}`}
+                  className="inline-flex"
+                >
+                  <X size={12} />
+                </button>
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
