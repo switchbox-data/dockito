@@ -1,9 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { useState } from "react";
-
-import { MOCK_DOCKETS } from "@/data/mock";
+import { supabase } from "@/integrations/supabase/client";
 
 const useModK = () => {
   const [open, setOpen] = useState(false);
@@ -23,11 +21,23 @@ const useModK = () => {
 export const CommandK = () => {
   const { open, setOpen } = useModK();
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Array<{ docket_govid: string; docket_title: string | null }>>([]);
   const navigate = useNavigate();
 
-  const results = MOCK_DOCKETS.filter(d =>
-    [d.docket_govid, d.docket_title].some((f) => f?.toLowerCase().includes(query.toLowerCase()))
-  ).slice(0, 20);
+  useEffect(() => {
+    const q = query.trim();
+    if (!open || !q) { setResults([]); return; }
+    let cancelled = false;
+    supabase
+      .from("dockets")
+      .select("docket_govid,docket_title,docket_description")
+      .or(`docket_govid.ilike.%${q}%,docket_title.ilike.%${q}%`)
+      .limit(20)
+      .then(({ data, error }) => {
+        if (!cancelled && !error) setResults(data || []);
+      });
+    return () => { cancelled = true; };
+  }, [query, open]);
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
