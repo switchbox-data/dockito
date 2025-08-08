@@ -11,6 +11,10 @@ import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { format, addMonths, startOfMonth, endOfMonth } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { ChevronDown, Check } from "lucide-react";
 
 const PAGE_SIZE = 30;
 
@@ -58,7 +62,8 @@ function monthsBetween(min: Date, max: Date) {
 
 export default function DocketsPage() {
   const [search, setSearch] = useState("");
-  const [industry, setIndustry] = useState<string | undefined>();
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+  const [industryOpen, setIndustryOpen] = useState(false);
   const [docketType, setDocketType] = useState<string | undefined>();
   const [petitioner, setPetitioner] = useState<string | undefined>();
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
@@ -83,6 +88,21 @@ export default function DocketsPage() {
 
   const normalizedSearch = useMemo(() => sanitize(search), [search]);
 
+  const { data: industries = [] } = useQuery<string[]>({
+    queryKey: ["docket-industries"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("dockets").select("industry").not("industry", "is", null);
+      if (error) throw error;
+      const set = new Set<string>();
+      (data as { industry: string | null }[]).forEach((r) => {
+        if (r.industry) set.add(r.industry);
+      });
+      return Array.from(set).sort();
+    },
+    staleTime: 60_000,
+  });
+
+
   const {
     data,
     isLoading,
@@ -93,7 +113,7 @@ export default function DocketsPage() {
   } = useInfiniteQuery<Docket[], Error>({
     queryKey: [
       "dockets-list",
-      { search: normalizedSearch, industry, docketType, petitioner, sortDir, start: startDate?.toISOString(), end: endDate?.toISOString() },
+      { search: normalizedSearch, industries: selectedIndustries.join(","), docketType, petitioner, sortDir, start: startDate?.toISOString(), end: endDate?.toISOString() },
     ],
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => (lastPage?.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined),
@@ -110,7 +130,7 @@ export default function DocketsPage() {
           `docket_govid.ilike.%${normalizedSearch}%,docket_description.ilike.%${normalizedSearch}%,petitioner.ilike.%${normalizedSearch}%`
         );
       }
-      if (industry) q = q.eq("industry", industry);
+      if (selectedIndustries.length) q = q.in("industry", selectedIndustries);
       if (docketType) q = q.eq("docket_subtype", docketType);
       if (petitioner) q = q.eq("petitioner", petitioner);
       if (startDate) q = q.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
@@ -184,7 +204,44 @@ export default function DocketsPage() {
         </div>
         <div>
           <Label>Industry</Label>
-          <Input placeholder="e.g., Electric" value={industry ?? ""} onChange={(e) => setIndustry(e.target.value || undefined)} />
+          <Popover open={industryOpen} onOpenChange={setIndustryOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-between">
+                {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Select industries"}
+                <ChevronDown size={14} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0 z-50 bg-popover border">
+              <Command>
+                <CommandInput placeholder="Search industries..." />
+                <CommandList>
+                  <CommandEmpty>No results.</CommandEmpty>
+                  <CommandGroup heading="Industries">
+                    <CommandItem onSelect={() => setSelectedIndustries([])}>Clear</CommandItem>
+                    <CommandItem onSelect={() => setSelectedIndustries(industries)}>Select all</CommandItem>
+                    {industries.map((ind) => {
+                      const selected = selectedIndustries.includes(ind);
+                      return (
+                        <CommandItem
+                          key={ind}
+                          onSelect={() =>
+                            setSelectedIndustries((prev) =>
+                              prev.includes(ind) ? prev.filter((v) => v !== ind) : [...prev, ind]
+                            )
+                          }
+                        >
+                          <div className="flex items-center gap-2">
+                            <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                            <span>{ind}</span>
+                          </div>
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
         <div>
           <Label>Docket type</Label>
@@ -212,7 +269,9 @@ export default function DocketsPage() {
         </div>
         <div className="md:col-span-5 flex items-end justify-between gap-3">
           <div className="flex flex-wrap gap-2 text-sm">
-            {industry && <Badge variant="secondary">Industry: {industry}</Badge>}
+            {selectedIndustries.map((ind) => (
+              <Badge key={`ind-${ind}`} variant="secondary">Industry: {ind}</Badge>
+            ))}
             {docketType && <Badge variant="secondary">Type: {docketType}</Badge>}
             {petitioner && <Badge variant="secondary">Petitioner: {petitioner}</Badge>}
             {normalizedSearch && <Badge variant="secondary">Search: {normalizedSearch}</Badge>}
