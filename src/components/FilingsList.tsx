@@ -69,7 +69,7 @@ export const FilingsList = ({ filings }: Props) => {
 
   return (
     <section className="mt-6">
-      <div className="mb-3 space-y-2">
+      <div className="sticky top-0 z-40 bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur border-b mb-3 space-y-2 py-2">
         {/* Row 1: controls */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="text-sm text-muted-foreground">Filter:</div>
