@@ -13,18 +13,7 @@ export const DocketHeader = ({ docket }: Props) => {
       <div className="relative z-10 grid gap-4 md:grid-cols-3">
         <div className="md:col-span-2">
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-1">{docket.docket_title}</h1>
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
-            Docket {docket.docket_govid}
-            <a
-              href={`https://documents.dps.ny.gov/public/MatterManagement/CaseMaster.aspx?Mattercaseno=${docket.docket_govid}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Open ${docket.docket_govid} on the NY PSC website`}
-              className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
-            >
-              NY PSC <ExternalLink size={14} className="opacity-70" />
-            </a>
-          </p>
+          <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
         </div>
         <div className="flex md:justify-end items-center gap-2 self-start">
           <span className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs border">{docket.industry ?? "other"}</span>
@@ -44,6 +33,15 @@ export const DocketHeader = ({ docket }: Props) => {
       {docket.docket_description && (
         <p className="relative z-10 mt-4 text-sm text-muted-foreground max-w-3xl">{docket.docket_description}</p>
       )}
+      <a
+        href={`https://documents.dps.ny.gov/public/MatterManagement/CaseMaster.aspx?Mattercaseno=${docket.docket_govid}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Open ${docket.docket_govid} on the NY PSC website`}
+        className="absolute bottom-3 right-3 z-10 text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline inline-flex items-center gap-1"
+      >
+        NY PSC <ExternalLink size={14} className="opacity-70" />
+      </a>
     </header>
   );
 };
