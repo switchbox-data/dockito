@@ -118,7 +118,7 @@ export default function DocketsPage() {
   } = useInfiniteQuery<Docket[], Error>({
     queryKey: [
       "dockets-list",
-      { search: normalizedSearch, industries: selectedIndustries.join(","), docketType, petitioner, sortDir, start: startDate?.toISOString(), end: endDate?.toISOString() },
+      { search: normalizedSearch, industries: selectedIndustries.join(","), docketTypes: docketTypes.join(","), petitioners: petitioners.join(","), sortDir, start: startDate?.toISOString(), end: endDate?.toISOString() },
     ],
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => (lastPage?.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined),
@@ -136,8 +136,8 @@ export default function DocketsPage() {
         );
       }
       if (selectedIndustries.length) q = q.in("industry", selectedIndustries);
-      if (docketType) q = q.eq("docket_subtype", docketType);
-      if (petitioner) q = q.eq("petitioner", petitioner);
+      if (docketTypes.length) q = q.in("docket_subtype", docketTypes);
+      if (petitioners.length) q = q.in("petitioner", petitioners);
       if (startDate) q = q.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
       if (endDate) q = q.lte("opened_date", format(endOfMonth(endDate!), "yyyy-MM-dd"));
 
@@ -250,11 +250,11 @@ export default function DocketsPage() {
         </div>
         <div>
           <Label>Docket type</Label>
-          <Input placeholder="e.g., Petition" value={docketType ?? ""} onChange={(e) => setDocketType(e.target.value || undefined)} />
+          <Input placeholder="e.g., Petition" value={docketTypes.join(", ")} onChange={(e) => setDocketTypes(e.target.value.split(",").map(s => s.trim()).filter(Boolean))} />
         </div>
         <div>
           <Label>Petitioner</Label>
-          <Input placeholder="e.g., Con Edison" value={petitioner ?? ""} onChange={(e) => setPetitioner(e.target.value || undefined)} />
+          <Input placeholder="e.g., Con Edison" value={petitioners.join(", ")} onChange={(e) => setPetitioners(e.target.value.split(",").map(s => s.trim()).filter(Boolean))} />
         </div>
         <div className="md:col-span-5">
           <Label>Date range</Label>
@@ -277,8 +277,12 @@ export default function DocketsPage() {
             {selectedIndustries.map((ind) => (
               <Badge key={`ind-${ind}`} variant="secondary">Industry: {ind}</Badge>
             ))}
-            {docketType && <Badge variant="secondary">Type: {docketType}</Badge>}
-            {petitioner && <Badge variant="secondary">Petitioner: {petitioner}</Badge>}
+            {docketTypes.map((t) => (
+              <Badge key={`type-${t}`} variant="secondary">Type: {t}</Badge>
+            ))}
+            {petitioners.map((p) => (
+              <Badge key={`pet-${p}`} variant="secondary">Petitioner: {p}</Badge>
+            ))}
             {normalizedSearch && <Badge variant="secondary">Search: {normalizedSearch}</Badge>}
           </div>
           <div className="w-48">
