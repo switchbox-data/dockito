@@ -7,7 +7,7 @@ import Index from "./pages/Index";
 import DocketPage from "./pages/Docket";
 import DocketsPage from "./pages/Dockets";
 import { CommandK } from "@/components/CommandK";
-
+import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (

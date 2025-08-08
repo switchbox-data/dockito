@@ -21,8 +21,8 @@ type Docket = {
   docket_description: string | null;
   industry: string | null;
   petitioner: string | null;
-  opened_date: string; // ISO date string
-  docket_type: string | null;
+  opened_date: string;
+  docket_subtype: string | null;
   current_status: string | null;
 };
 
@@ -90,7 +90,7 @@ export default function DocketsPage() {
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useInfiniteQuery({
+  } = useInfiniteQuery<Docket[], Error>({
     queryKey: [
       "dockets-list",
       { search: normalizedSearch, industry, docketType, petitioner, sortDir, start: startDate?.toISOString(), end: endDate?.toISOString() },
@@ -101,7 +101,7 @@ export default function DocketsPage() {
       const offset = pageParam as number;
       let q = supabase
         .from("dockets")
-        .select("uuid,docket_govid,docket_title,docket_description,industry,petitioner,opened_date,docket_type,current_status")
+        .select("uuid,docket_govid,docket_title,docket_description,industry,petitioner,opened_date,docket_subtype,current_status")
         .order("opened_date", { ascending: sortDir === "asc" })
         .range(offset, offset + PAGE_SIZE - 1);
 
@@ -111,7 +111,7 @@ export default function DocketsPage() {
         );
       }
       if (industry) q = q.eq("industry", industry);
-      if (docketType) q = q.eq("docket_type", docketType);
+      if (docketType) q = q.eq("docket_subtype", docketType);
       if (petitioner) q = q.eq("petitioner", petitioner);
       if (startDate) q = q.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
       if (endDate) q = q.lte("opened_date", format(endOfMonth(endDate!), "yyyy-MM-dd"));
@@ -163,7 +163,7 @@ export default function DocketsPage() {
     if (meta) meta.setAttribute("content", "Browse and filter New York PSC dockets by industry, type, dates, and more.");
   }, []);
 
-  const pages = data?.pages ?? [];
+  const pages = (data?.pages ?? []) as Docket[][];
   const items = pages.flat();
 
   return (
@@ -258,7 +258,7 @@ export default function DocketsPage() {
                   )}
                   <div className="flex flex-wrap gap-2">
                     {d.industry && <Badge variant="outline">{d.industry}</Badge>}
-                    {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
+                    {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
                     {d.petitioner && <Badge variant="outline">{d.petitioner}</Badge>}
                     {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
                   </div>
