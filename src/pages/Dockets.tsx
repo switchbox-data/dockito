@@ -72,6 +72,7 @@ export default function DocketsPage() {
   const [petOpen, setPetOpen] = useState(false);
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
+  const [dateOpen, setDateOpen] = useState(false);
 
   // Date slider uses month indices
   const { data: bounds } = useDateBounds();
@@ -107,6 +108,58 @@ export default function DocketsPage() {
     staleTime: 60_000,
   });
 
+  const { data: docketTypeOptions = [] } = useQuery<string[]>({
+    queryKey: ["docket-types"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("dockets")
+        .select("docket_subtype")
+        .not("docket_subtype", "is", null);
+      if (error) throw error;
+      const set = new Set<string>();
+      (data as { docket_subtype: string | null }[]).forEach((r) => {
+        if (r.docket_subtype) set.add(r.docket_subtype);
+      });
+      return Array.from(set).sort();
+    },
+    staleTime: 60_000,
+  });
+
+  const { data: petitionerOptions = [] } = useQuery<{ name: string; count: number }[]>({
+    queryKey: [
+      "petitioners-ranked",
+      {
+        industries: selectedIndustries.join(","),
+        docketTypes: docketTypes.join(","),
+        start: startDate?.toISOString(),
+        end: endDate?.toISOString(),
+        search: normalizedSearch,
+      },
+    ],
+    queryFn: async () => {
+      let q: any = supabase
+        .from("dockets")
+        .select("petitioner,count:petitioner.count()", { head: false })
+        .not("petitioner", "is", null);
+
+      if (normalizedSearch) {
+        q = q.or(
+          `docket_govid.ilike.%${normalizedSearch}%,docket_description.ilike.%${normalizedSearch}%,petitioner.ilike.%${normalizedSearch}%`
+        );
+      }
+      if (selectedIndustries.length) q = q.in("industry", selectedIndustries);
+      if (docketTypes.length) q = q.in("docket_subtype", docketTypes);
+      if (startDate) q = q.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
+      if (endDate) q = q.lte("opened_date", format(endOfMonth(endDate!), "yyyy-MM-dd"));
+
+      const { data, error } = await (q as any).order("count", { ascending: false });
+      if (error) throw error;
+      return ((data ?? []) as any[])
+        .filter((r) => r.petitioner)
+        .map((r: any) => ({ name: r.petitioner as string, count: Number(r.count ?? 0) }));
+    },
+    staleTime: 30_000,
+  });
 
   const {
     data,
@@ -197,106 +250,200 @@ export default function DocketsPage() {
         <h1 className="text-3xl font-semibold tracking-tight">New York PSC Dockets</h1>
         <p className="text-muted-foreground">Public Service Commission • State: NY • Explore and filter dockets</p>
       </header>
-      <section aria-label="Filters" className="grid gap-4 md:grid-cols-5">
-        <div className="md:col-span-2">
-          <Label htmlFor="search">Search</Label>
-          <Input
-            id="search"
-            placeholder="Search docket ID, description, or petitioner"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div>
-          <Label>Industry</Label>
-          <Popover open={industryOpen} onOpenChange={setIndustryOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-between">
-                {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Select industries"}
-                <ChevronDown size={14} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0 z-50 bg-popover border">
-              <Command>
-                <CommandInput placeholder="Search industries..." />
-                <CommandList>
-                  <CommandEmpty>No results.</CommandEmpty>
-                  <CommandGroup heading="Industries">
-                    <CommandItem onSelect={() => setSelectedIndustries([])}>Clear</CommandItem>
-                    <CommandItem onSelect={() => setSelectedIndustries(industries)}>Select all</CommandItem>
-                    {industries.map((ind) => {
-                      const selected = selectedIndustries.includes(ind);
-                      return (
-                        <CommandItem
-                          key={ind}
-                          onSelect={() =>
-                            setSelectedIndustries((prev) =>
-                              prev.includes(ind) ? prev.filter((v) => v !== ind) : [...prev, ind]
-                            )
-                          }
-                        >
-                          <div className="flex items-center gap-2">
-                            <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                            <span>{ind}</span>
-                          </div>
-                        </CommandItem>
-                      );
-                    })}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
-        <div>
-          <Label>Docket type</Label>
-          <Input placeholder="e.g., Petition" value={docketTypes.join(", ")} onChange={(e) => setDocketTypes(e.target.value.split(",").map(s => s.trim()).filter(Boolean))} />
-        </div>
-        <div>
-          <Label>Petitioner</Label>
-          <Input placeholder="e.g., Con Edison" value={petitioners.join(", ")} onChange={(e) => setPetitioners(e.target.value.split(",").map(s => s.trim()).filter(Boolean))} />
-        </div>
-        <div className="md:col-span-5">
-          <Label>Date range</Label>
-          <div className="space-y-2">
-            <Slider
-              value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
-              min={0}
-              max={Math.max(0, (months.length || 1) - 1)}
-              step={1}
-              onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
-            />
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>{startDate ? format(startDate, "MMM yyyy") : "–"}</span>
-              <span>{endDate ? format(endDate, "MMM yyyy") : "–"}</span>
+      <section aria-label="Filters" className="space-y-2">
+        <div className="sticky top-0 z-40">
+          <div className="relative overflow-hidden border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md">
+            <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
+            <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-x-auto">
+              {/* Search (compact, expands on focus) */}
+              <Input
+                id="search"
+                placeholder="Search docket ID, description, or petitioner"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-[10rem] md:w-[16rem] focus:w-[20rem] md:focus:w-[28rem] transition-[width] duration-300"
+              />
+
+              {/* Industry multi-select */}
+              <Popover open={industryOpen} onOpenChange={setIndustryOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="shrink-0 justify-between">
+                    {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Industries"}
+                    <ChevronDown size={14} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 z-50 bg-popover border">
+                  <Command>
+                    <CommandInput placeholder="Search industries..." />
+                    <CommandList>
+                      <CommandEmpty>No results.</CommandEmpty>
+                      <CommandGroup heading="Industries">
+                        <CommandItem onSelect={() => setSelectedIndustries([])}>Clear</CommandItem>
+                        <CommandItem onSelect={() => setSelectedIndustries(industries)}>Select all</CommandItem>
+                        {industries.map((ind) => {
+                          const selected = selectedIndustries.includes(ind);
+                          return (
+                            <CommandItem
+                              key={ind}
+                              onSelect={() =>
+                                setSelectedIndustries((prev) =>
+                                  prev.includes(ind) ? prev.filter((v) => v !== ind) : [...prev, ind]
+                                )
+                              }
+                            >
+                              <div className="flex items-center gap-2">
+                                <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                                <span>{ind}</span>
+                              </div>
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+              {/* Docket types multi-select */}
+              <Popover open={typeOpen} onOpenChange={setTypeOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="shrink-0 justify-between">
+                    {docketTypes.length ? `Types (${docketTypes.length})` : "Types"}
+                    <ChevronDown size={14} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 z-50 bg-popover border">
+                  <Command>
+                    <CommandInput placeholder="Search types..." />
+                    <CommandList>
+                      <CommandEmpty>No results.</CommandEmpty>
+                      <CommandGroup heading="Types">
+                        <CommandItem onSelect={() => setDocketTypes([])}>Clear</CommandItem>
+                        <CommandItem onSelect={() => setDocketTypes(docketTypeOptions)}>Select all</CommandItem>
+                        {docketTypeOptions.map((t) => {
+                          const selected = docketTypes.includes(t);
+                          return (
+                            <CommandItem
+                              key={t}
+                              onSelect={() =>
+                                setDocketTypes((prev) =>
+                                  prev.includes(t) ? prev.filter((v) => v !== t) : [...prev, t]
+                                )
+                              }
+                            >
+                              <div className="flex items-center gap-2">
+                                <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                                <span>{t}</span>
+                              </div>
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+              {/* Petitioners multi-select (ranked by frequency within current filters) */}
+              <Popover open={petOpen} onOpenChange={setPetOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="shrink-0 justify-between">
+                    {petitioners.length ? `Petitioners (${petitioners.length})` : "Petitioners"}
+                    <ChevronDown size={14} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 z-50 bg-popover border">
+                  <Command>
+                    <CommandInput placeholder="Search petitioners..." />
+                    <CommandList>
+                      <CommandEmpty>No results.</CommandEmpty>
+                      <CommandGroup heading="Petitioners">
+                        <CommandItem onSelect={() => setPetitioners([])}>Clear</CommandItem>
+                        <CommandItem onSelect={() => setPetitioners(petitionerOptions.map(p => p.name))}>Select all</CommandItem>
+                        {petitionerOptions.map(({ name, count }) => {
+                          const selected = petitioners.includes(name);
+                          return (
+                            <CommandItem
+                              key={name}
+                              onSelect={() =>
+                                setPetitioners((prev) =>
+                                  prev.includes(name) ? prev.filter((v) => v !== name) : [...prev, name]
+                                )
+                              }
+                            >
+                              <div className="flex items-center gap-2">
+                                <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                                <span>{name}</span>
+                                <span className="ml-1 text-muted-foreground text-xs">({count})</span>
+                              </div>
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+              {/* Sort */}
+              <div className="shrink-0">
+                <Select value={sortDir} onValueChange={(v: any) => setSortDir(v)}>
+                  <SelectTrigger className="min-w-[9rem]">
+                    <SelectValue placeholder="Sort" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="desc">Newest first</SelectItem>
+                    <SelectItem value="asc">Oldest first</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Date range (month) in a modal dialog) */}
+              <Dialog open={dateOpen} onOpenChange={setDateOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="shrink-0">
+                    {startDate ? format(startDate, "MMM yyyy") : "–"} – {endDate ? format(endDate, "MMM yyyy") : "–"}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[620px]">
+                  <DialogHeader>
+                    <DialogTitle>Select date range</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-3">
+                    <Slider
+                      value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
+                      min={0}
+                      max={Math.max(0, (months.length || 1) - 1)}
+                      step={1}
+                      onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
+                    />
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>{startDate ? format(startDate, "MMM yyyy") : "–"}</span>
+                      <span>{endDate ? format(endDate, "MMM yyyy") : "–"}</span>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="secondary" onClick={() => setRange([0, Math.max(0, (months.length || 1) - 1)] as [number, number])}>Reset</Button>
+                    <Button onClick={() => setDateOpen(false)}>Done</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
-        <div className="md:col-span-5 flex items-end justify-between gap-3">
-          <div className="flex flex-wrap gap-2 text-sm">
-            {selectedIndustries.map((ind) => (
-              <Badge key={`ind-${ind}`} variant="secondary">Industry: {ind}</Badge>
-            ))}
-            {docketTypes.map((t) => (
-              <Badge key={`type-${t}`} variant="secondary">Type: {t}</Badge>
-            ))}
-            {petitioners.map((p) => (
-              <Badge key={`pet-${p}`} variant="secondary">Petitioner: {p}</Badge>
-            ))}
-            {normalizedSearch && <Badge variant="secondary">Search: {normalizedSearch}</Badge>}
-          </div>
-          <div className="w-48">
-            <Label>Sort by opened date</Label>
-            <Select value={sortDir} onValueChange={(v: any) => setSortDir(v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sort" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desc">Newest first</SelectItem>
-                <SelectItem value="asc">Oldest first</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+
+        {/* Active filter chips */}
+        <div className="flex flex-wrap gap-2 text-sm px-1">
+          {selectedIndustries.map((ind) => (
+            <Badge key={`ind-${ind}`} variant="secondary">Industry: {ind}</Badge>
+          ))}
+          {docketTypes.map((t) => (
+            <Badge key={`type-${t}`} variant="secondary">Type: {t}</Badge>
+          ))}
+          {petitioners.map((p) => (
+            <Badge key={`pet-${p}`} variant="secondary">Petitioner: {p}</Badge>
+          ))}
+          {normalizedSearch && <Badge variant="secondary">Search: {normalizedSearch}</Badge>}
         </div>
       </section>
 
