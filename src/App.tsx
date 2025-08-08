@@ -4,7 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import DocketPage from "./pages/Docket";
 import NotFound from "./pages/NotFound";
+import { CommandK } from "@/components/CommandK";
 
 const queryClient = new QueryClient();
 
@@ -14,8 +16,10 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <CommandK />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/docket/:docket_govid" element={<DocketPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
