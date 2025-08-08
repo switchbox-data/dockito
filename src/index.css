@@ -54,8 +54,9 @@ All colors MUST be HSL. */
     --surface-elevated: 210 40% 98%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--accent) / 0.95), hsl(210 80% 40%));
-    --gradient-subtle: linear-gradient(180deg, hsl(var(--surface) / 0.8), hsl(var(--surface-elevated)));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--accent) / 0.12), hsl(210 40% 98% / 0));
+    --gradient-subtle: linear-gradient(135deg, hsl(var(--surface) / 1), hsl(var(--surface-elevated) / 1));
+    --gradient-interactive: linear-gradient(135deg, hsl(var(--accent) / 0.08), hsl(210 40% 98% / 0));
 
     /* Shadows */
     --shadow-elegant: 0 10px 30px -10px hsl(var(--accent) / 0.25);
@@ -105,6 +106,10 @@ All colors MUST be HSL. */
 
     --surface: 222.2 84% 6.5%;
     --surface-elevated: 222.2 84% 8.5%;
+
+    /* Dark gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--accent) / 0.16), hsl(222.2 84% 4.9% / 0));
+    --gradient-interactive: linear-gradient(135deg, hsl(var(--accent) / 0.14), hsl(222.2 84% 4.9% / 0));
   }
 }
 
@@ -123,3 +128,10 @@ All colors MUST be HSL. */
   .hover-scale { @apply transition-transform duration-200 hover:scale-105; }
   .pulse { @apply animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]; }
 }
+
+@layer utilities {
+  .bg-gradient-primary { background-image: var(--gradient-primary); }
+  .hover\:bg-gradient-interactive:hover { background-image: var(--gradient-interactive); }
+  .group:hover .group-hover\:bg-gradient-interactive { background-image: var(--gradient-interactive); }
+}
+

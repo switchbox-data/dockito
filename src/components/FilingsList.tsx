@@ -250,7 +250,7 @@ export const FilingsList = ({ filings }: Props) => {
                         key={a.uuid}
                         type="button"
                         onClick={() => setViewer({ filingId: f.uuid, index: idx })}
-                        className="group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 hover:bg-accent hover:border-accent/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+                        className="group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 hover:bg-gradient-interactive hover:border-accent/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <FileIcon ext={a.attachment_file_extension} />
@@ -260,7 +260,7 @@ export const FilingsList = ({ filings }: Props) => {
                           </div>
                         </div>
                         <span
-                          className={[buttonVariants({ size: "sm" }), "pointer-events-none", "group-hover:bg-primary/90"].join(" ")}
+                          className={[buttonVariants({ size: "sm" }), "pointer-events-none", "group-hover:bg-gradient-interactive"].join(" ")}
                         >
                           Open
                         </span>
@@ -271,7 +271,7 @@ export const FilingsList = ({ filings }: Props) => {
                         href={a.attachment_url ?? "#"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 hover:bg-accent hover:border-accent/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+                        className="group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 hover:bg-gradient-interactive hover:border-accent/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <FileIcon ext={a.attachment_file_extension} />
@@ -281,7 +281,7 @@ export const FilingsList = ({ filings }: Props) => {
                           </div>
                         </div>
                         <span
-                          className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-accent", "group-hover:text-accent-foreground", "flex", "items-center", "gap-2"].join(" ")}
+                          className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-gradient-interactive", "flex", "items-center", "gap-2"].join(" ")}
                         >
                           <LinkIcon size={16} /> Download
                         </span>
