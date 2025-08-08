@@ -72,9 +72,9 @@ export type Database = {
           attachment_type?: string | null
           attachment_url?: string | null
           blake2b_hash: string
-          created_at: string
+          created_at?: string
           parent_filling_uuid: string
-          updated_at: string
+          updated_at?: string
           uuid?: string
         }
         Update: {
