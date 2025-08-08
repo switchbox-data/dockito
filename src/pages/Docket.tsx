@@ -10,7 +10,7 @@ const DocketPage = () => {
 
   useEffect(() => {
     const title = docket ? `${docket.docket_govid} • ${docket.docket_title}` : "Docket not found";
-    document.title = `${title} | docket-stream`;
+    document.title = `${title} | Dockito`;
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute('content', docket?.docket_description || docket?.docket_title || 'PUC docket');
   }, [docket]);
