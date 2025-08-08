@@ -5,6 +5,9 @@ import { format } from "date-fns";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PDFViewerModal } from "@/components/PDFViewerModal";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
 
 export type FilingWithAttachments = Filling & { attachments: Attachment[] };
 
@@ -14,9 +17,13 @@ type Props = {
 
 export const FilingsList = ({ filings }: Props) => {
   const [orgFilter, setOrgFilter] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
   const [active, setActive] = useState<string | null>(null);
   const [viewer, setViewer] = useState<{ filingId: string; index: number } | null>(null);
+  const [orgOpen, setOrgOpen] = useState(false);
+  const [typeOpen, setTypeOpen] = useState(false);
 
   const organizations = useMemo(() => {
     const set = new Set<string>();
@@ -24,16 +31,32 @@ export const FilingsList = ({ filings }: Props) => {
     return Array.from(set).sort();
   }, [filings]);
 
+  const types = useMemo(() => {
+    const set = new Set<string>();
+    filings.forEach((f) => {
+      if (f.filling_type) set.add(f.filling_type);
+    });
+    return Array.from(set).sort();
+  }, [filings]);
+
   const filtered = useMemo(() => {
     let list = [...filings];
     if (orgFilter) list = list.filter((f) => f.organization_author_strings.includes(orgFilter));
+    if (typeFilter) list = list.filter((f) => f.filling_type === typeFilter);
+    if (query.trim()) {
+      const q = query.trim().toLowerCase();
+      list = list.filter((f) =>
+        (f.filling_name?.toLowerCase().includes(q) ?? false) ||
+        (f.filling_description?.toLowerCase().includes(q) ?? false)
+      );
+    }
     list.sort((a, b) =>
       sortDir === "desc"
         ? new Date(b.filed_date).getTime() - new Date(a.filed_date).getTime()
         : new Date(a.filed_date).getTime() - new Date(b.filed_date).getTime()
     );
     return list;
-  }, [filings, orgFilter, sortDir]);
+  }, [filings, orgFilter, typeFilter, query, sortDir]);
 
   useEffect(() => {
     // Close viewer if active filing disappears (filter changed)
@@ -46,15 +69,75 @@ export const FilingsList = ({ filings }: Props) => {
     <section className="mt-6">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <div className="text-sm text-muted-foreground">Filter:</div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant={orgFilter === null ? "default" : "outline"} size="sm" onClick={() => setOrgFilter(null)}>All</Button>
-          {organizations.map((o) => (
-            <Button key={o} variant={orgFilter === o ? "default" : "outline"} size="sm" onClick={() => setOrgFilter(o)}>
-              {o}
+
+        {/* Organization filter (searchable) */}
+        <Popover open={orgOpen} onOpenChange={setOrgOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="min-w-[180px] justify-between">
+              {orgFilter ?? "Organization"}
+              <ChevronDown size={14} />
             </Button>
-          ))}
-        </div>
+          </PopoverTrigger>
+          <PopoverContent className="p-0 z-50">
+            <Command>
+              <CommandInput placeholder="Search organizations..." />
+              <CommandList>
+                <CommandEmpty>No results.</CommandEmpty>
+                <CommandGroup heading="Organizations">
+                  <CommandItem onSelect={() => { setOrgFilter(null); setOrgOpen(false); }}>
+                    All
+                  </CommandItem>
+                  {organizations.map((o) => (
+                    <CommandItem key={o} onSelect={() => { setOrgFilter(o); setOrgOpen(false); }}>
+                      {o}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
+        {/* Filing type filter (searchable) */}
+        <Popover open={typeOpen} onOpenChange={setTypeOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="min-w-[160px] justify-between">
+              {typeFilter ?? "Filing type"}
+              <ChevronDown size={14} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0 z-50">
+            <Command>
+              <CommandInput placeholder="Search types..." />
+              <CommandList>
+                <CommandEmpty>No results.</CommandEmpty>
+                <CommandGroup heading="Types">
+                  <CommandItem onSelect={() => { setTypeFilter(null); setTypeOpen(false); }}>
+                    All
+                  </CommandItem>
+                  {types.map((t) => (
+                    <CommandItem key={t} onSelect={() => { setTypeFilter(t); setTypeOpen(false); }}>
+                      {t}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
         <div className="ml-auto flex items-center gap-2">
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search filings..."
+            className="w-56 md:w-72"
+          />
+          {(orgFilter || typeFilter || query) && (
+            <Button variant="ghost" size="sm" onClick={() => { setOrgFilter(null); setTypeFilter(null); setQuery(""); }}>
+              Clear
+            </Button>
+          )}
           <span className="text-sm text-muted-foreground">Sort:</span>
           <Button variant="outline" size="sm" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
             Date {sortDir === "desc" ? "↓" : "↑"}

@@ -64,7 +64,8 @@ export const MOCK_DOCKETS: Docket[] = [
   },
 ];
 
-export const MOCK_FILLINGS: Filling[] = [
+// Base seed data (kept for stability in examples)
+const BASE_FILLINGS: Filling[] = [
   {
     uuid: "f-1",
     docket_govid: "NY-24-00123",
@@ -102,7 +103,7 @@ export const MOCK_FILLINGS: Filling[] = [
   },
 ];
 
-export const MOCK_ATTACHMENTS: Attachment[] = [
+const BASE_ATTACHMENTS: Attachment[] = [
   {
     uuid: "a-1",
     parent_filling_uuid: "f-1",
@@ -143,4 +144,126 @@ export const MOCK_ATTACHMENTS: Attachment[] = [
     attachment_subtype: null,
     attachment_url: "/pdfs/sample.zip",
   },
+];
+
+// Expand mock data: hundreds of filings and many orgs/types
+const ORGS = [
+  "Consolidated Edison Company of New York, Inc.",
+  "NY DPS Staff",
+  "National Grid",
+  "Avangrid",
+  "Orange & Rockland",
+  "Central Hudson",
+  "PSEG Long Island",
+  "New York Power Authority",
+  "Joint Utilities of NY",
+  "Acme Energy Solutions",
+  "Clean Energy Coalition",
+  "Consumers Union",
+  "Environmental Defense Fund",
+  "Sierra Club",
+  "Sunrise Renewables",
+  "WindCo Northeast",
+  "Hydro Partners",
+  "Microgrid NYC",
+  "Grid Modernization Alliance",
+  "EV Infrastructure Group",
+  "City of New York",
+  "NYS Attorney General",
+  "Independent Power Producers",
+  "Upstate Solar",
+  "Downstate Storage, LLC",
+  "Ratepayer Advocates",
+  "Community Energy Hub",
+  "Heat Pump Association",
+  "Thermal Networks Inc.",
+  "WaterCo NY",
+  "Gas Reliability Council",
+  "Energy Storage Assoc.",
+  "Public Advocate",
+  "Utility Workers Union",
+  "Local 123",
+  "Green Buildings Council",
+  "Smart Thermostat Makers",
+  "Research Triangle Group",
+  "Rural Electric Coop",
+  "Transmission Partners",
+  "Distributed Energy NY",
+];
+
+const TYPES = [
+  "order",
+  "report",
+  "notice",
+  "petition",
+  "motion",
+  "comment",
+  "reply",
+  "letter",
+];
+
+function randomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function pick<T>(arr: T[]) {
+  return arr[randomInt(0, arr.length - 1)];
+}
+
+// Generate filings across both example dockets
+const GENERATED_FILLINGS: Filling[] = [];
+const GENERATED_ATTACHMENTS: Attachment[] = [];
+
+let fCounter = 1000;
+let aCounter = 5000;
+
+const docketsToPopulate = ["NY-24-00123", "NY-24-00456"];
+
+for (const docketId of docketsToPopulate) {
+  const count = docketId === "NY-24-00123" ? 220 : 180; // hundreds total
+  for (let i = 0; i < count; i++) {
+    const uuid = `f-${fCounter++}`;
+    const type = pick(TYPES);
+    const filed = new Date(2024, randomInt(0, 6), randomInt(1, 28));
+    const orgCount = Math.random() < 0.2 ? 2 : 1;
+    const orgs = Array.from({ length: orgCount }, () => pick(ORGS));
+    const uniqueOrgs = Array.from(new Set(orgs));
+
+    GENERATED_FILLINGS.push({
+      uuid,
+      docket_govid: docketId,
+      filed_date: filed.toISOString().slice(0, 10),
+      created_at: filed.toISOString(),
+      updated_at: filed.toISOString(),
+      filling_type: type,
+      filling_name: `${type[0].toUpperCase()}${type.slice(1)} – Submission ${i + 1}`,
+      filling_description: Math.random() < 0.55 ? `Detailed ${type} related to ${docketId} covering scope ${i + 1}.` : null,
+      organization_author_strings: uniqueOrgs,
+    });
+
+    // 1–3 attachments with at least one PDF
+    const pdfCount = 1;
+    const extraCount = Math.random() < 0.4 ? 1 : 0; // sometimes two files total
+    const total = pdfCount + extraCount;
+
+    for (let k = 0; k < total; k++) {
+      const isPdf = k === 0 || Math.random() < 0.7;
+      GENERATED_ATTACHMENTS.push({
+        uuid: `a-${aCounter++}`,
+        parent_filling_uuid: uuid,
+        attachment_file_extension: isPdf ? "pdf" : pick(["xlsx", "zip"]),
+        attachment_file_name: isPdf ? `attachment-${uuid}-${k + 1}.pdf` : `attachment-${uuid}-${k + 1}.dat`,
+        attachment_title: isPdf ? `Document ${k + 1}` : `Supporting File ${k + 1}`,
+        attachment_type: isPdf ? "document" : "data",
+        attachment_subtype: null,
+        attachment_url: isPdf ? "/pdfs/sample.pdf" : "/pdfs/sample.zip",
+      });
+    }
+  }
+}
+
+export const MOCK_FILLINGS: Filling[] = [...BASE_FILLINGS, ...GENERATED_FILLINGS];
+export const MOCK_ATTACHMENTS: Attachment[] = [
+  ...BASE_ATTACHMENTS,
+  ...GENERATED_ATTACHMENTS,
 ];
