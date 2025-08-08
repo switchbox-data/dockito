@@ -301,28 +301,33 @@ export default function DocketsPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {items.map((d) => (
-              <Card key={d.uuid} className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center justify-between gap-3">
-                    <Link to={`/docket/${d.docket_govid}`} className="underline-offset-2 hover:underline">
-                      {d.docket_govid}
-                    </Link>
-                    <span className="text-sm text-muted-foreground">{format(new Date(d.opened_date), "MMM d, yyyy")}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="font-medium">{d.docket_title ?? "Untitled docket"}</div>
-                  {d.docket_description && (
-                    <p className="text-sm text-muted-foreground line-clamp-3">{d.docket_description}</p>
-                  )}
-                  <div className="flex flex-wrap gap-2">
-                    {d.industry && <Badge variant="outline">{d.industry}</Badge>}
-                    {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
-                    {d.petitioner && <Badge variant="outline">{d.petitioner}</Badge>}
-                    {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
-                  </div>
-                </CardContent>
-              </Card>
+              <Link
+                key={d.uuid}
+                to={`/docket/${d.docket_govid}`}
+                aria-label={`Open docket ${d.docket_govid}`}
+                className="group block focus-visible:outline-none"
+              >
+                <Card className="hover:shadow-md transition-shadow focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background">
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center justify-between gap-3">
+                      <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
+                      <span className="text-sm text-muted-foreground">{format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="font-medium">{d.docket_title ?? "Untitled docket"}</div>
+                    {d.docket_description && (
+                      <p className="text-sm text-muted-foreground line-clamp-3">{d.docket_description}</p>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {d.industry && <Badge variant="outline">{d.industry}</Badge>}
+                      {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
+                      {d.petitioner && <Badge variant="outline">{d.petitioner}</Badge>}
+                      {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         )}
