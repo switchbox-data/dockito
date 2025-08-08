@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon } from "lucide-react";
+import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X } from "lucide-react";
 import { Attachment, Filling } from "@/data/mock";
 import { format } from "date-fns";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -16,8 +16,8 @@ type Props = {
 };
 
 export const FilingsList = ({ filings }: Props) => {
-  const [orgFilter, setOrgFilter] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [selectedOrgs, setSelectedOrgs] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
   const [active, setActive] = useState<string | null>(null);
@@ -41,8 +41,10 @@ export const FilingsList = ({ filings }: Props) => {
 
   const filtered = useMemo(() => {
     let list = [...filings];
-    if (orgFilter) list = list.filter((f) => f.organization_author_strings.includes(orgFilter));
-    if (typeFilter) list = list.filter((f) => f.filling_type === typeFilter);
+    if (selectedOrgs.length)
+      list = list.filter((f) => f.organization_author_strings.some((o) => selectedOrgs.includes(o)));
+    if (selectedTypes.length)
+      list = list.filter((f) => f.filling_type && selectedTypes.includes(f.filling_type));
     if (query.trim()) {
       const q = query.trim().toLowerCase();
       list = list.filter((f) =>
@@ -56,7 +58,7 @@ export const FilingsList = ({ filings }: Props) => {
         : new Date(a.filed_date).getTime() - new Date(b.filed_date).getTime()
     );
     return list;
-  }, [filings, orgFilter, typeFilter, query, sortDir]);
+  }, [filings, selectedOrgs, selectedTypes, query, sortDir]);
 
   useEffect(() => {
     // Close viewer if active filing disappears (filter changed)
@@ -73,8 +75,8 @@ export const FilingsList = ({ filings }: Props) => {
         {/* Organization filter (searchable) */}
         <Popover open={orgOpen} onOpenChange={setOrgOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="min-w-[180px] justify-between">
-              {orgFilter ?? "Organization"}
+            <Button variant="outline" size="sm" className="min-w-[200px] justify-between">
+              {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
               <ChevronDown size={14} />
             </Button>
           </PopoverTrigger>
@@ -84,14 +86,30 @@ export const FilingsList = ({ filings }: Props) => {
               <CommandList>
                 <CommandEmpty>No results.</CommandEmpty>
                 <CommandGroup heading="Organizations">
-                  <CommandItem onSelect={() => { setOrgFilter(null); setOrgOpen(false); }}>
-                    All
+                  <CommandItem onSelect={() => setSelectedOrgs([])}>
+                    Clear
                   </CommandItem>
-                  {organizations.map((o) => (
-                    <CommandItem key={o} onSelect={() => { setOrgFilter(o); setOrgOpen(false); }}>
-                      {o}
-                    </CommandItem>
-                  ))}
+                  <CommandItem onSelect={() => setSelectedOrgs(organizations)}>
+                    Select all
+                  </CommandItem>
+                  {organizations.map((o) => {
+                    const selected = selectedOrgs.includes(o);
+                    return (
+                      <CommandItem
+                        key={o}
+                        onSelect={() =>
+                          setSelectedOrgs((prev) =>
+                            prev.includes(o) ? prev.filter((v) => v !== o) : [...prev, o]
+                          )
+                        }
+                      >
+                        <div className="flex items-center gap-2">
+                          <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                          <span>{o}</span>
+                        </div>
+                      </CommandItem>
+                    );
+                  })}
                 </CommandGroup>
               </CommandList>
             </Command>
@@ -102,7 +120,7 @@ export const FilingsList = ({ filings }: Props) => {
         <Popover open={typeOpen} onOpenChange={setTypeOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" size="sm" className="min-w-[160px] justify-between">
-              {typeFilter ?? "Filing type"}
+              {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
               <ChevronDown size={14} />
             </Button>
           </PopoverTrigger>
@@ -112,29 +130,72 @@ export const FilingsList = ({ filings }: Props) => {
               <CommandList>
                 <CommandEmpty>No results.</CommandEmpty>
                 <CommandGroup heading="Types">
-                  <CommandItem onSelect={() => { setTypeFilter(null); setTypeOpen(false); }}>
-                    All
+                  <CommandItem onSelect={() => setSelectedTypes([])}>
+                    Clear
                   </CommandItem>
-                  {types.map((t) => (
-                    <CommandItem key={t} onSelect={() => { setTypeFilter(t); setTypeOpen(false); }}>
-                      {t}
-                    </CommandItem>
-                  ))}
+                  <CommandItem onSelect={() => setSelectedTypes(types)}>
+                    Select all
+                  </CommandItem>
+                  {types.map((t) => {
+                    const selected = selectedTypes.includes(t);
+                    return (
+                      <CommandItem
+                        key={t}
+                        onSelect={() =>
+                          setSelectedTypes((prev) =>
+                            prev.includes(t) ? prev.filter((v) => v !== t) : [...prev, t]
+                          )
+                        }
+                      >
+                        <div className="flex items-center gap-2">
+                          <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                          <span>{t}</span>
+                        </div>
+                      </CommandItem>
+                    );
+                  })}
                 </CommandGroup>
               </CommandList>
             </Command>
           </PopoverContent>
         </Popover>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2 flex-wrap">
+          {/* Selected filters chips */}
+          {selectedOrgs.map((o) => (
+            <Badge key={`org-${o}`} variant="secondary" className="px-2 py-1">
+              <span className="mr-1">{o}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedOrgs((prev) => prev.filter((v) => v !== o))}
+                aria-label={`Remove ${o}`}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
+          ))}
+          {selectedTypes.map((t) => (
+            <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
+              <span className="mr-1">{t}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedTypes((prev) => prev.filter((v) => v !== t))}
+                aria-label={`Remove ${t}`}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
+          ))}
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search filings..."
             className="w-56 md:w-72"
           />
-          {(orgFilter || typeFilter || query) && (
-            <Button variant="ghost" size="sm" onClick={() => { setOrgFilter(null); setTypeFilter(null); setQuery(""); }}>
+          {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query) && (
+            <Button variant="ghost" size="sm" onClick={() => { setSelectedOrgs([]); setSelectedTypes([]); setQuery(""); }}>
               Clear
             </Button>
           )}
