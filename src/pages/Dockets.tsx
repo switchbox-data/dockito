@@ -139,7 +139,7 @@ export default function DocketsPage() {
     queryFn: async () => {
       let q: any = supabase
         .from("dockets")
-        .select("petitioner,count:petitioner.count()", { head: false })
+        .select("petitioner")
         .not("petitioner", "is", null);
 
       if (normalizedSearch) {
@@ -152,11 +152,15 @@ export default function DocketsPage() {
       if (startDate) q = q.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
       if (endDate) q = q.lte("opened_date", format(endOfMonth(endDate!), "yyyy-MM-dd"));
 
-      const { data, error } = await (q as any).order("count", { ascending: false });
+      const { data, error } = await q.limit(10000);
       if (error) throw error;
-      return ((data ?? []) as any[])
-        .filter((r) => r.petitioner)
-        .map((r: any) => ({ name: r.petitioner as string, count: Number(r.count ?? 0) }));
+      const counts = new Map<string, number>();
+      ((data ?? []) as { petitioner: string | null }[]).forEach((r) => {
+        if (r.petitioner) counts.set(r.petitioner, (counts.get(r.petitioner) ?? 0) + 1);
+      });
+      return Array.from(counts.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
     },
     staleTime: 30_000,
   });
@@ -251,7 +255,7 @@ export default function DocketsPage() {
         <p className="text-muted-foreground">Public Service Commission • State: NY • Explore and filter dockets</p>
       </header>
       <section aria-label="Filters" className="space-y-2">
-        <div className="sticky top-0 z-40">
+        <div className="sticky top-0 z-50">
           <div className="relative overflow-hidden border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md">
             <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
             <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-x-auto">
