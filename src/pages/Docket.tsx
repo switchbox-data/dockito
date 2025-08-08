@@ -81,6 +81,17 @@ const DocketPage = () => {
 
   return (
     <main className="container py-8 space-y-6">
+      <div className="flex items-center justify-end">
+        <a
+          href={`https://documents.dps.ny.gov/public/MatterManagement/CaseMaster.aspx?Mattercaseno=${docket.docket_govid}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-muted-foreground hover:underline"
+          aria-label={`Open ${docket.docket_govid} on the NY PSC website`}
+        >
+          View on NY PSC site
+        </a>
+      </div>
       <DocketHeader docket={docket} />
       {filingsLoading ? (
         <div className="text-muted-foreground">Loading filings…</div>
