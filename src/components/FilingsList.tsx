@@ -47,10 +47,23 @@ export const FilingsList = ({ filings }: Props) => {
       list = list.filter((f) => f.filling_type && selectedTypes.includes(f.filling_type));
     if (query.trim()) {
       const q = query.trim().toLowerCase();
-      list = list.filter((f) =>
-        (f.filling_name?.toLowerCase().includes(q) ?? false) ||
-        (f.filling_description?.toLowerCase().includes(q) ?? false)
-      );
+      list = list.filter((f) => {
+        const inFiling =
+          (f.filling_name?.toLowerCase().includes(q) ?? false) ||
+          (f.filling_description?.toLowerCase().includes(q) ?? false) ||
+          (f.filling_type?.toLowerCase().includes(q) ?? false) ||
+          f.organization_author_strings.some((o) => o.toLowerCase().includes(q));
+
+        const inAttachments = f.attachments.some((a: any) =>
+          (a.attachment_title?.toLowerCase().includes(q) ?? false) ||
+          (a.attachment_file_name?.toLowerCase().includes(q) ?? false) ||
+          (a.attachment_file_extension?.toLowerCase().includes(q) ?? false) ||
+          (a.attachment_type?.toLowerCase().includes(q) ?? false) ||
+          (a.attachment_subtype?.toLowerCase().includes(q) ?? false)
+        );
+
+        return inFiling || inAttachments;
+      });
     }
     list.sort((a, b) =>
       sortDir === "desc"
