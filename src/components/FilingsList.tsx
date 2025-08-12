@@ -96,8 +96,8 @@ export const FilingsList = ({ filings }: Props) => {
     if (!filtered.length) { setSelectedIndex(0); setSelectedAttachmentIdx(null); return; }
     if (selectedIndex > filtered.length - 1) setSelectedIndex(filtered.length - 1);
     const filing = filtered[Math.min(selectedIndex, filtered.length - 1)];
-    const pdfCount = filing ? filing.attachments.filter(a => a.attachment_file_extension.toLowerCase() === 'pdf').length : 0;
-    if (selectedAttachmentIdx !== null && selectedAttachmentIdx >= pdfCount) setSelectedAttachmentIdx(pdfCount ? pdfCount - 1 : null);
+    const attCount = filing ? filing.attachments.length : 0;
+    if (selectedAttachmentIdx !== null && selectedAttachmentIdx >= attCount) setSelectedAttachmentIdx(attCount ? attCount - 1 : null);
   }, [filtered, selectedIndex, selectedAttachmentIdx]);
 
   const scrollFilingIntoView = (idx: number) => {
@@ -137,9 +137,9 @@ export const FilingsList = ({ filings }: Props) => {
       e.preventDefault();
       const filing = filtered[selectedIndex];
       if (filing && active === filing.uuid) {
-        const pdfs = filing.attachments.filter(a => a.attachment_file_extension.toLowerCase() === 'pdf');
+        const total = filing.attachments.length;
         if (selectedAttachmentIdx === null) {
-          if (pdfs.length) {
+          if (total) {
             setSelectedAttachmentIdx(0);
             scrollAttachmentIntoView(filing.uuid, 0);
           } else if (selectedIndex < filtered.length - 1) {
@@ -147,7 +147,7 @@ export const FilingsList = ({ filings }: Props) => {
             scrollFilingIntoView(selectedIndex + 1);
           }
         } else {
-          if (selectedAttachmentIdx < pdfs.length - 1) {
+          if (selectedAttachmentIdx < total - 1) {
             setSelectedAttachmentIdx(selectedAttachmentIdx + 1);
             scrollAttachmentIntoView(filing.uuid, selectedAttachmentIdx + 1);
           } else if (selectedIndex < filtered.length - 1) {
@@ -186,10 +186,15 @@ export const FilingsList = ({ filings }: Props) => {
       const filing = filtered[selectedIndex];
       if (!filing) return;
       if (selectedAttachmentIdx !== null) {
-        const pdfs = filing.attachments.filter(a => a.attachment_file_extension.toLowerCase() === 'pdf');
-        const idx = selectedAttachmentIdx;
-        if (idx >= 0 && idx < pdfs.length) {
-          setViewer({ filingId: filing.uuid, index: idx });
+        const att = filing.attachments[selectedAttachmentIdx];
+        if (att) {
+          const isPdf = att.attachment_file_extension.toLowerCase() === 'pdf';
+          if (isPdf) {
+            setViewer({ filingId: filing.uuid, index: selectedAttachmentIdx });
+          } else {
+            const el = attachmentRefs.current[filing.uuid]?.[selectedAttachmentIdx] as HTMLAnchorElement | undefined;
+            el?.click?.();
+          }
         }
       } else {
         setActive(filing.uuid);
@@ -380,33 +385,47 @@ export const FilingsList = ({ filings }: Props) => {
                   )}
                   {f.attachments.map((a, idx) => {
                     const isPdf = a.attachment_file_extension.toLowerCase() === "pdf";
-                    return isPdf ? (
-                      <button
-                        key={a.uuid}
-                        type="button"
-                        onClick={() => setViewer({ filingId: f.uuid, index: idx })}
-                        className="group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 hover:bg-gradient-primary hover:border-accent/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <FileIcon ext={a.attachment_file_extension} />
-                          <div className="min-w-0">
-                            <div className="text-sm font-medium truncate">{a.attachment_title}</div>
-                            <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
-                          </div>
-                        </div>
-                        <span
-                          className={[buttonVariants({ size: "sm" }), "pointer-events-none", "group-hover:bg-gradient-primary"].join(" ")}
+                    const isSelectedAtt = isSelected && selectedAttachmentIdx === idx;
+                    if (isPdf) {
+                      return (
+                        <button
+                          key={a.uuid}
+                          type="button"
+                          ref={(el) => {
+                            if (!attachmentRefs.current[f.uuid]) attachmentRefs.current[f.uuid] = [];
+                            attachmentRefs.current[f.uuid][idx] = el;
+                          }}
+                          onClick={() => setViewer({ filingId: f.uuid, index: idx })}
+                          className={cn(
+                            "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                            isSelectedAtt ? "bg-gradient-primary border-accent/30" : "hover:bg-gradient-primary hover:border-accent/30"
+                          )}
                         >
-                          Open
-                        </span>
-                      </button>
-                    ) : (
+                          <div className="flex items-center gap-3 min-w-0">
+                            <FileIcon ext={a.attachment_file_extension} />
+                            <div className="min-w-0">
+                              <div className="text-sm font-medium truncate">{a.attachment_title}</div>
+                              <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
+                            </div>
+                          </div>
+                          <span className={[buttonVariants({ size: "sm" }), "pointer-events-none", "group-hover:bg-gradient-primary"].join(" ")}>Open</span>
+                        </button>
+                      );
+                    }
+                    return (
                       <a
                         key={a.uuid}
+                        ref={(el) => {
+                          if (!attachmentRefs.current[f.uuid]) attachmentRefs.current[f.uuid] = [];
+                          attachmentRefs.current[f.uuid][idx] = el;
+                        }}
                         href={a.attachment_url ?? "#"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 hover:bg-gradient-primary hover:border-accent/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+                        className={cn(
+                          "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                          isSelectedAtt ? "bg-gradient-primary border-accent/30" : "hover:bg-gradient-primary hover:border-accent/30"
+                        )}
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <FileIcon ext={a.attachment_file_extension} />
@@ -415,8 +434,7 @@ export const FilingsList = ({ filings }: Props) => {
                             <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                           </div>
                         </div>
-                        <span
-                          className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-gradient-primary", "flex", "items-center", "gap-2"].join(" ")}
+                        <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-gradient-primary", "flex", "items-center", "gap-2"].join(" ")}
                         >
                           <LinkIcon size={16} /> Download
                         </span>
