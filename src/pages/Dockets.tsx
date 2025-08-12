@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { format, addMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -72,6 +72,12 @@ export default function DocketsPage() {
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
   const [dateOpen, setDateOpen] = useState(false);
+
+  const searchRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const navigate = useNavigate();
 
   // Date slider uses month indices
   const { data: bounds } = useDateBounds();
@@ -247,8 +253,41 @@ export default function DocketsPage() {
   const pages = (data?.pages ?? []) as Docket[][];
   const items = pages.flat();
 
+  // Focus container on mount
+  useEffect(() => { containerRef.current?.focus(); }, []);
+
+  // Keep selection in range
+  useEffect(() => {
+    if (selectedIdx > items.length - 1) setSelectedIdx(items.length ? items.length - 1 : 0);
+  }, [items, selectedIdx]);
+
+  const scrollSelectedIntoView = (idx: number) => {
+    const el = cardRefs.current[idx];
+    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    const tag = (e.target as HTMLElement)?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    // quick keys
+    if (e.key === '/') { e.preventDefault(); searchRef.current?.focus(); return; }
+    if (e.key.toLowerCase() === 'p') { e.preventDefault(); setPetOpen(true); return; }
+    if (e.key.toLowerCase() === 'i') { e.preventDefault(); setIndustryOpen(true); return; }
+    if (e.key.toLowerCase() === 't') { e.preventDefault(); setTypeOpen(true); return; }
+    if (e.key.toLowerCase() === 's') { e.preventDefault(); setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); return; }
+    if (e.key.toLowerCase() === 'd') { e.preventDefault(); setDateOpen(true); return; }
+
+    const cols = window.matchMedia('(min-width: 768px)').matches ? 2 : 1;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); setSelectedIdx((i) => { const ni = Math.max(0, i - 1); scrollSelectedIntoView(ni); return ni; }); return; }
+    if (e.key === 'ArrowRight') { e.preventDefault(); setSelectedIdx((i) => { const ni = Math.min(items.length - 1, i + 1); scrollSelectedIntoView(ni); return ni; }); return; }
+    if (e.key === 'ArrowUp') { e.preventDefault(); setSelectedIdx((i) => { const ni = Math.max(0, i - cols); scrollSelectedIntoView(ni); return ni; }); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setSelectedIdx((i) => { const ni = Math.min(items.length - 1, i + cols); scrollSelectedIntoView(ni); return ni; }); return; }
+    if (e.key === 'Enter') { e.preventDefault(); const d = items[selectedIdx]; if (d) navigate(`/docket/${d.docket_govid}`); return; }
+  };
+
   return (
-    <main className="container py-6 space-y-6">
+    <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-6 space-y-6">
       <header className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight">New York PSC Dockets</h1>
         <p className="text-muted-foreground">Public Service Commission • State: NY • Explore and filter dockets</p>
@@ -264,6 +303,7 @@ export default function DocketsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-[10rem] md:w-[16rem] focus:w-[20rem] md:focus:w-[28rem] transition-[width] duration-300"
+                ref={searchRef}
               />
 
               {/* Industry multi-select */}
@@ -387,13 +427,6 @@ export default function DocketsPage() {
                 </PopoverContent>
               </Popover>
 
-              {/* Sort */}
-              <div className="shrink-0">
-                <Button variant="outline" size="sm" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
-                  Date {sortDir === "desc" ? "↓" : "↑"}
-                </Button>
-              </div>
-
               {/* Date range (month) in a modal dialog) */}
               <Dialog open={dateOpen} onOpenChange={setDateOpen}>
                 <DialogTrigger asChild>
@@ -424,6 +457,13 @@ export default function DocketsPage() {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+
+              {/* Sort */}
+              <div className="shrink-0">
+                <Button variant="outline" size="sm" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+                  Date {sortDir === "desc" ? "↓" : "↑"}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -494,35 +534,40 @@ export default function DocketsPage() {
           <div className="text-muted-foreground">No dockets found.</div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {items.map((d) => (
-              <Link
-                key={d.uuid}
-                to={`/docket/${d.docket_govid}`}
-                aria-label={`Open docket ${d.docket_govid}`}
-                className="group block focus-visible:outline-none"
-              >
-                <Card className="hover:shadow-md transition-shadow focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background">
-                  <CardHeader>
-                    <CardTitle className="text-base flex items-center justify-between gap-3">
-                      <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
-                      <span className="text-sm text-muted-foreground">{format(new Date(d.opened_date), "MMM d, yyyy")}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="font-medium">{d.docket_title ?? "Untitled docket"}</div>
-                    {d.docket_description && (
-                      <p className="text-sm text-muted-foreground line-clamp-3">{d.docket_description}</p>
-                    )}
-                    <div className="flex flex-wrap gap-2">
-                      {d.industry && <Badge variant="outline">{d.industry}</Badge>}
-                      {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
-                      {d.petitioner && <Badge variant="outline">{d.petitioner}</Badge>}
-                      {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+            {items.map((d, idx) => {
+              const isSelected = selectedIdx === idx;
+              return (
+                <Link
+                  key={d.uuid}
+                  to={`/docket/${d.docket_govid}`}
+                  aria-label={`Open docket ${d.docket_govid}`}
+                  className="group block focus-visible:outline-none"
+                  ref={(el) => { cardRefs.current[idx] = el; }}
+                >
+                  <Card className={cn("hover:shadow-md transition-shadow focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background", isSelected ? "bg-muted" : "")}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-base flex items-center justify-between gap-3">
+                        <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
+                        <span className="text-sm text-muted-foreground">{format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="font-medium">{d.docket_title ?? "Untitled docket"}</div>
+                      {d.docket_description && (
+                        <p className="text-sm text-muted-foreground line-clamp-3">{d.docket_description}</p>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        {d.industry && <Badge variant="outline">{d.industry}</Badge>}
+                        {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
+                        {d.petitioner && <Badge variant="outline">{d.petitioner}</Badge>}
+                        {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         )}
 

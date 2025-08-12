@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X } from "lucide-react";
 import { Attachment, Filling } from "@/data/mock";
-import { format } from "date-fns";
+import { format, startOfDay, endOfDay } from "date-fns";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PDFViewerModal } from "@/components/PDFViewerModal";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 export type FilingWithAttachments = Filling & { attachments: Attachment[] };
@@ -26,7 +27,10 @@ export const FilingsList = ({ filings }: Props) => {
   const [orgOpen, setOrgOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
+const navigate = useNavigate();
+
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
 
   // Keyboard selection state
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -75,6 +79,17 @@ export const FilingsList = ({ filings }: Props) => {
         return inFiling || inAttachments;
       });
     }
+    // Date range filter
+    if (dateRange?.from || dateRange?.to) {
+      const from = dateRange?.from ? startOfDay(dateRange.from) : null;
+      const to = dateRange?.to ? endOfDay(dateRange.to) : null;
+      list = list.filter((f) => {
+        const t = new Date(f.filed_date).getTime();
+        if (from && t < from.getTime()) return false;
+        if (to && t > to.getTime()) return false;
+        return true;
+      });
+    }
     list.sort((a, b) =>
       sortDir === "desc"
         ? new Date(b.filed_date).getTime() - new Date(a.filed_date).getTime()
@@ -118,6 +133,12 @@ export const FilingsList = ({ filings }: Props) => {
     if (viewer) return;
     const tag = (e.target as HTMLElement)?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    // Quick keys
+    if (e.key === '/') { e.preventDefault(); searchRef.current?.focus(); return; }
+    if (e.key.toLowerCase() === 'o') { e.preventDefault(); setOrgOpen(true); return; }
+    if (e.key.toLowerCase() === 't') { e.preventDefault(); setTypeOpen(true); return; }
+    if (e.key.toLowerCase() === 's') { e.preventDefault(); setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); return; }
 
     if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -233,7 +254,13 @@ export const FilingsList = ({ filings }: Props) => {
       <div className="sticky top-0 z-40 bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur border-b mb-3 space-y-2 py-2">
         {/* Row 1: controls */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="text-sm text-muted-foreground">Filter:</div>
+          <Input
+            ref={searchRef}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search filings..."
+            className="w-56 md:w-72"
+          />
 
           {/* Organization filter (searchable) */}
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
@@ -243,7 +270,7 @@ export const FilingsList = ({ filings }: Props) => {
                 <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-0 z-50">
+            <PopoverContent className="p-0 z-50 bg-popover border">
               <Command>
                 <CommandInput placeholder="Search organizations..." />
                 <CommandList>
@@ -283,7 +310,7 @@ export const FilingsList = ({ filings }: Props) => {
                 <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-0 z-50">
+            <PopoverContent className="p-0 z-50 bg-popover border">
               <Command>
                 <CommandInput placeholder="Search types..." />
                 <CommandList>
@@ -315,14 +342,27 @@ export const FilingsList = ({ filings }: Props) => {
             </PopoverContent>
           </Popover>
 
+          {/* Date range */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="min-w-[200px] justify-between">
+                {dateRange?.from ? format(dateRange.from, "PPP") : "Start"} – {dateRange?.to ? format(dateRange.to, "PPP") : "End"}
+                <ChevronDown size={14} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 z-50 bg-popover border" align="start">
+              <Calendar
+                mode="range"
+                selected={dateRange}
+                onSelect={setDateRange}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+
           <div className="ml-auto flex items-center gap-2">
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search filings..."
-              className="w-56 md:w-72"
-            />
-            {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query) && (
+            {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || (dateRange?.from || dateRange?.to)) && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -330,6 +370,7 @@ export const FilingsList = ({ filings }: Props) => {
                   setSelectedOrgs([]);
                   setSelectedTypes([]);
                   setQuery("");
+                  setDateRange(undefined);
                 }}
               >
                 Clear
@@ -380,11 +421,11 @@ export const FilingsList = ({ filings }: Props) => {
           const isOpen = openIds.has(f.uuid);
           const isSelected = selectedIndex === idx;
           return (
-            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className="rounded-lg border bg-card p-3">
+            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className="rounded-lg border bg-muted p-3">
               <button
               className={cn(
                 "w-full flex items-center gap-3 text-left rounded-md px-2 py-1 transition-colors",
-                isSelected ? "bg-muted" : "hover:bg-accent/20"
+                "hover:bg-accent/20"
               )}
                 onClick={() => { setSelectedIndex(idx); setSelectedAttachmentIdx(isOpen ? null : (f.attachments.length ? 0 : null)); setOpenIds((prev) => { const next = new Set(prev); if (isOpen) next.delete(f.uuid); else next.add(f.uuid); return next; }); }}
                 aria-expanded={isOpen}
