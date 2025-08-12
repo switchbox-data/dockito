@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X } from "lucide-react";
+import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X, Eye } from "lucide-react";
 import { Attachment, Filling } from "@/data/mock";
 import { format, addMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -545,7 +545,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                               <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm" }), "pointer-events-none", "group-hover:bg-accent/20"].join(" ")}>Open</span>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-accent/20", "flex", "items-center", "gap-2"].join(" ")}>\n                            <Eye size={16} /> Open\n                          </span>
                         </button>
                       );
                     }
