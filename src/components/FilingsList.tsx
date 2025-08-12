@@ -21,7 +21,7 @@ export const FilingsList = ({ filings }: Props) => {
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
-  const [active, setActive] = useState<string | null>(null);
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const [viewer, setViewer] = useState<{ filingId: string; index: number } | null>(null);
   const [orgOpen, setOrgOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
@@ -141,7 +141,7 @@ export const FilingsList = ({ filings }: Props) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       const filing = filtered[selectedIndex];
-      if (filing && active === filing.uuid) {
+      if (filing && openIds.has(filing.uuid)) {
         const total = filing.attachments.length;
         if (selectedAttachmentIdx === null) {
           if (total) {
@@ -171,16 +171,29 @@ export const FilingsList = ({ filings }: Props) => {
     if (e.key === 'ArrowRight') {
       e.preventDefault();
       const filing = filtered[selectedIndex];
-      if (filing) setActive(filing.uuid);
+      if (filing) {
+        setOpenIds((prev) => {
+          const next = new Set(prev);
+          next.add(filing.uuid);
+          return next;
+        });
+        const total = filing.attachments.length;
+        setSelectedAttachmentIdx(total ? 0 : null);
+        if (total) scrollAttachmentIntoView(filing.uuid, 0);
+      }
       return;
     }
 
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
       const filing = filtered[selectedIndex];
-      if (filing && active === filing.uuid) {
+      if (filing && openIds.has(filing.uuid)) {
         setSelectedAttachmentIdx(null);
-        setActive(null);
+        setOpenIds((prev) => {
+          const next = new Set(prev);
+          next.delete(filing.uuid);
+          return next;
+        });
         scrollFilingIntoView(selectedIndex);
       }
       return;
@@ -202,7 +215,14 @@ export const FilingsList = ({ filings }: Props) => {
           }
         }
       } else {
-        setActive(filing.uuid);
+        setOpenIds((prev) => {
+          const next = new Set(prev);
+          next.add(filing.uuid);
+          return next;
+        });
+        const total = filing.attachments.length;
+        setSelectedAttachmentIdx(total ? 0 : null);
+        if (total) scrollAttachmentIntoView(filing.uuid, 0);
       }
       return;
     }
@@ -357,16 +377,16 @@ export const FilingsList = ({ filings }: Props) => {
 
       <div className="space-y-2">
         {filtered.map((f, idx) => {
-          const isOpen = active === f.uuid;
+          const isOpen = openIds.has(f.uuid);
           const isSelected = selectedIndex === idx;
           return (
             <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className="rounded-lg border bg-card p-3">
               <button
-                className={cn(
-                  "w-full flex items-center gap-3 text-left rounded-md px-2 py-1 transition-colors",
-                  isSelected ? "bg-gradient-primary border border-accent/30" : "hover:bg-accent/20"
-                )}
-                onClick={() => setActive(isOpen ? null : f.uuid)}
+              className={cn(
+                "w-full flex items-center gap-3 text-left rounded-md px-2 py-1 transition-colors",
+                isSelected ? "bg-muted" : "hover:bg-accent/20"
+              )}
+                onClick={() => { setSelectedIndex(idx); setSelectedAttachmentIdx(isOpen ? null : (f.attachments.length ? 0 : null)); setOpenIds((prev) => { const next = new Set(prev); if (isOpen) next.delete(f.uuid); else next.add(f.uuid); return next; }); }}
                 aria-expanded={isOpen}
               >
                 {isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
@@ -403,7 +423,7 @@ export const FilingsList = ({ filings }: Props) => {
                           onClick={() => setViewer({ filingId: f.uuid, index: idx })}
                           className={cn(
                             "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-                            isSelectedAtt ? "bg-gradient-primary border-accent/30" : "hover:bg-gradient-primary hover:border-accent/30"
+                            isSelectedAtt ? "bg-muted" : "hover:bg-accent/20"
                           )}
                         >
                           <div className="flex items-center gap-3 min-w-0">
@@ -413,7 +433,7 @@ export const FilingsList = ({ filings }: Props) => {
                               <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm" }), "pointer-events-none", "group-hover:bg-gradient-primary"].join(" ")}>Open</span>
+                          <span className={[buttonVariants({ size: "sm" }), "pointer-events-none", "group-hover:bg-accent/20"].join(" ")}>Open</span>
                         </button>
                       );
                     }
@@ -427,10 +447,10 @@ export const FilingsList = ({ filings }: Props) => {
                         href={a.attachment_url ?? "#"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={cn(
-                          "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-                          isSelectedAtt ? "bg-gradient-primary border-accent/30" : "hover:bg-gradient-primary hover:border-accent/30"
-                        )}
+                          className={cn(
+                            "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                            isSelectedAtt ? "bg-muted" : "hover:bg-accent/20"
+                          )}
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <FileIcon ext={a.attachment_file_extension} />
@@ -439,8 +459,8 @@ export const FilingsList = ({ filings }: Props) => {
                             <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                           </div>
                         </div>
-                        <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-gradient-primary", "flex", "items-center", "gap-2"].join(" ")}
-                        >
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-accent/20", "flex", "items-center", "gap-2"].join(" ")}
+                          >
                           <LinkIcon size={16} /> Download
                         </span>
                       </a>
