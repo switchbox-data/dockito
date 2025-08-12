@@ -178,10 +178,10 @@ export const FilingsList = ({ filings }: Props) => {
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
       const filing = filtered[selectedIndex];
-      if (selectedAttachmentIdx !== null) {
+      if (filing && active === filing.uuid) {
         setSelectedAttachmentIdx(null);
-      } else if (filing && active === filing.uuid) {
         setActive(null);
+        scrollFilingIntoView(selectedIndex);
       }
       return;
     }
