@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
+import type { DateRange } from "react-day-picker";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 export type FilingWithAttachments = Filling & { attachments: Attachment[] };
@@ -30,7 +31,7 @@ export const FilingsList = ({ filings }: Props) => {
 const navigate = useNavigate();
 
   const searchRef = useRef<HTMLInputElement>(null);
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
+const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   // Keyboard selection state
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -353,8 +354,8 @@ const navigate = useNavigate();
             <PopoverContent className="w-auto p-0 z-50 bg-popover border" align="start">
               <Calendar
                 mode="range"
-                selected={dateRange}
-                onSelect={setDateRange}
+                selected={dateRange as any}
+                onSelect={(r) => setDateRange(r as DateRange | undefined)}
                 initialFocus
                 className="p-3 pointer-events-auto"
               />
