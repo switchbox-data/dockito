@@ -71,6 +71,13 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
     return Array.from(set).sort();
   }, [filings]);
 
+  const typePalette = ["bg-primary/10 text-primary", "bg-accent/10 text-foreground", "bg-secondary/20 text-foreground"];
+  const typeClass = (name: string) => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) { hash = (hash + name.charCodeAt(i)) % 1000; }
+    return typePalette[hash % typePalette.length];
+  };
+
   const filtered = useMemo(() => {
     let list = [...filings];
     if (selectedOrgs.length)
@@ -165,13 +172,28 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           const filing = filtered[selectedIndex];
           if (filing) scrollAttachmentIntoView(filing.uuid, selectedAttachmentIdx - 1);
         } else if (selectedIndex > 0) {
+          const prev = filtered[selectedIndex - 1];
           setSelectedIndex(selectedIndex - 1);
+          if (prev && openIds.has(prev.uuid) && prev.attachments.length) {
+            const last = prev.attachments.length - 1;
+            setSelectedAttachmentIdx(last);
+            scrollAttachmentIntoView(prev.uuid, last);
+          } else {
+            setSelectedAttachmentIdx(null);
+            scrollFilingIntoView(selectedIndex - 1);
+          }
+        }
+      } else if (selectedIndex > 0) {
+        const prev = filtered[selectedIndex - 1];
+        setSelectedIndex(selectedIndex - 1);
+        if (prev && openIds.has(prev.uuid) && prev.attachments.length) {
+          const last = prev.attachments.length - 1;
+          setSelectedAttachmentIdx(last);
+          scrollAttachmentIntoView(prev.uuid, last);
+        } else {
           setSelectedAttachmentIdx(null);
           scrollFilingIntoView(selectedIndex - 1);
         }
-      } else if (selectedIndex > 0) {
-        setSelectedIndex(selectedIndex - 1);
-        scrollFilingIntoView(selectedIndex - 1);
       }
       return;
     }
@@ -186,22 +208,42 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             setSelectedAttachmentIdx(0);
             scrollAttachmentIntoView(filing.uuid, 0);
           } else if (selectedIndex < filtered.length - 1) {
+            const nextF = filtered[selectedIndex + 1];
             setSelectedIndex(selectedIndex + 1);
-            scrollFilingIntoView(selectedIndex + 1);
+            if (nextF && openIds.has(nextF.uuid) && nextF.attachments.length) {
+              setSelectedAttachmentIdx(0);
+              scrollAttachmentIntoView(nextF.uuid, 0);
+            } else {
+              setSelectedAttachmentIdx(null);
+              scrollFilingIntoView(selectedIndex + 1);
+            }
           }
         } else {
           if (selectedAttachmentIdx < total - 1) {
             setSelectedAttachmentIdx(selectedAttachmentIdx + 1);
             scrollAttachmentIntoView(filing.uuid, selectedAttachmentIdx + 1);
           } else if (selectedIndex < filtered.length - 1) {
+            const nextF = filtered[selectedIndex + 1];
             setSelectedIndex(selectedIndex + 1);
-            setSelectedAttachmentIdx(null);
-            scrollFilingIntoView(selectedIndex + 1);
+            if (nextF && openIds.has(nextF.uuid) && nextF.attachments.length) {
+              setSelectedAttachmentIdx(0);
+              scrollAttachmentIntoView(nextF.uuid, 0);
+            } else {
+              setSelectedAttachmentIdx(null);
+              scrollFilingIntoView(selectedIndex + 1);
+            }
           }
         }
       } else if (selectedIndex < filtered.length - 1) {
+        const nextF = filtered[selectedIndex + 1];
         setSelectedIndex(selectedIndex + 1);
-        scrollFilingIntoView(selectedIndex + 1);
+        if (nextF && openIds.has(nextF.uuid) && nextF.attachments.length) {
+          setSelectedAttachmentIdx(0);
+          scrollAttachmentIntoView(nextF.uuid, 0);
+        } else {
+          setSelectedAttachmentIdx(null);
+          scrollFilingIntoView(selectedIndex + 1);
+        }
       }
       return;
     }
@@ -451,11 +493,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           const isOpen = openIds.has(f.uuid);
           const isSelected = selectedIndex === idx;
           return (
-            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className={cn("rounded-lg border p-3", isSelected ? "bg-muted" : "bg-card")}>
+            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className={cn("rounded-lg border p-3 transition-colors hover:border-primary/30", isSelected ? "bg-muted" : "bg-card")}>
               <button
               className={cn(
-                "w-full flex items-center gap-3 text-left rounded-md px-2 py-1 transition-colors",
-                "hover:bg-accent/20"
+                "w-full flex items-center gap-3 text-left rounded-md px-2 py-1 transition-colors"
               )}
                 onClick={() => { setSelectedIndex(idx); setSelectedAttachmentIdx(isOpen ? null : (f.attachments.length ? 0 : null)); setOpenIds((prev) => { const next = new Set(prev); if (isOpen) next.delete(f.uuid); else next.add(f.uuid); return next; }); }}
                 aria-expanded={isOpen}
@@ -464,7 +505,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-medium leading-tight">{f.filling_name ?? f.filling_type ?? "Filing"}</h3>
-                    {f.filling_type && <Badge variant="secondary">{f.filling_type}</Badge>}
+                    {f.filling_type && <Badge variant="secondary" className={cn("px-2 py-0.5", typeClass(f.filling_type))}>{f.filling_type}</Badge>}
                   </div>
                   <div className="text-sm text-muted-foreground mt-0.5 flex flex-wrap items-center gap-2">
                     <span>{format(new Date(f.filed_date), "PPP")}</span>
