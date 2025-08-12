@@ -461,7 +461,7 @@ export default function DocketsPage() {
 
               {/* Sort */}
               <div className="shrink-0">
-                <Button variant="outline" size="sm" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+                <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
                   Date {sortDir === "desc" ? "↓" : "↑"}
                 </Button>
               </div>
