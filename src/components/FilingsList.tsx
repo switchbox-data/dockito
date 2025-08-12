@@ -545,7 +545,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                               <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-accent/20", "flex", "items-center", "gap-2"].join(" ")}>\n                            <Eye size={16} /> Open\n                          </span>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-accent/20", "flex", "items-center", "gap-2", "leading-none"].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
                         </button>
                       );
                     }
