@@ -102,7 +102,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     if (el && viewerRef.current) {
       viewerRef.current.scrollTo({
         top: el.offsetTop,
-        behavior: 'smooth',
+        behavior: 'auto',
       });
     }
     pageMemory.set(current.uuid, target);
@@ -243,7 +243,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                         key={p}
                         ref={(el) => { pageRefs.current[p] = el; }}
                         data-page={p}
-                        className="mb-0 flex justify-center"
+                        className="mb-1 flex justify-center"
                       >
                         <Page pageNumber={p} scale={scale} renderTextLayer={false} renderAnnotationLayer={false} />
                       </div>
