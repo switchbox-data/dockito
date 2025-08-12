@@ -60,6 +60,17 @@ export const CommandK = () => {
       <CommandInput placeholder="Type a docket number or title… (Cmd/Ctrl + K)" value={query} onValueChange={setQuery} />
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
+        <CommandGroup heading="Commands">
+          <CommandItem
+            onSelect={() => {
+              navigate('/dockets');
+              setOpen(false);
+            }}
+          >
+            <FolderOpen className="mr-2 h-4 w-4" />
+            <span>View Dockets</span>
+          </CommandItem>
+        </CommandGroup>
         <CommandGroup heading={`Dockets${results.length ? ` (${results.length})` : ""}`}>
           {results.map((d) => (
             <CommandItem

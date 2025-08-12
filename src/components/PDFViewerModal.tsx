@@ -53,16 +53,22 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
      return a?.attachment_url!;
    };
 
-   // Pre-fetch PDF to verify reachability and optionally use a Blob URL
+   // Pre-fetch PDF and cache Blob URLs per attachment to avoid refetching
    useEffect(() => {
      if (!current) return;
      const url = buildFileUrl(current);
      setLoadErr(null);
-     setBlobUrl(null);
      setProbing(true);
 
+     // Use cached Blob URL if available
+     const cached = blobCache.get(current.uuid);
+     if (cached) {
+       setBlobUrl(cached);
+       setProbing(false);
+       return;
+     }
+
      let aborted = false;
-     let objectUrl: string | null = null;
 
      fetch(url, { method: 'GET', mode: 'cors' })
        .then(async (res) => {
@@ -75,7 +81,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
          }
          const blob = await res.blob();
          if (aborted) return;
-         objectUrl = URL.createObjectURL(blob);
+         const objectUrl = URL.createObjectURL(blob);
+         blobCache.set(current.uuid, objectUrl);
          setBlobUrl(objectUrl);
        })
        .catch((err) => {
@@ -88,7 +95,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
      return () => {
        aborted = true;
-       if (objectUrl) URL.revokeObjectURL(objectUrl);
+       // Do not revoke cached object URLs here to preserve caching across switches
      };
    }, [current?.uuid]);
   // Restore remembered page when switching/opening
@@ -124,18 +131,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     scrollToPage(p);
   };
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (!open) return;
-      if (e.key === 'ArrowRight') { setIndex(i => (i + 1) % attachments.length); e.preventDefault(); }
-      if (e.key === 'ArrowLeft') { setIndex(i => (i - 1 + attachments.length) % attachments.length); e.preventDefault(); }
-      if (e.key === 'ArrowDown') { go(page + 1); e.preventDefault(); }
-      if (e.key === 'ArrowUp') { go(page - 1); e.preventDefault(); }
-      if (e.key === 'Escape') { onOpenChange(false); }
-    };
-    window.addEventListener('keydown', onKey, true);
-    return () => window.removeEventListener('keydown', onKey, true);
-  }, [open, page, attachments.length, onOpenChange]);
+  // Keyboard handling is scoped to the dialog via onKeyDownCapture to avoid double triggers
   useEffect(() => {
     if (!open || !current) return;
     const params = new URLSearchParams(location.search);
@@ -272,7 +268,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                         key={p}
                         ref={(el) => { pageRefs.current[p] = el; }}
                         data-page={p}
-                        className="mb-3 flex justify-center"
+                        className="mb-6 flex justify-center"
                       >
                         <Page pageNumber={p} scale={scale} renderTextLayer={false} renderAnnotationLayer={false} />
                       </div>
