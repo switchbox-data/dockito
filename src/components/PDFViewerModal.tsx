@@ -122,8 +122,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
       if (e.key === 'ArrowUp') { go(page - 1); e.preventDefault(); }
       if (e.key === 'Escape') { onOpenChange(false); }
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
   }, [open, page, attachments.length, onOpenChange]);
 
   const pagesArr = useMemo(() => Array.from({ length: numPages }, (_, i) => i + 1), [numPages]);
@@ -175,7 +175,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
               <Button variant="outline" size="sm" onClick={() => setIndex(i => (i - 1 + attachments.length) % attachments.length)} aria-label="Previous attachment">
                 <ChevronLeft size={16} />
               </Button>
-              <span className="text-xs text-muted-foreground">Doc {index + 1} / {attachments.length}</span>
+              <span className="text-sm text-muted-foreground">Doc {index + 1} / {attachments.length}</span>
               <Button variant="outline" size="sm" onClick={() => setIndex(i => (i + 1) % attachments.length)} aria-label="Next attachment">
                 <ChevronRight size={16} />
               </Button>
@@ -193,7 +193,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           </div>
         </DialogHeader>
         <div className="grid grid-cols-12 gap-3" ref={containerRef}>
-          <aside className="hidden md:block md:col-span-2 max-h-[78vh] overflow-auto rounded border p-1">
+          <aside className="hidden md:block md:col-span-2 h-[78vh] overflow-auto rounded border p-1">
             
             {current && (
               <Document file={blobUrl ?? buildFileUrl(current)} loading={<div className='text-xs p-4'>Loading…</div>}>
@@ -213,7 +213,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           </aside>
 
           <main className="col-span-12 md:col-span-10">
-            <div className="mb-2" />
+            
 
             <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[78vh] overflow-auto">
               {current && (
@@ -243,9 +243,9 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                         key={p}
                         ref={(el) => { pageRefs.current[p] = el; }}
                         data-page={p}
-                        className="mb-1 flex justify-center"
+                        className="mb-0 flex justify-center"
                       >
-                        <Page pageNumber={p} scale={scale} renderTextLayer={false} renderAnnotationLayer={true} />
+                        <Page pageNumber={p} scale={scale} renderTextLayer={false} renderAnnotationLayer={false} />
                       </div>
                     ))}
                   </Document>
