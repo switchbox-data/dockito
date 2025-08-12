@@ -170,22 +170,21 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <DialogTitle className="truncate text-base">{current?.attachment_title}</DialogTitle>
-              <DialogDescription>Scrolling through filing attachments</DialogDescription>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => setIndex(i => (i - 1 + attachments.length) % attachments.length)} aria-label="Previous attachment">
-                <ChevronLeft size={16} /> Prev
+                <ChevronLeft size={16} />
               </Button>
-              <span className="text-xs text-muted-foreground">{index + 1} / {attachments.length}</span>
+              <span className="text-xs text-muted-foreground">Doc {index + 1} / {attachments.length}</span>
               <Button variant="outline" size="sm" onClick={() => setIndex(i => (i + 1) % attachments.length)} aria-label="Next attachment">
-                Next <ChevronRight size={16} />
+                <ChevronRight size={16} />
               </Button>
               <div className="mx-3 h-5 w-px bg-border" />
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={() => go(page - 1)} disabled={page <= 1} aria-label="Previous page">
                   <ChevronUp size={16} />
                 </Button>
-                <span className="text-sm text-muted-foreground">{page} / {numPages || 1}</span>
+                <span className="text-sm text-muted-foreground">Page {page} / {numPages || 1}</span>
                 <Button variant="outline" size="sm" onClick={() => go(page + 1)} disabled={page >= numPages} aria-label="Next page">
                   <ChevronDown size={16} />
                 </Button>
@@ -216,7 +215,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           <main className="col-span-12 md:col-span-10">
             <div className="mb-2" />
 
-            <div ref={viewerRef} className="relative group rounded-lg border bg-background h-[78vh] overflow-auto">
+            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[78vh] overflow-auto">
               {current && (
                 loadErr ? (
                   <div className="p-6 text-sm">
@@ -244,7 +243,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                         key={p}
                         ref={(el) => { pageRefs.current[p] = el; }}
                         data-page={p}
-                        className="mb-4 flex justify-center"
+                        className="mb-1 flex justify-center"
                       >
                         <Page pageNumber={p} scale={scale} renderTextLayer={false} renderAnnotationLayer={true} />
                       </div>
