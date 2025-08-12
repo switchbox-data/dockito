@@ -34,17 +34,58 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const [scale, setScale] = useState(1.1);
   const [query, setQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [loadErr, setLoadErr] = useState<string | null>(null);
+  const [probing, setProbing] = useState(false);
 
   const current = attachments[index];
 
   const buildFileUrl = (a: Att) => {
     const hash = a?.blake2b_hash?.toString().trim();
-    if (hash) {
-      return `https://temporary-openscrapersapi-x6wb2.ondigitalocean.app/public/raw_attachments/${encodeURIComponent(hash)}/raw`;
-    }
-    return a?.attachment_url!;
-  };
+     if (hash) {
+       return `https://temporary-openscrapersapi-x6wb2.ondigitalocean.app/public/raw_attachments/${encodeURIComponent(hash)}/raw`;
+     }
+     return a?.attachment_url!;
+   };
 
+   // Pre-fetch PDF to verify reachability and optionally use a Blob URL
+   useEffect(() => {
+     if (!current) return;
+     const url = buildFileUrl(current);
+     setLoadErr(null);
+     setBlobUrl(null);
+     setProbing(true);
+
+     let aborted = false;
+     let objectUrl: string | null = null;
+
+     fetch(url, { method: 'GET', mode: 'cors' })
+       .then(async (res) => {
+         if (!res.ok) {
+           throw new Error(`HTTP ${res.status} ${res.statusText}`);
+         }
+         const ct = res.headers.get('content-type') || '';
+         if (!ct.includes('pdf')) {
+           console.warn('Unexpected content-type for PDF:', ct);
+         }
+         const blob = await res.blob();
+         if (aborted) return;
+         objectUrl = URL.createObjectURL(blob);
+         setBlobUrl(objectUrl);
+       })
+       .catch((err) => {
+         if (aborted) return;
+         setLoadErr(err?.message || 'Failed to fetch PDF');
+       })
+       .finally(() => {
+         if (!aborted) setProbing(false);
+       });
+
+     return () => {
+       aborted = true;
+       if (objectUrl) URL.revokeObjectURL(objectUrl);
+     };
+   }, [current?.uuid]);
   // Restore remembered page when switching/opening
   useEffect(() => {
     if (!current) return;
@@ -119,9 +160,30 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
             <div className="rounded-lg border bg-background max-h-[70vh] overflow-auto flex items-start justify-center">
               {current && (
-                <Document file={buildFileUrl(current)} onLoadSuccess={onDocumentLoadSuccess} loading={<div className='p-8 text-sm'>Loading PDF…</div>}>
-                  <Page pageNumber={page} scale={scale} renderTextLayer={true} renderAnnotationLayer={true} />
-                </Document>
+                loadErr ? (
+                  <div className="p-6 text-sm">
+                    <div className="mb-2 font-medium">Failed to load PDF</div>
+                    <div className="mb-3 text-muted-foreground">{loadErr}</div>
+                    <a
+                      href={buildFileUrl(current)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline"
+                    >
+                      Open raw file
+                    </a>
+                  </div>
+                ) : (
+                  <Document
+                    file={blobUrl ?? buildFileUrl(current)}
+                    onLoadSuccess={onDocumentLoadSuccess}
+                    onLoadError={(e) => setLoadErr((e as Error)?.message || 'Failed to load PDF')}
+                    onSourceError={(e) => setLoadErr((e as Error)?.message || 'Failed to load PDF')}
+                    loading={<div className='p-8 text-sm'>Loading PDF…</div>}
+                  >
+                    <Page pageNumber={page} scale={scale} renderTextLayer={true} renderAnnotationLayer={true} />
+                  </Document>
+                )
               )}
             </div>
 
