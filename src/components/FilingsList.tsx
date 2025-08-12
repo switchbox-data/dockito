@@ -318,7 +318,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search filings..."
-            className="w-40 md:w-56"
+            className="w-40 md:w-56 transition-[width] duration-200 focus:w-64 md:focus:w-96"
             onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
           />
 
@@ -391,7 +391,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                         >
                           <div className="flex items-center gap-2">
                             <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                            <span>{t}</span>
+                              <Badge variant="outline" className={cn("px-2 py-0.5", typeClass(t))}>{t}</Badge>
                           </div>
                         </CommandItem>
                       );
@@ -505,7 +505,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-medium leading-tight">{f.filling_name ?? f.filling_type ?? "Filing"}</h3>
-                    {f.filling_type && <Badge variant="secondary" className={cn("px-2 py-0.5", typeClass(f.filling_type))}>{f.filling_type}</Badge>}
+                    {f.filling_type && <Badge variant="outline" className={cn("px-2 py-0.5", typeClass(f.filling_type))}>{f.filling_type}</Badge>}
                   </div>
                   <div className="text-sm text-muted-foreground mt-0.5 flex flex-wrap items-center gap-2">
                     <span>{format(new Date(f.filed_date), "PPP")}</span>
@@ -534,8 +534,8 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           }}
                           onClick={() => setViewer({ filingId: f.uuid, index: idx })}
                           className={cn(
-                              "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-                              isSelectedAtt ? "bg-gradient-primary" : "hover:bg-accent/20"
+                              "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
+                              isSelectedAtt ? "bg-gradient-primary" : undefined
                           )}
                         >
                           <div className="flex items-center gap-3 min-w-0">
@@ -560,8 +560,8 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                         target="_blank"
                         rel="noopener noreferrer"
                           className={cn(
-                            "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-                            isSelectedAtt ? "bg-gradient-primary" : "hover:bg-accent/20"
+                            "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
+                            isSelectedAtt ? "bg-gradient-primary" : undefined
                           )}
                       >
                         <div className="flex items-center gap-3 min-w-0">
