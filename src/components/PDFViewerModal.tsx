@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import { Attachment } from "@/data/mock";
 import { Document, Page, pdfjs } from "react-pdf";
 
@@ -116,12 +116,15 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!open) return;
-      if (e.key === 'ArrowRight') go(page + 1);
-      if (e.key === 'ArrowLeft') go(page - 1);
+      if (e.key === 'ArrowRight') { setIndex(i => (i + 1) % attachments.length); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { setIndex(i => (i - 1 + attachments.length) % attachments.length); e.preventDefault(); }
+      if (e.key === 'ArrowDown') { go(page + 1); e.preventDefault(); }
+      if (e.key === 'ArrowUp') { go(page - 1); e.preventDefault(); }
+      if (e.key === 'Escape') { onOpenChange(false); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, page, numPages]);
+  }, [open, page, attachments.length, onOpenChange]);
 
   const pagesArr = useMemo(() => Array.from({ length: numPages }, (_, i) => i + 1), [numPages]);
 
@@ -162,13 +165,36 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[1000px] md:max-w-[1100px]">
+      <DialogContent className="sm:max-w-[1000px] md:max-w-[1100px] md:max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-base">{current?.attachment_title}</DialogTitle>
-          <DialogDescription className="sr-only">PDF preview with zoom, page navigation, and keyboard arrows.</DialogDescription>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <DialogTitle className="truncate text-base">{current?.attachment_title}</DialogTitle>
+              <DialogDescription>Scrolling through filing attachments</DialogDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => setIndex(i => (i - 1 + attachments.length) % attachments.length)} aria-label="Previous attachment">
+                <ChevronLeft size={16} /> Prev
+              </Button>
+              <span className="text-xs text-muted-foreground">{index + 1} / {attachments.length}</span>
+              <Button variant="outline" size="sm" onClick={() => setIndex(i => (i + 1) % attachments.length)} aria-label="Next attachment">
+                Next <ChevronRight size={16} />
+              </Button>
+              <div className="mx-3 h-5 w-px bg-border" />
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => go(page - 1)} disabled={page <= 1} aria-label="Previous page">
+                  <ChevronUp size={16} />
+                </Button>
+                <span className="text-sm text-muted-foreground">{page} / {numPages || 1}</span>
+                <Button variant="outline" size="sm" onClick={() => go(page + 1)} disabled={page >= numPages} aria-label="Next page">
+                  <ChevronDown size={16} />
+                </Button>
+              </div>
+            </div>
+          </div>
         </DialogHeader>
         <div className="grid grid-cols-12 gap-3" ref={containerRef}>
-          <aside className="hidden md:block md:col-span-2 max-h-[70vh] overflow-auto rounded border p-2">
+          <aside className="hidden md:block md:col-span-2 max-h-[78vh] overflow-auto rounded border p-1">
             
             {current && (
               <Document file={blobUrl ?? buildFileUrl(current)} loading={<div className='text-xs p-4'>Loading…</div>}>
@@ -179,7 +205,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                     className={`block w-full rounded border mb-2 overflow-hidden ${p === page ? 'ring-2 ring-primary' : ''}`}
                   >
                     <div className="flex justify-center bg-background">
-                      <Page pageNumber={p} width={110} renderTextLayer={false} renderAnnotationLayer={false} />
+                      <Page pageNumber={p} width={90} renderTextLayer={false} renderAnnotationLayer={false} />
                     </div>
                   </button>
                 ))}
@@ -188,24 +214,9 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           </aside>
 
           <main className="col-span-12 md:col-span-10">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => setScale(s => Math.max(0.6, s - 0.1))}>-</Button>
-                <span className="text-sm w-14 text-center">{Math.round(scale * 100)}%</span>
-                <Button variant="outline" size="sm" onClick={() => setScale(s => Math.min(2, s + 0.1))}>+</Button>
-              </div>
-              <div className="text-sm text-muted-foreground">{page} / {numPages || 1}</div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={index === 0}>
-                  <ChevronLeft size={16} /> Prev
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setIndex(i => Math.min(attachments.length - 1, i + 1))} disabled={index === attachments.length - 1}>
-                  Next <ChevronRight size={16} />
-                </Button>
-              </div>
-            </div>
+            <div className="mb-2" />
 
-            <div ref={viewerRef} className="rounded-lg border bg-background max-h-[70vh] overflow-auto">
+            <div ref={viewerRef} className="relative group rounded-lg border bg-background h-[78vh] overflow-auto">
               {current && (
                 loadErr ? (
                   <div className="p-6 text-sm">
@@ -241,12 +252,14 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                   </Document>
                 )
               )}
+              <div className="pointer-events-none absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-2 pointer-events-auto">
+                  <Button variant="outline" size="sm" onClick={() => setScale(s => Math.max(0.6, s - 0.1))} aria-label="Zoom out">-</Button>
+                  <Button variant="outline" size="sm" onClick={() => setScale(s => Math.min(2, s + 0.1))} aria-label="Zoom in">+</Button>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-2 flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => go(page - 1)} disabled={page <= 1}><ChevronLeft size={16} /> Page</Button>
-              <Button variant="outline" size="sm" onClick={() => go(page + 1)} disabled={page >= numPages}>Page <ChevronRight size={16} /></Button>
-            </div>
           </main>
         </div>
       </DialogContent>
