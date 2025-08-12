@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Loader2 } from "lucide-react";
 import { Attachment } from "@/data/mock";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -27,6 +27,13 @@ type Props = {
   attachments: Att[]; // PDFs only
   startIndex?: number;
 };
+
+// Subtle loading glyph
+const LoadingGlyph = ({ size = 28 }: { size?: number }) => (
+  <div className="flex items-center justify-center p-4">
+    <Loader2 size={size} className="text-muted-foreground animate-spin" />
+  </div>
+);
 
 export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0 }: Props) => {
   const [index, setIndex] = useState(startIndex);
@@ -60,6 +67,7 @@ const [probing, setProbing] = useState(false);
      const url = buildFileUrl(current);
      setLoadErr(null);
      setProbing(true);
+     setBlobUrl(null);
 
      // Use cached Blob URL if available
      const cached = blobCache.get(current.uuid);
@@ -235,7 +243,7 @@ const [probing, setProbing] = useState(false);
           <aside className="hidden md:block md:col-span-2 h-[78vh] overflow-auto rounded border p-1">
             
             {current && (
-              <Document file={blobUrl ?? buildFileUrl(current)} loading={<div className='text-xs p-4'>Loading…</div>}>
+              <Document key={current.uuid} file={blobUrl ?? buildFileUrl(current)} loading={<LoadingGlyph size={20} />}>
                 {pagesArr.map((p) => (
                   <button
                     key={p}
@@ -271,11 +279,12 @@ const [probing, setProbing] = useState(false);
                   </div>
                 ) : (
                   <Document
+                    key={current.uuid}
                     file={blobUrl ?? buildFileUrl(current)}
                     onLoadSuccess={onDocumentLoadSuccess}
                     onLoadError={(e) => setLoadErr((e as Error)?.message || 'Failed to load PDF')}
                     onSourceError={(e) => setLoadErr((e as Error)?.message || 'Failed to load PDF')}
-                    loading={<div className='p-8 text-sm'>Loading PDF…</div>}
+                    loading={<LoadingGlyph size={36} />}
                   >
                     {pagesArr.map((p) => (
                       <div
