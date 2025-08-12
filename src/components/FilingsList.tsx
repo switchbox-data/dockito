@@ -100,6 +100,11 @@ export const FilingsList = ({ filings }: Props) => {
     if (selectedAttachmentIdx !== null && selectedAttachmentIdx >= attCount) setSelectedAttachmentIdx(attCount ? attCount - 1 : null);
   }, [filtered, selectedIndex, selectedAttachmentIdx]);
 
+  // Refocus the keyboard container after the PDF modal closes
+  useEffect(() => {
+    if (!viewer) containerRef.current?.focus();
+  }, [viewer]);
+
   const scrollFilingIntoView = (idx: number) => {
     const el = filingRefs.current[idx];
     el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
