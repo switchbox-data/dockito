@@ -546,7 +546,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                               <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm", variant: isSelectedAtt ? "default" : "outline" }), "pointer-events-none", (!isSelectedAtt ? "group-hover:bg-accent/20" : ""), "flex", "items-center", "gap-2", "leading-none"].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none", "group-hover:border-primary/30", isSelectedAtt ? "bg-accent text-accent-foreground border-accent" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
                         </button>
                       );
                     }
@@ -573,8 +573,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                             <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                           </div>
                         </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-accent/20", "flex", "items-center", "gap-2", "group-data-[selected=true]:bg-primary", "group-data-[selected=true]:text-primary-foreground"].join(" ")}
-                          >
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2", "group-hover:border-primary/30", isSelectedAtt ? "bg-accent text-accent-foreground border-accent" : ""].join(" ")}>
                           <LinkIcon size={16} /> Download
                         </span>
                       </a>

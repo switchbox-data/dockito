@@ -545,7 +545,7 @@ export default function DocketsPage() {
                   className="group block focus-visible:outline-none"
                   ref={(el) => { cardRefs.current[idx] = el; }}
                 >
-                  <Card className={cn("hover:shadow-md transition-shadow focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background", isSelected ? "bg-muted" : "")}
+                  <Card className={cn("transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background", isSelected ? "bg-muted" : "")}
                   >
                     <CardHeader>
                       <CardTitle className="text-base flex items-center justify-between gap-3">
