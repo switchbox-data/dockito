@@ -30,8 +30,9 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const [numPages, setNumPages] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [scale, setScale] = useState(1.1);
-  const [query, setQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const viewerRef = useRef<HTMLDivElement>(null);
+  const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [probing, setProbing] = useState(false);
@@ -95,10 +96,21 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     setNumPages(numPages);
   };
 
+  const scrollToPage = (p: number) => {
+    const target = Math.min(Math.max(p, 1), numPages || 1);
+    const el = pageRefs.current[target];
+    if (el && viewerRef.current) {
+      viewerRef.current.scrollTo({
+        top: el.offsetTop,
+        behavior: 'smooth',
+      });
+    }
+    pageMemory.set(current.uuid, target);
+    setPage(target);
+  };
+
   const go = (p: number) => {
-    const next = Math.min(Math.max(p, 1), numPages || 1);
-    pageMemory.set(current.uuid, next);
-    setPage(next);
+    scrollToPage(p);
   };
 
   useEffect(() => {
@@ -111,6 +123,40 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     return () => window.removeEventListener('keydown', onKey);
   }, [open, page, numPages]);
 
+  // Update current page based on scroll position
+  useEffect(() => {
+    const root = viewerRef.current;
+    if (!root) return;
+
+    const updateVisiblePage = () => {
+      let best = 1;
+      let bestRatio = 0;
+      const rootRect = root.getBoundingClientRect();
+      pagesArr.forEach((p) => {
+        const el = pageRefs.current[p];
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const visible = Math.min(rect.bottom, rootRect.bottom) - Math.max(rect.top, rootRect.top);
+        const ratio = Math.max(0, visible) / Math.max(1, rect.height);
+        if (ratio > bestRatio) {
+          bestRatio = ratio;
+          best = p;
+        }
+      });
+      if (best !== page) {
+        setPage(best);
+        if (current) pageMemory.set(current.uuid, best);
+      }
+    };
+
+    root.addEventListener('scroll', updateVisiblePage, { passive: true } as EventListenerOptions);
+    updateVisiblePage();
+
+    return () => {
+      root.removeEventListener('scroll', updateVisiblePage as EventListener);
+    };
+  }, [viewerRef.current, pagesArr, current?.uuid, page, scale]);
+
   const pagesArr = useMemo(() => Array.from({ length: numPages }, (_, i) => i + 1), [numPages]);
 
   return (
@@ -121,21 +167,23 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           <DialogDescription className="sr-only">PDF preview with zoom, page navigation, and keyboard arrows.</DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-12 gap-3" ref={containerRef}>
-          <aside className="col-span-3 hidden md:block max-h-[70vh] overflow-auto rounded border p-2">
+          <aside className="hidden md:block md:col-span-2 max-h-[70vh] overflow-auto rounded border p-2">
             <div className="mb-2 text-xs text-muted-foreground">Pages</div>
-            {pagesArr.map((p) => (
-              <button key={p} onClick={() => go(p)} className={`block w-full rounded border mb-2 overflow-hidden ${p === page ? 'ring-2 ring-primary' : ''}`}>
-                <div className="bg-muted/40 text-xs px-2 py-1 text-left">Page {p}</div>
-                {/* Thumbnails */}
-                <div className="flex justify-center bg-background">
-                  {current && (
-                    <Document file={buildFileUrl(current)} loading={<div className='text-xs p-4'>Loading…</div>}>
-                      <Page pageNumber={p} width={140} renderTextLayer={false} renderAnnotationLayer={false} />
-                    </Document>
-                  )}
-                </div>
-              </button>
-            ))}
+            {current && (
+              <Document file={blobUrl ?? buildFileUrl(current)} loading={<div className='text-xs p-4'>Loading…</div>}>
+                {pagesArr.map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => scrollToPage(p)}
+                    className={`block w-full rounded border mb-2 overflow-hidden ${p === page ? 'ring-2 ring-primary' : ''}`}
+                  >
+                    <div className="flex justify-center bg-background">
+                      <Page pageNumber={p} width={110} renderTextLayer={false} renderAnnotationLayer={false} />
+                    </div>
+                  </button>
+                ))}
+              </Document>
+            )}
           </aside>
 
           <main className="col-span-12 md:col-span-9">
@@ -156,7 +204,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
               </div>
             </div>
 
-            <div className="rounded-lg border bg-background max-h-[70vh] overflow-auto flex items-start justify-center">
+            <div ref={viewerRef} className="rounded-lg border bg-background max-h-[70vh] overflow-auto">
               {current && (
                 loadErr ? (
                   <div className="p-6 text-sm">
@@ -179,21 +227,24 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                     onSourceError={(e) => setLoadErr((e as Error)?.message || 'Failed to load PDF')}
                     loading={<div className='p-8 text-sm'>Loading PDF…</div>}
                   >
-                    <Page pageNumber={page} scale={scale} renderTextLayer={true} renderAnnotationLayer={true} />
+                    {pagesArr.map((p) => (
+                      <div
+                        key={p}
+                        ref={(el) => { pageRefs.current[p] = el; }}
+                        data-page={p}
+                        className="mb-4 flex justify-center"
+                      >
+                        <Page pageNumber={p} scale={scale} renderTextLayer={false} renderAnnotationLayer={true} />
+                      </div>
+                    ))}
                   </Document>
                 )
               )}
             </div>
 
-            <div className="mt-2 flex items-center gap-2 justify-between">
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => go(page - 1)} disabled={page <= 1}><ChevronLeft size={16} /> Page</Button>
-                <Button variant="outline" size="sm" onClick={() => go(page + 1)} disabled={page >= numPages}>Page <ChevronRight size={16} /></Button>
-              </div>
-              <div className="flex items-center gap-2">
-                <Search size={16} className="text-muted-foreground" />
-                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Find in document (visual only)" className="text-sm bg-background border rounded px-2 py-1 w-56" />
-              </div>
+            <div className="mt-2 flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => go(page - 1)} disabled={page <= 1}><ChevronLeft size={16} /> Page</Button>
+              <Button variant="outline" size="sm" onClick={() => go(page + 1)} disabled={page >= numPages}>Page <ChevronRight size={16} /></Button>
             </div>
           </main>
         </div>
