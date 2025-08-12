@@ -102,8 +102,13 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   useEffect(() => {
     if (!current) return;
     const params = new URLSearchParams(location.search);
+    const aParam = params.get("a");
     const pParam = parseInt(params.get("p") || "", 10);
-    const saved = Number.isFinite(pParam) && pParam > 0 ? pParam : (pageMemory.get(current.uuid) ?? 1);
+
+    // Only trust the URL page param if it belongs to the current attachment
+    const urlPageValidForCurrent = aParam === current.uuid && Number.isFinite(pParam) && pParam > 0;
+    const saved = urlPageValidForCurrent ? pParam : (pageMemory.get(current.uuid) ?? 1);
+
     pageMemory.set(current.uuid, saved);
     setPage(saved);
   }, [current?.uuid, open, location.search]);
