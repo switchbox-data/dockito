@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Attachment } from "@/data/mock";
 import { Document, Page, pdfjs } from "react-pdf";
 
@@ -123,6 +123,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     return () => window.removeEventListener('keydown', onKey);
   }, [open, page, numPages]);
 
+  const pagesArr = useMemo(() => Array.from({ length: numPages }, (_, i) => i + 1), [numPages]);
+
   // Update current page based on scroll position
   useEffect(() => {
     const root = viewerRef.current;
@@ -157,7 +159,6 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     };
   }, [viewerRef.current, pagesArr, current?.uuid, page, scale]);
 
-  const pagesArr = useMemo(() => Array.from({ length: numPages }, (_, i) => i + 1), [numPages]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -168,7 +169,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
         </DialogHeader>
         <div className="grid grid-cols-12 gap-3" ref={containerRef}>
           <aside className="hidden md:block md:col-span-2 max-h-[70vh] overflow-auto rounded border p-2">
-            <div className="mb-2 text-xs text-muted-foreground">Pages</div>
+            
             {current && (
               <Document file={blobUrl ?? buildFileUrl(current)} loading={<div className='text-xs p-4'>Loading…</div>}>
                 {pagesArr.map((p) => (
@@ -186,7 +187,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
             )}
           </aside>
 
-          <main className="col-span-12 md:col-span-9">
+          <main className="col-span-12 md:col-span-10">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={() => setScale(s => Math.max(0.6, s - 0.1))}>-</Button>
