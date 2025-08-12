@@ -302,7 +302,7 @@ export default function DocketsPage() {
                 placeholder="Search docket ID, description, or petitioner"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-[10rem] md:w-[16rem] focus:w-[20rem] md:focus:w-[28rem] transition-[width] duration-300"
+                className="w-[10rem] md:w-[16rem] focus:w-[20rem] md:focus:w-[28rem] transition-[width] duration-300 hover:border-primary/30"
                 ref={searchRef}
                 onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
               />
@@ -310,7 +310,7 @@ export default function DocketsPage() {
               {/* Industry multi-select */}
               <Popover open={industryOpen} onOpenChange={setIndustryOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between">
+                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Industries"}
                     <ChevronDown size={14} />
                   </Button>
@@ -350,7 +350,7 @@ export default function DocketsPage() {
               {/* Docket types multi-select */}
               <Popover open={typeOpen} onOpenChange={setTypeOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between">
+                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     {docketTypes.length ? `Types (${docketTypes.length})` : "Types"}
                     <ChevronDown size={14} />
                   </Button>
@@ -390,7 +390,7 @@ export default function DocketsPage() {
               {/* Petitioners multi-select (ranked by frequency within current filters) */}
               <Popover open={petOpen} onOpenChange={setPetOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between">
+                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     {petitioners.length ? `Petitioners (${petitioners.length})` : "Petitioners"}
                     <ChevronDown size={14} />
                   </Button>
@@ -431,7 +431,7 @@ export default function DocketsPage() {
               {/* Date range (month) in a modal dialog) */}
               <Dialog open={dateOpen} onOpenChange={setDateOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="shrink-0">
+                  <Button variant="outline" className="shrink-0 hover:border-primary/30">
                     {startDate ? format(startDate, "MMM yyyy") : "–"} – {endDate ? format(endDate, "MMM yyyy") : "–"}
                   </Button>
                 </DialogTrigger>
@@ -461,7 +461,7 @@ export default function DocketsPage() {
 
               {/* Sort */}
               <div className="shrink-0">
-                <Button variant="outline" size="sm" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+                <Button variant="outline" size="sm" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
                   Date {sortDir === "desc" ? "↓" : "↑"}
                 </Button>
               </div>

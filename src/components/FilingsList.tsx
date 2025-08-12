@@ -318,14 +318,14 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search filings..."
-            className="w-40 md:w-56 transition-[width] duration-200 focus:w-64 md:focus:w-96"
+            className="w-40 md:w-56 transition-[width] duration-200 focus:w-64 md:focus:w-96 hover:border-primary/30"
             onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
           />
 
           <span className="ml-auto text-sm text-muted-foreground">Filter:</span>
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[160px] justify-between">
+              <Button variant="outline" size="sm" className="min-w-[160px] justify-between hover:border-primary/30">
                 {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
                 <ChevronDown size={14} />
               </Button>
@@ -365,7 +365,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           {/* Filing type filter (searchable) */}
           <Popover open={typeOpen} onOpenChange={setTypeOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[160px] justify-between">
+              <Button variant="outline" size="sm" className="min-w-[160px] justify-between hover:border-primary/30">
                 {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
                 <ChevronDown size={14} />
               </Button>
@@ -405,7 +405,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           {/* Date range (months) */}
           <Dialog open={dateOpen} onOpenChange={setDateOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0" disabled={months.length <= 1}>
+              <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0 hover:border-primary/30" disabled={months.length <= 1}>
                 {months.length === 1 ? format(months[0], "MMM yyyy") : months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}
               </Button>
             </DialogTrigger>
@@ -449,7 +449,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
               </Button>
             )}
             <span className="text-sm text-muted-foreground">Sort:</span>
-            <Button variant="outline" size="sm" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+            <Button variant="outline" size="sm" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
               Date {sortDir === "desc" ? "↓" : "↑"}
             </Button>
           </div>
