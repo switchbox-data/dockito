@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, X } from "lucide-react";
 
 const PAGE_SIZE = 30;
 
@@ -439,15 +439,57 @@ export default function DocketsPage() {
         {/* Active filter chips */}
         <div className="flex flex-wrap gap-2 text-sm px-1">
           {selectedIndustries.map((ind) => (
-            <Badge key={`ind-${ind}`} variant="secondary">Industry: {ind}</Badge>
+            <Badge key={`ind-${ind}`} variant="secondary" className="px-2 py-1">
+              <span className="mr-1">Industry: {ind}</span>
+              <button
+                type="button"
+                aria-label={`Remove industry ${ind}`}
+                onClick={() => setSelectedIndustries((prev) => prev.filter((v) => v !== ind))}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
           ))}
           {docketTypes.map((t) => (
-            <Badge key={`type-${t}`} variant="secondary">Type: {t}</Badge>
+            <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
+              <span className="mr-1">Type: {t}</span>
+              <button
+                type="button"
+                aria-label={`Remove type ${t}`}
+                onClick={() => setDocketTypes((prev) => prev.filter((v) => v !== t))}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
           ))}
           {petitioners.map((p) => (
-            <Badge key={`pet-${p}`} variant="secondary">Petitioner: {p}</Badge>
+            <Badge key={`pet-${p}`} variant="secondary" className="px-2 py-1">
+              <span className="mr-1">Petitioner: {p}</span>
+              <button
+                type="button"
+                aria-label={`Remove petitioner ${p}`}
+                onClick={() => setPetitioners((prev) => prev.filter((v) => v !== p))}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
           ))}
-          {normalizedSearch && <Badge variant="secondary">Search: {normalizedSearch}</Badge>}
+          {normalizedSearch && (
+            <Badge variant="secondary" className="px-2 py-1">
+              <span className="mr-1">Search: {normalizedSearch}</span>
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => setSearch("")}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
+          )}
         </div>
       </section>
 
@@ -499,7 +541,7 @@ export default function DocketsPage() {
           <div className="text-center text-muted-foreground">Loading more…</div>
         )}
         {!hasNextPage && items.length > 0 && (
-          <div className="text-center text-muted-foreground">You’ve reached the end.</div>
+          <div className="text-center text-muted-foreground">You've reached the end.</div>
         )}
       </section>
     </main>
