@@ -5,14 +5,12 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Attachment } from "@/data/mock";
 import { Document, Page, pdfjs } from "react-pdf";
 
-// Configure PDF.js worker (Vite + pdfjs-dist v4)
-// Use a real module worker to avoid "fake worker" errors.
-// eslint-disable-next-line no-restricted-globals
-const pdfWorker = new Worker(
-  new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url),
-  { type: 'module' }
-);
-pdfjs.GlobalWorkerOptions.workerPort = pdfWorker as unknown as any;
+// Configure PDF.js worker (Vite + pdfjs-dist v3 to match react-pdf)
+// Align API and Worker versions to avoid "API version does not match Worker version" errors.
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url
+).toString();
 
 // Persist page position per attachment
 const pageMemory = new Map<string, number>();
