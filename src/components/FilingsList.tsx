@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X } from "lucide-react";
 import { Attachment, Filling } from "@/data/mock";
 import { format } from "date-fns";
@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { cn } from "@/lib/utils";
 export type FilingWithAttachments = Filling & { attachments: Attachment[] };
 
 type Props = {
@@ -27,6 +27,13 @@ export const FilingsList = ({ filings }: Props) => {
   const [typeOpen, setTypeOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Keyboard selection state
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [selectedAttachmentIdx, setSelectedAttachmentIdx] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const filingRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const attachmentRefs = useRef<Record<string, (HTMLButtonElement | HTMLAnchorElement | null)[]>>({});
 
   const organizations = useMemo(() => {
     const set = new Set<string>();
@@ -83,8 +90,116 @@ export const FilingsList = ({ filings }: Props) => {
     }
   }, [filtered, viewer]);
 
+  // Focus and clamp selection
+  useEffect(() => { containerRef.current?.focus(); }, []);
+  useEffect(() => {
+    if (!filtered.length) { setSelectedIndex(0); setSelectedAttachmentIdx(null); return; }
+    if (selectedIndex > filtered.length - 1) setSelectedIndex(filtered.length - 1);
+    const filing = filtered[Math.min(selectedIndex, filtered.length - 1)];
+    const pdfCount = filing ? filing.attachments.filter(a => a.attachment_file_extension.toLowerCase() === 'pdf').length : 0;
+    if (selectedAttachmentIdx !== null && selectedAttachmentIdx >= pdfCount) setSelectedAttachmentIdx(pdfCount ? pdfCount - 1 : null);
+  }, [filtered, selectedIndex, selectedAttachmentIdx]);
+
+  const scrollFilingIntoView = (idx: number) => {
+    const el = filingRefs.current[idx];
+    el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  };
+  const scrollAttachmentIntoView = (filingId: string, attIdx: number) => {
+    const el = attachmentRefs.current[filingId]?.[attIdx];
+    el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (viewer) return;
+    const tag = (e.target as HTMLElement)?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (selectedAttachmentIdx !== null) {
+        if (selectedAttachmentIdx > 0) {
+          setSelectedAttachmentIdx(selectedAttachmentIdx - 1);
+          const filing = filtered[selectedIndex];
+          if (filing) scrollAttachmentIntoView(filing.uuid, selectedAttachmentIdx - 1);
+        } else if (selectedIndex > 0) {
+          setSelectedIndex(selectedIndex - 1);
+          setSelectedAttachmentIdx(null);
+          scrollFilingIntoView(selectedIndex - 1);
+        }
+      } else if (selectedIndex > 0) {
+        setSelectedIndex(selectedIndex - 1);
+        scrollFilingIntoView(selectedIndex - 1);
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const filing = filtered[selectedIndex];
+      if (filing && active === filing.uuid) {
+        const pdfs = filing.attachments.filter(a => a.attachment_file_extension.toLowerCase() === 'pdf');
+        if (selectedAttachmentIdx === null) {
+          if (pdfs.length) {
+            setSelectedAttachmentIdx(0);
+            scrollAttachmentIntoView(filing.uuid, 0);
+          } else if (selectedIndex < filtered.length - 1) {
+            setSelectedIndex(selectedIndex + 1);
+            scrollFilingIntoView(selectedIndex + 1);
+          }
+        } else {
+          if (selectedAttachmentIdx < pdfs.length - 1) {
+            setSelectedAttachmentIdx(selectedAttachmentIdx + 1);
+            scrollAttachmentIntoView(filing.uuid, selectedAttachmentIdx + 1);
+          } else if (selectedIndex < filtered.length - 1) {
+            setSelectedIndex(selectedIndex + 1);
+            setSelectedAttachmentIdx(null);
+            scrollFilingIntoView(selectedIndex + 1);
+          }
+        }
+      } else if (selectedIndex < filtered.length - 1) {
+        setSelectedIndex(selectedIndex + 1);
+        scrollFilingIntoView(selectedIndex + 1);
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      const filing = filtered[selectedIndex];
+      if (filing) setActive(filing.uuid);
+      return;
+    }
+
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const filing = filtered[selectedIndex];
+      if (selectedAttachmentIdx !== null) {
+        setSelectedAttachmentIdx(null);
+      } else if (filing && active === filing.uuid) {
+        setActive(null);
+      }
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const filing = filtered[selectedIndex];
+      if (!filing) return;
+      if (selectedAttachmentIdx !== null) {
+        const pdfs = filing.attachments.filter(a => a.attachment_file_extension.toLowerCase() === 'pdf');
+        const idx = selectedAttachmentIdx;
+        if (idx >= 0 && idx < pdfs.length) {
+          setViewer({ filingId: filing.uuid, index: idx });
+        }
+      } else {
+        setActive(filing.uuid);
+      }
+      return;
+    }
+  };
+
   return (
-    <section className="mt-6">
+    <section ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="mt-6 outline-none">
       <div className="sticky top-0 z-40 bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur border-b mb-3 space-y-2 py-2">
         {/* Row 1: controls */}
         <div className="flex flex-wrap items-center gap-2">
@@ -231,12 +346,16 @@ export const FilingsList = ({ filings }: Props) => {
       </div>
 
       <div className="space-y-2">
-        {filtered.map((f) => {
+        {filtered.map((f, idx) => {
           const isOpen = active === f.uuid;
+          const isSelected = selectedIndex === idx;
           return (
-            <article key={f.uuid} className="rounded-lg border bg-card p-3">
+            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className="rounded-lg border bg-card p-3">
               <button
-                className="w-full flex items-center gap-3 text-left"
+                className={cn(
+                  "w-full flex items-center gap-3 text-left rounded-md px-2 py-1 transition-colors",
+                  isSelected ? "bg-gradient-primary border border-accent/30" : "hover:bg-accent/20"
+                )}
                 onClick={() => setActive(isOpen ? null : f.uuid)}
                 aria-expanded={isOpen}
               >
