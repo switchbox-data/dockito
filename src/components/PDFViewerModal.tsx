@@ -17,10 +17,13 @@ pdfjs.GlobalWorkerOptions.workerPort = pdfWorker as unknown as any;
 // Persist page position per attachment
 const pageMemory = new Map<string, number>();
 
+// Extend attachment type to include DB hash field when available
+type Att = Attachment & { blake2b_hash?: string | null };
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  attachments: Attachment[]; // PDFs only
+  attachments: Att[]; // PDFs only
   startIndex?: number;
 };
 
@@ -33,6 +36,14 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const containerRef = useRef<HTMLDivElement>(null);
 
   const current = attachments[index];
+
+  const buildFileUrl = (a: Att) => {
+    const hash = a?.blake2b_hash?.toString().trim();
+    if (hash) {
+      return `https://temporary-openscrapersapi-x6wb2.ondigitalocean.app/public/raw_attachments/${encodeURIComponent(hash)}/raw`;
+    }
+    return a?.attachment_url!;
+  };
 
   // Restore remembered page when switching/opening
   useEffect(() => {
@@ -79,7 +90,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                 {/* Thumbnails */}
                 <div className="flex justify-center bg-background">
                   {current && (
-                    <Document file={current.attachment_url!} loading={<div className='text-xs p-4'>Loading…</div>}>
+                    <Document file={buildFileUrl(current)} loading={<div className='text-xs p-4'>Loading…</div>}>
                       <Page pageNumber={p} width={140} renderTextLayer={false} renderAnnotationLayer={false} />
                     </Document>
                   )}
@@ -108,7 +119,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
             <div className="rounded-lg border bg-background max-h-[70vh] overflow-auto flex items-start justify-center">
               {current && (
-                <Document file={current.attachment_url!} onLoadSuccess={onDocumentLoadSuccess} loading={<div className='p-8 text-sm'>Loading PDF…</div>}>
+                <Document file={buildFileUrl(current)} onLoadSuccess={onDocumentLoadSuccess} loading={<div className='p-8 text-sm'>Loading PDF…</div>}>
                   <Page pageNumber={page} scale={scale} renderTextLayer={true} renderAnnotationLayer={true} />
                 </Document>
               )}
