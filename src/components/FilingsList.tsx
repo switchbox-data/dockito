@@ -71,7 +71,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
     return Array.from(set).sort();
   }, [filings]);
 
-  const typePalette = ["bg-primary/10 text-primary", "bg-accent/10 text-foreground", "bg-secondary/20 text-foreground"];
+  const typePalette = ["bg-primary/10 text-primary", "bg-destructive/10 text-destructive", "bg-secondary/20 text-foreground", "bg-accent/20 text-foreground"];
   const typeClass = (name: string) => {
     let hash = 0;
     for (let i = 0; i < name.length; i++) { hash = (hash + name.charCodeAt(i)) % 1000; }
@@ -533,9 +533,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                             attachmentRefs.current[f.uuid][idx] = el;
                           }}
                           onClick={() => setViewer({ filingId: f.uuid, index: idx })}
+                          data-selected={isSelectedAtt}
                           className={cn(
                               "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
-                              isSelectedAtt ? "bg-gradient-primary" : undefined
+                              isSelectedAtt ? "border-primary" : undefined
                           )}
                         >
                           <div className="flex items-center gap-3 min-w-0">
@@ -545,7 +546,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                               <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-accent/20", "flex", "items-center", "gap-2", "leading-none"].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
+                          <span className={[buttonVariants({ size: "sm", variant: isSelectedAtt ? "default" : "outline" }), "pointer-events-none", (!isSelectedAtt ? "group-hover:bg-accent/20" : ""), "flex", "items-center", "gap-2", "leading-none"].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
                         </button>
                       );
                     }
@@ -556,13 +557,14 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           if (!attachmentRefs.current[f.uuid]) attachmentRefs.current[f.uuid] = [];
                           attachmentRefs.current[f.uuid][idx] = el;
                         }}
-                        href={a.attachment_url ?? "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                          className={cn(
-                            "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
-                            isSelectedAtt ? "bg-gradient-primary" : undefined
-                          )}
+                          href={a.attachment_url ?? "#"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                            data-selected={isSelectedAtt}
+                            className={cn(
+                              "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
+                              isSelectedAtt ? "border-primary" : undefined
+                            )}
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <FileIcon ext={a.attachment_file_extension} />
@@ -571,7 +573,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                             <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                           </div>
                         </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-accent/20", "flex", "items-center", "gap-2"].join(" ")}
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none", "group-hover:bg-accent/20", "flex", "items-center", "gap-2", "group-data-[selected=true]:bg-primary", "group-data-[selected=true]:text-primary-foreground"].join(" ")}
                           >
                           <LinkIcon size={16} /> Download
                         </span>

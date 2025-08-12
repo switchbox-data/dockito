@@ -53,11 +53,11 @@ const DocketPage = () => {
 
   useEffect(() => {
     const title = docket
-      ? `${docket.docket_govid} • ${docket.docket_title}`
+      ? `Docket ${docket.docket_govid} | NY PSC`
       : docketLoading
-      ? "Loading docket"
-      : "Docket not found";
-    document.title = `${title} | Dockito`;
+      ? "Loading docket | NY PSC"
+      : "Docket not found | NY PSC";
+    document.title = title;
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute("content", docket?.docket_description || docket?.docket_title || "PUC docket");
   }, [docket, docketLoading]);
