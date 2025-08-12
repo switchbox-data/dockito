@@ -550,15 +550,17 @@ export default function DocketsPage() {
                     <CardHeader>
                       <CardTitle className="text-base flex items-center justify-between gap-3">
                         <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
-                        {d.industry && <Badge variant="outline">{d.industry}</Badge>}
+                        <div className="flex flex-col items-end gap-1">
+                          {d.industry && <Badge variant="outline">{d.industry}</Badge>}
+                          <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                        </div>
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-<div className="font-medium">{d.docket_title ?? "Untitled docket"}</div>
-<div className="text-sm text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</div>
-{d.docket_description && (
-  <p className="text-sm text-muted-foreground line-clamp-3">{d.docket_description}</p>
-)}
+                      <div className="font-medium">{d.docket_title ?? "Untitled docket"}</div>
+                      {d.docket_description && (
+                        <p className="text-sm text-muted-foreground line-clamp-3">{d.docket_description}</p>
+                      )}
                       <div className="flex flex-wrap gap-2">
                         {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
                         {d.petitioner && <Badge variant="outline">{d.petitioner}</Badge>}
