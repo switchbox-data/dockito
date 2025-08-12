@@ -165,7 +165,18 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[1000px] md:max-w-[1100px] md:max-h-[90vh]">
+      <DialogContent 
+        className="sm:max-w-[1000px] md:max-w-[1100px] md:max-h-[90vh]"
+        tabIndex={-1}
+        onKeyDownCapture={(e) => {
+          if (!open) return;
+          if (e.key === 'ArrowRight') { setIndex(i => (i + 1) % attachments.length); e.preventDefault(); }
+          if (e.key === 'ArrowLeft')  { setIndex(i => (i - 1 + attachments.length) % attachments.length); e.preventDefault(); }
+          if (e.key === 'ArrowDown')  { go(page + 1); e.preventDefault(); }
+          if (e.key === 'ArrowUp')    { go(page - 1); e.preventDefault(); }
+          if (e.key === 'Escape')     { onOpenChange(false); }
+        }}
+      >
         <DialogHeader>
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
