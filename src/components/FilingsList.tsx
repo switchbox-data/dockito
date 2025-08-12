@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X } from "lucide-react";
 import { Attachment, Filling } from "@/data/mock";
-import { format, startOfDay, endOfDay } from "date-fns";
+import { format, addMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PDFViewerModal } from "@/components/PDFViewerModal";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import type { DateRange } from "react-day-picker";
+import { Slider } from "@/components/ui/slider";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 export type FilingWithAttachments = Filling & { attachments: Attachment[] };
@@ -31,7 +31,24 @@ export const FilingsList = ({ filings }: Props) => {
 const navigate = useNavigate();
 
   const searchRef = useRef<HTMLInputElement>(null);
-const [dateRange, setDateRange] = useState<DateRange | undefined>();
+const [dateOpen, setDateOpen] = useState(false);
+const [range, setRange] = useState<[number, number] | null>(null);
+const months = useMemo(() => {
+  if (!filings?.length) return [] as Date[];
+  const times = filings
+    .map((f) => new Date(f.filed_date))
+    .filter((d) => !isNaN(d.getTime()));
+  if (!times.length) return [] as Date[];
+  let min = times[0], max = times[0];
+  for (const d of times) { if (d < min) min = d; if (d > max) max = d; }
+  const out: Date[] = [];
+  let d = startOfMonth(min);
+  const end = startOfMonth(max);
+  while (d <= end) { out.push(d); d = addMonths(d, 1); }
+  return out;
+}, [filings]);
+useEffect(() => { if (months.length && !range) setRange([0, months.length - 1]); }, [months, range]);
+const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 && range[1] === months.length - 1), [range, months]);
 
   // Keyboard selection state
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -80,15 +97,13 @@ const [dateRange, setDateRange] = useState<DateRange | undefined>();
         return inFiling || inAttachments;
       });
     }
-    // Date range filter
-    if (dateRange?.from || dateRange?.to) {
-      const from = dateRange?.from ? startOfDay(dateRange.from) : null;
-      const to = dateRange?.to ? endOfDay(dateRange.to) : null;
+    // Month range filter
+    if (range && months.length) {
+      const from = startOfMonth(months[range[0]]);
+      const to = endOfMonth(months[range[1]]);
       list = list.filter((f) => {
         const t = new Date(f.filed_date).getTime();
-        if (from && t < from.getTime()) return false;
-        if (to && t > to.getTime()) return false;
-        return true;
+        return t >= from.getTime() && t <= to.getTime();
       });
     }
     list.sort((a, b) =>
@@ -97,7 +112,7 @@ const [dateRange, setDateRange] = useState<DateRange | undefined>();
         : new Date(a.filed_date).getTime() - new Date(b.filed_date).getTime()
     );
     return list;
-  }, [filings, selectedOrgs, selectedTypes, query, sortDir]);
+  }, [filings, selectedOrgs, selectedTypes, query, sortDir, range, months]);
 
   useEffect(() => {
     // Close viewer if active filing disappears (filter changed)
@@ -254,19 +269,19 @@ const [dateRange, setDateRange] = useState<DateRange | undefined>();
     <section ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="mt-6 outline-none">
       <div className="sticky top-0 z-40 bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur border-b mb-3 space-y-2 py-2">
         {/* Row 1: controls */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto">
           <Input
             ref={searchRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search filings..."
-            className="w-56 md:w-72"
+            className="w-40 md:w-56"
           />
 
           {/* Organization filter (searchable) */}
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[200px] justify-between">
+              <Button variant="outline" size="sm" className="min-w-[160px] justify-between">
                 {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
                 <ChevronDown size={14} />
               </Button>
@@ -343,27 +358,39 @@ const [dateRange, setDateRange] = useState<DateRange | undefined>();
             </PopoverContent>
           </Popover>
 
-          {/* Date range */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[200px] justify-between">
-                {dateRange?.from ? format(dateRange.from, "PPP") : "Start"} – {dateRange?.to ? format(dateRange.to, "PPP") : "End"}
-                <ChevronDown size={14} />
+          {/* Date range (months) */}
+          <Dialog open={dateOpen} onOpenChange={setDateOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0">
+                {months.length && range ? format(months[range[0]], "MMM yyyy") : "–"} – {months.length && range ? format(months[range[1]], "MMM yyyy") : "–"}
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 z-50 bg-popover border" align="start">
-              <Calendar
-                mode="range"
-                selected={dateRange as any}
-                onSelect={(r) => setDateRange(r as DateRange | undefined)}
-                initialFocus
-                className="p-3 pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[620px]">
+              <DialogHeader>
+                <DialogTitle>Select month range</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <Slider
+                  value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
+                  min={0}
+                  max={Math.max(0, (months.length || 1) - 1)}
+                  step={1}
+                  onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
+                />
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>{months.length && range ? format(months[range[0]], "MMM yyyy") : "–"}</span>
+                  <span>{months.length && range ? format(months[range[1]], "MMM yyyy") : "–"}</span>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="secondary" onClick={() => setRange(months.length ? [0, months.length - 1] : null)}>Reset</Button>
+                <Button onClick={() => setDateOpen(false)}>Done</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           <div className="ml-auto flex items-center gap-2">
-            {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || (dateRange?.from || dateRange?.to)) && (
+            {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -371,7 +398,7 @@ const [dateRange, setDateRange] = useState<DateRange | undefined>();
                   setSelectedOrgs([]);
                   setSelectedTypes([]);
                   setQuery("");
-                  setDateRange(undefined);
+                  setRange(months.length ? [0, months.length - 1] : null);
                 }}
               >
                 Clear
