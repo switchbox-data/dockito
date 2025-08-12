@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import { Attachment } from "@/data/mock";
 import { Document, Page, pdfjs } from "react-pdf";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Configure PDF.js worker (Vite + pdfjs-dist v3 to match react-pdf)
 // Align API and Worker versions to avoid "API version does not match Worker version" errors.
@@ -14,6 +15,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 // Persist page position per attachment
 const pageMemory = new Map<string, number>();
+// Cache Blob URLs per attachment to avoid re-fetching when switching
+const blobCache = new Map<string, string>();
 
 // Extend attachment type to include DB hash field when available
 type Att = Attachment & { blake2b_hash?: string | null };
@@ -36,6 +39,9 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [probing, setProbing] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const current = attachments[index];
 
@@ -88,12 +94,17 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   // Restore remembered page when switching/opening
   useEffect(() => {
     if (!current) return;
-    const saved = pageMemory.get(current.uuid) ?? 1;
+    const params = new URLSearchParams(location.search);
+    const pParam = parseInt(params.get("p") || "", 10);
+    const saved = Number.isFinite(pParam) && pParam > 0 ? pParam : (pageMemory.get(current.uuid) ?? 1);
+    pageMemory.set(current.uuid, saved);
     setPage(saved);
-  }, [current?.uuid, open]);
+  }, [current?.uuid, open, location.search]);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
+    const desired = pageMemory.get(current.uuid) ?? 1;
+    setTimeout(() => scrollToPage(desired), 0);
   };
 
   const scrollToPage = (p: number) => {
@@ -125,6 +136,13 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     window.addEventListener('keydown', onKey, true);
     return () => window.removeEventListener('keydown', onKey, true);
   }, [open, page, attachments.length, onOpenChange]);
+  useEffect(() => {
+    if (!open || !current) return;
+    const params = new URLSearchParams(location.search);
+    params.set("a", current.uuid);
+    params.set("p", String(page));
+    navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
+  }, [open, current?.uuid, page, location.pathname]);
 
   const pagesArr = useMemo(() => Array.from({ length: numPages }, (_, i) => i + 1), [numPages]);
 
@@ -254,7 +272,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                         key={p}
                         ref={(el) => { pageRefs.current[p] = el; }}
                         data-page={p}
-                        className="mb-1 flex justify-center"
+                        className="mb-3 flex justify-center"
                       >
                         <Page pageNumber={p} scale={scale} renderTextLayer={false} renderAnnotationLayer={false} />
                       </div>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { FolderOpen } from "lucide-react";
 
 const SEARCH_DELAY = 300;
 const sanitizeQuery = (s: string) => s.replace(/[,%]/g, " ").trim();

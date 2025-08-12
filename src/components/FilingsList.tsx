@@ -24,6 +24,8 @@ export const FilingsList = ({ filings }: Props) => {
   const [viewer, setViewer] = useState<{ filingId: string; index: number } | null>(null);
   const [orgOpen, setOrgOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const organizations = useMemo(() => {
     const set = new Set<string>();
