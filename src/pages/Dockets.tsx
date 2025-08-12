@@ -304,6 +304,7 @@ export default function DocketsPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-[10rem] md:w-[16rem] focus:w-[20rem] md:focus:w-[28rem] transition-[width] duration-300"
                 ref={searchRef}
+                onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
               />
 
               {/* Industry multi-select */}

@@ -155,6 +155,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
     if (e.key.toLowerCase() === 'o') { e.preventDefault(); setOrgOpen(true); return; }
     if (e.key.toLowerCase() === 't') { e.preventDefault(); setTypeOpen(true); return; }
     if (e.key.toLowerCase() === 's') { e.preventDefault(); setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); return; }
+    if (e.key.toLowerCase() === 'd') { e.preventDefault(); setDateOpen(true); return; }
 
     if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -276,9 +277,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search filings..."
             className="w-40 md:w-56"
+            onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
           />
 
-          {/* Organization filter (searchable) */}
+          <span className="ml-auto text-sm text-muted-foreground">Filter:</span>
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="min-w-[160px] justify-between">
@@ -361,8 +363,8 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           {/* Date range (months) */}
           <Dialog open={dateOpen} onOpenChange={setDateOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0">
-                {months.length && range ? format(months[range[0]], "MMM yyyy") : "–"} – {months.length && range ? format(months[range[1]], "MMM yyyy") : "–"}
+              <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0" disabled={months.length <= 1}>
+                {months.length === 1 ? format(months[0], "MMM yyyy") : months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[620px]">
@@ -389,7 +391,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             </DialogContent>
           </Dialog>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-2 flex items-center gap-2">
             {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
               <Button
                 variant="ghost"
@@ -449,7 +451,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           const isOpen = openIds.has(f.uuid);
           const isSelected = selectedIndex === idx;
           return (
-            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className="rounded-lg border bg-muted p-3">
+            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className={cn("rounded-lg border p-3", isSelected ? "bg-muted" : "bg-card")}>
               <button
               className={cn(
                 "w-full flex items-center gap-3 text-left rounded-md px-2 py-1 transition-colors",
@@ -491,8 +493,8 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           }}
                           onClick={() => setViewer({ filingId: f.uuid, index: idx })}
                           className={cn(
-                            "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-                            isSelectedAtt ? "bg-muted" : "hover:bg-accent/20"
+                              "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                              isSelectedAtt ? "bg-gradient-primary" : "hover:bg-accent/20"
                           )}
                         >
                           <div className="flex items-center gap-3 min-w-0">
@@ -518,7 +520,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                         rel="noopener noreferrer"
                           className={cn(
                             "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-                            isSelectedAtt ? "bg-muted" : "hover:bg-accent/20"
+                            isSelectedAtt ? "bg-gradient-primary" : "hover:bg-accent/20"
                           )}
                       >
                         <div className="flex items-center gap-3 min-w-0">
