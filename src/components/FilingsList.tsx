@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X, Eye } from "lucide-react";
+import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X, Eye, Users, Shapes, Calendar } from "lucide-react";
 import { Attachment, Filling } from "@/data/mock";
 import { format, addMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -318,7 +318,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search filings..."
-            className="w-40 md:w-56 transition-[width] duration-200 focus:w-64 md:focus:w-96 hover:border-primary/30"
+            className="flex-1 w-40 md:w-56 transition-[width] duration-200 focus:w-72 md:focus:w-[36rem] hover:border-primary/30"
             onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
           />
 
@@ -326,7 +326,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="min-w-[160px] justify-between hover:border-primary/30">
-                {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
+                <span className="inline-flex items-center gap-2">
+                  <Users size={16} className="text-muted-foreground" />
+                  {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
+                </span>
                 <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
@@ -366,7 +369,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           <Popover open={typeOpen} onOpenChange={setTypeOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="min-w-[160px] justify-between hover:border-primary/30">
-                {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
+                <span className="inline-flex items-center gap-2">
+                  <Shapes size={16} className="text-muted-foreground" />
+                  {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
+                </span>
                 <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
@@ -406,7 +412,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           <Dialog open={dateOpen} onOpenChange={setDateOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0 hover:border-primary/30" disabled={months.length <= 1}>
-                {months.length === 1 ? format(months[0], "MMM yyyy") : months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}
+                <span className="inline-flex items-center gap-2">
+                  <Calendar size={16} className="text-muted-foreground" />
+                  {months.length === 1 ? format(months[0], "MMM yyyy") : months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}
+                </span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[620px]">
@@ -450,7 +459,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             )}
             <span className="text-sm text-muted-foreground">Sort:</span>
             <Button variant="outline" size="sm" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
-              Date {sortDir === "desc" ? "↓" : "↑"}
+              {sortDir === "desc" ? "↓" : "↑"} Date
             </Button>
           </div>
         </div>
@@ -546,7 +555,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                               <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none", "group-hover:border-primary/30", isSelectedAtt ? "bg-accent text-accent-foreground border-accent" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
                         </button>
                       );
                     }
@@ -573,7 +582,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                             <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                           </div>
                         </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2", "group-hover:border-primary/30", isSelectedAtt ? "bg-accent text-accent-foreground border-accent" : ""].join(" ")}>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}>
                           <LinkIcon size={16} /> Download
                         </span>
                       </a>

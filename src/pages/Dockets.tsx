@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { ChevronDown, Check, X } from "lucide-react";
+import { ChevronDown, Check, X, Users, Shapes, Calendar as CalendarIcon, Factory } from "lucide-react";
 
 const PAGE_SIZE = 30;
 
@@ -302,7 +302,7 @@ export default function DocketsPage() {
                 placeholder="Search docket ID, description, or petitioner"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-[10rem] md:w-[16rem] focus:w-[20rem] md:focus:w-[28rem] transition-[width] duration-300 hover:border-primary/30"
+                className="w-[10rem] md:w-[16rem] focus:w-[24rem] md:focus:w-[36rem] transition-[width] duration-300 hover:border-primary/30"
                 ref={searchRef}
                 onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
               />
@@ -311,7 +311,10 @@ export default function DocketsPage() {
               <Popover open={industryOpen} onOpenChange={setIndustryOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                    {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Industries"}
+                    <span className="inline-flex items-center gap-2">
+                      <Factory size={16} className="text-muted-foreground" />
+                      {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Industries"}
+                    </span>
                     <ChevronDown size={14} />
                   </Button>
                 </PopoverTrigger>
@@ -351,7 +354,10 @@ export default function DocketsPage() {
               <Popover open={typeOpen} onOpenChange={setTypeOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                    {docketTypes.length ? `Types (${docketTypes.length})` : "Types"}
+                    <span className="inline-flex items-center gap-2">
+                      <Shapes size={16} className="text-muted-foreground" />
+                      {docketTypes.length ? `Types (${docketTypes.length})` : "Types"}
+                    </span>
                     <ChevronDown size={14} />
                   </Button>
                 </PopoverTrigger>
@@ -391,7 +397,10 @@ export default function DocketsPage() {
               <Popover open={petOpen} onOpenChange={setPetOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                    {petitioners.length ? `Petitioners (${petitioners.length})` : "Petitioners"}
+                    <span className="inline-flex items-center gap-2">
+                      <Users size={16} className="text-muted-foreground" />
+                      {petitioners.length ? `Petitioners (${petitioners.length})` : "Petitioners"}
+                    </span>
                     <ChevronDown size={14} />
                   </Button>
                 </PopoverTrigger>
@@ -432,7 +441,10 @@ export default function DocketsPage() {
               <Dialog open={dateOpen} onOpenChange={setDateOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" className="shrink-0 hover:border-primary/30">
-                    {startDate ? format(startDate, "MMM yyyy") : "–"} – {endDate ? format(endDate, "MMM yyyy") : "–"}
+                    <span className="inline-flex items-center gap-2">
+                      <CalendarIcon size={16} className="text-muted-foreground" />
+                      {startDate ? format(startDate, "MMM yyyy") : "–"} – {endDate ? format(endDate, "MMM yyyy") : "–"}
+                    </span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[620px]">
@@ -462,7 +474,7 @@ export default function DocketsPage() {
               {/* Sort */}
               <div className="shrink-0">
                 <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
-                  Date {sortDir === "desc" ? "↓" : "↑"}
+                  {sortDir === "desc" ? "↓" : "↑"} Date
                 </Button>
               </div>
             </div>
