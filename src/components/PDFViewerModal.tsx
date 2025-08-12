@@ -38,7 +38,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
-  const [probing, setProbing] = useState(false);
+const [probing, setProbing] = useState(false);
+  const skipUrlUpdateRef = useRef(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -98,20 +99,28 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
        // Do not revoke cached object URLs here to preserve caching across switches
      };
    }, [current?.uuid]);
-  // Restore remembered page when switching/opening
+  // Restore remembered page when switching/opening and sync URL atomically
   useEffect(() => {
     if (!current) return;
+    skipUrlUpdateRef.current = true;
+
     const params = new URLSearchParams(location.search);
     const aParam = params.get("a");
     const pParam = parseInt(params.get("p") || "", 10);
 
-    // Only trust the URL page param if it belongs to the current attachment
     const urlPageValidForCurrent = aParam === current.uuid && Number.isFinite(pParam) && pParam > 0;
     const saved = urlPageValidForCurrent ? pParam : (pageMemory.get(current.uuid) ?? 1);
 
     pageMemory.set(current.uuid, saved);
     setPage(saved);
-  }, [current?.uuid, open, location.search]);
+
+    // Ensure URL reflects the current attachment and its restored page
+    params.set("a", current.uuid);
+    params.set("p", String(saved));
+    navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
+
+    queueMicrotask(() => { skipUrlUpdateRef.current = false; });
+  }, [current?.uuid, open]);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -138,12 +147,12 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
   // Keyboard handling is scoped to the dialog via onKeyDownCapture to avoid double triggers
   useEffect(() => {
-    if (!open || !current) return;
+    if (!open || !current || skipUrlUpdateRef.current) return;
     const params = new URLSearchParams(location.search);
     params.set("a", current.uuid);
     params.set("p", String(page));
     navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
-  }, [open, current?.uuid, page, location.pathname]);
+  }, [open, current?.uuid, page, location.pathname, location.search]);
 
   const pagesArr = useMemo(() => Array.from({ length: numPages }, (_, i) => i + 1), [numPages]);
 
