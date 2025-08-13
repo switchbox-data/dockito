@@ -48,6 +48,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const [probing, setProbing] = useState(false);
   const skipUrlUpdateRef = useRef(false);
   const autoFitDoneRef = useRef(false);
+  const programmaticScrollRef = useRef(false);
 
 
   const location = useLocation();
@@ -165,10 +166,14 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     const target = Math.min(Math.max(p, 1), numPages || 1);
     const el = pageRefs.current[target];
     if (el && viewerRef.current) {
+      programmaticScrollRef.current = true;
       viewerRef.current.scrollTo({
         top: el.offsetTop,
         behavior: 'auto',
       });
+      window.setTimeout(() => {
+        programmaticScrollRef.current = false;
+      }, 120);
     }
     pageMemory.set(current.uuid, target);
     setPage(target);
@@ -189,12 +194,22 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
   const pagesArr = useMemo(() => Array.from({ length: numPages }, (_, i) => i + 1), [numPages]);
 
+  // Keep current page in view after scale changes
+  useEffect(() => {
+    if (!viewerRef.current || !current) return;
+    programmaticScrollRef.current = true;
+    scrollToPage(page);
+    const t = window.setTimeout(() => { programmaticScrollRef.current = false; }, 120);
+    return () => clearTimeout(t);
+  }, [scale]);
+
   // Update current page based on scroll position
   useEffect(() => {
     const root = viewerRef.current;
     if (!root) return;
 
     const updateVisiblePage = () => {
+      if (programmaticScrollRef.current) return;
       let best = 1;
       let bestRatio = 0;
       const rootRect = root.getBoundingClientRect();
