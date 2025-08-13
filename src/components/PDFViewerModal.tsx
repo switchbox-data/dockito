@@ -45,8 +45,10 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
-const [probing, setProbing] = useState(false);
+  const [probing, setProbing] = useState(false);
   const skipUrlUpdateRef = useRef(false);
+  const autoFitDoneRef = useRef(false);
+
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -130,8 +132,31 @@ const [probing, setProbing] = useState(false);
     queueMicrotask(() => { skipUrlUpdateRef.current = false; });
   }, [current?.uuid, open]);
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
+  // Reset auto-fit when switching attachments
+  useEffect(() => {
+    autoFitDoneRef.current = false;
+  }, [current?.uuid]);
+
+  const onDocumentLoadSuccess = async (doc: any) => {
+    const { numPages } = doc || {};
+    setNumPages(numPages || 0);
+
+    // Compute initial scale to fit page height into viewer
+    try {
+      if (viewerRef.current && !autoFitDoneRef.current) {
+        const firstPage = await doc.getPage(1);
+        const viewport = firstPage.getViewport({ scale: 1 });
+        const available = viewerRef.current.clientHeight || 0;
+        if (viewport?.height && available > 0) {
+          const nextScale = Math.max(0.5, Math.min(3, available / viewport.height));
+          setScale(nextScale);
+          autoFitDoneRef.current = true;
+        }
+      }
+    } catch (e) {
+      // ignore failures to compute fit
+    }
+
     const desired = pageMemory.get(current.uuid) ?? 1;
     setTimeout(() => scrollToPage(desired), 0);
   };
@@ -202,7 +227,7 @@ const [probing, setProbing] = useState(false);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="sm:max-w-[1000px] md:max-w-[1100px] md:max-h-[90vh]"
+        className="sm:max-w-[1000px] md:max-w-[1100px] max-h-[96vh] md:max-h-[96vh]"
         tabIndex={-1}
         onKeyDownCapture={(e) => {
           if (!open) return;
@@ -240,7 +265,7 @@ const [probing, setProbing] = useState(false);
           </div>
         </DialogHeader>
         <div className="grid grid-cols-12 gap-3" ref={containerRef}>
-          <aside className="hidden md:block md:col-span-2 h-[78vh] overflow-auto rounded border p-1">
+          <aside className="hidden md:block md:col-span-2 h-[88vh] overflow-auto rounded border p-1">
             
             {current && (
               <Document key={current.uuid} file={blobUrl ?? buildFileUrl(current)} loading={<LoadingGlyph size={20} />}>
@@ -262,7 +287,7 @@ const [probing, setProbing] = useState(false);
           <main className="col-span-12 md:col-span-10">
             
 
-            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[78vh] overflow-auto">
+            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[88vh] overflow-auto">
               {current && (
                 loadErr ? (
                   <div className="p-6 text-sm">
