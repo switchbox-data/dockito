@@ -71,7 +71,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
     return Array.from(set).sort();
   }, [filings]);
 
-  const typePalette = ["bg-primary/10 text-primary", "bg-primary/15 text-primary", "bg-primary/20 text-primary", "bg-primary/25 text-primary"];
+  const typePalette = ["bg-accent/10 text-accent", "bg-accent/15 text-accent", "bg-accent/20 text-accent", "bg-accent/25 text-accent"];
   const typeClass = (name: string) => {
     let hash = 0;
     for (let i = 0; i < name.length; i++) { hash = (hash + name.charCodeAt(i)) % 1000; }
