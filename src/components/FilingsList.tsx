@@ -318,7 +318,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search filings..."
-            className="flex-1 w-40 md:w-56 transition-[width] duration-200 focus:w-72 md:focus:w-[36rem] hover:border-primary/30"
+            className="w-32 md:w-40 transition-[width] duration-200 focus:w-72 md:focus:w-[36rem] hover:border-primary/30"
             onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
           />
 
