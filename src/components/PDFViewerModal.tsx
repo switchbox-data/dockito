@@ -284,7 +284,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
             )}
           </aside>
 
-          <main className="col-span-12 md:col-span-10">
+          <main className="col-span-12 md:col-span-10 relative">
             
 
             <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[88vh] overflow-auto">
@@ -324,11 +324,12 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                   </Document>
                 )
               )}
-              <div className="pointer-events-none absolute bottom-3 right-3 transition-opacity">
-                <div className="flex gap-2 pointer-events-auto">
-                  <Button variant="outline" size="sm" onClick={() => setScale(s => Math.max(0.6, s - 0.1))} aria-label="Zoom out">-</Button>
-                  <Button variant="outline" size="sm" onClick={() => setScale(s => Math.min(2, s + 0.1))} aria-label="Zoom in">+</Button>
-                </div>
+            </div>
+
+            <div className="absolute bottom-3 right-3 pointer-events-auto">
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setScale(s => Math.max(0.6, s - 0.1))} aria-label="Zoom out">-</Button>
+                <Button variant="outline" size="sm" onClick={() => setScale(s => Math.min(2, s + 0.1))} aria-label="Zoom in">+</Button>
               </div>
             </div>
 
