@@ -39,7 +39,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const [index, setIndex] = useState(startIndex);
   const [numPages, setNumPages] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
-  const [scale, setScale] = useState(0.9);
+  const [scale, setScale] = useState(0.7);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
@@ -264,27 +264,29 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
             </div>
           </div>
         </DialogHeader>
-        <div className="grid grid-cols-12 gap-3" ref={containerRef}>
-          <aside className="hidden md:block md:col-span-3 h-[88vh] overflow-auto rounded-lg border bg-muted p-1">
+        <div className="flex gap-3" ref={containerRef}>
+          <aside className="hidden md:block w-fit h-[88vh] overflow-auto rounded-lg border bg-muted p-2">
             
             {current && (
               <Document key={current.uuid} file={blobUrl ?? buildFileUrl(current)} loading={<LoadingGlyph size={20} />}>
                 {pagesArr.map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => scrollToPage(p)}
-                    className={`inline-block rounded border mb-2 overflow-hidden ${p === page ? 'ring-2 ring-primary' : ''}`}
-                  >
-                    <div className="flex justify-center bg-background">
-                      <Page pageNumber={p} width={100} renderTextLayer={false} renderAnnotationLayer={false} />
-                    </div>
-                  </button>
+                  <div key={p} className="mb-3 text-center">
+                    <button
+                      onClick={() => scrollToPage(p)}
+                      className={`inline-block rounded border overflow-hidden ${p === page ? 'ring-2 ring-primary' : ''}`}
+                    >
+                      <div className="flex justify-center bg-background">
+                        <Page pageNumber={p} width={120} renderTextLayer={false} renderAnnotationLayer={false} />
+                      </div>
+                    </button>
+                    <div className="text-xs text-muted-foreground mt-1">{p}</div>
+                  </div>
                 ))}
               </Document>
             )}
           </aside>
 
-          <main className="col-span-12 md:col-span-9 relative">
+          <main className="flex-1 relative">
             
 
             <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[88vh] overflow-auto">
