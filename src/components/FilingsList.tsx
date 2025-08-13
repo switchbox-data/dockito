@@ -71,7 +71,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
     return Array.from(set).sort();
   }, [filings]);
 
-  const typePalette = ["bg-accent/10 text-accent", "bg-accent/15 text-accent", "bg-accent/20 text-accent", "bg-accent/25 text-accent"];
+  const typePalette = ["bg-primary/10 text-primary", "bg-destructive/10 text-destructive", "bg-secondary/20 text-foreground", "bg-accent/20 text-foreground"];
   const typeClass = (name: string) => {
     let hash = 0;
     for (let i = 0; i < name.length; i++) { hash = (hash + name.charCodeAt(i)) % 1000; }
@@ -481,7 +481,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
               </Badge>
             ))}
             {selectedTypes.map((t) => (
-              <Badge key={`type-${t}`} variant="outline" className={cn("px-2 py-1", typeClass(t))}>
+              <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
                 <span className="mr-1">{t}</span>
                 <button
                   type="button"

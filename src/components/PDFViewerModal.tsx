@@ -48,7 +48,6 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const [probing, setProbing] = useState(false);
   const skipUrlUpdateRef = useRef(false);
   const autoFitDoneRef = useRef(false);
-  const programmaticScrollRef = useRef(false);
 
 
   const location = useLocation();
@@ -166,14 +165,10 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     const target = Math.min(Math.max(p, 1), numPages || 1);
     const el = pageRefs.current[target];
     if (el && viewerRef.current) {
-      programmaticScrollRef.current = true;
       viewerRef.current.scrollTo({
         top: el.offsetTop,
         behavior: 'auto',
       });
-      window.setTimeout(() => {
-        programmaticScrollRef.current = false;
-      }, 120);
     }
     pageMemory.set(current.uuid, target);
     setPage(target);
@@ -194,22 +189,12 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
   const pagesArr = useMemo(() => Array.from({ length: numPages }, (_, i) => i + 1), [numPages]);
 
-  // Keep current page in view after scale changes
-  useEffect(() => {
-    if (!viewerRef.current || !current) return;
-    programmaticScrollRef.current = true;
-    scrollToPage(page);
-    const t = window.setTimeout(() => { programmaticScrollRef.current = false; }, 120);
-    return () => clearTimeout(t);
-  }, [scale]);
-
   // Update current page based on scroll position
   useEffect(() => {
     const root = viewerRef.current;
     if (!root) return;
 
     const updateVisiblePage = () => {
-      if (programmaticScrollRef.current) return;
       let best = 1;
       let bestRatio = 0;
       const rootRect = root.getBoundingClientRect();
@@ -279,8 +264,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
             </div>
           </div>
         </DialogHeader>
-        <div className="grid grid-cols-12 gap-3 h-[calc(96vh-120px)] overflow-hidden" ref={containerRef}>
-          <aside className="hidden md:block md:col-span-2 h-full overflow-auto rounded border p-1">
+        <div className="grid grid-cols-12 gap-3" ref={containerRef}>
+          <aside className="hidden md:block md:col-span-2 h-[88vh] overflow-auto rounded border p-1">
             
             {current && (
               <Document key={current.uuid} file={blobUrl ?? buildFileUrl(current)} loading={<LoadingGlyph size={20} />}>
@@ -302,7 +287,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           <main className="col-span-12 md:col-span-10">
             
 
-            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-full overflow-auto">
+            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[88vh] overflow-auto">
               {current && (
                 loadErr ? (
                   <div className="p-6 text-sm">
