@@ -264,8 +264,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
             </div>
           </div>
         </DialogHeader>
-        <div className="grid grid-cols-12 gap-3" ref={containerRef}>
-          <aside className="hidden md:block md:col-span-2 h-[88vh] overflow-auto rounded border p-1">
+        <div className="grid grid-cols-12 gap-3 h-[calc(96vh-120px)] overflow-hidden" ref={containerRef}>
+          <aside className="hidden md:block md:col-span-2 h-full overflow-auto rounded border p-1">
             
             {current && (
               <Document key={current.uuid} file={blobUrl ?? buildFileUrl(current)} loading={<LoadingGlyph size={20} />}>
@@ -287,7 +287,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           <main className="col-span-12 md:col-span-10">
             
 
-            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[88vh] overflow-auto">
+            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-full overflow-auto">
               {current && (
                 loadErr ? (
                   <div className="p-6 text-sm">
