@@ -39,7 +39,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   const [index, setIndex] = useState(startIndex);
   const [numPages, setNumPages] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
-  const [scale, setScale] = useState(0.7);
+  const [scale, setScale] = useState(0.5);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
