@@ -164,19 +164,28 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
   const scrollToPage = (p: number) => {
     const target = Math.min(Math.max(p, 1), numPages || 1);
-    const el = pageRefs.current[target];
-    if (el && viewerRef.current) {
-      programmaticScrollRef.current = true;
-      viewerRef.current.scrollTo({
-        top: el.offsetTop,
-        behavior: 'auto',
-      });
-      window.setTimeout(() => {
-        programmaticScrollRef.current = false;
-      }, 120);
-    }
-    pageMemory.set(current.uuid, target);
+    
+    // Update page state immediately for UI responsiveness
     setPage(target);
+    pageMemory.set(current.uuid, target);
+    
+    // Wait for next frame to ensure page state update is reflected
+    requestAnimationFrame(() => {
+      const el = pageRefs.current[target];
+      if (el && viewerRef.current) {
+        programmaticScrollRef.current = true;
+        
+        // Use scrollIntoView for more reliable scrolling
+        el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        
+        window.setTimeout(() => {
+          programmaticScrollRef.current = false;
+        }, 300); // Increased timeout for smooth scroll
+      }
+    });
   };
 
   const go = (p: number) => {
@@ -268,11 +277,29 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
               </Button>
               <div className="mx-3 h-5 w-px bg-border" />
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => go(page - 1)} disabled={page <= 1} aria-label="Previous page">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    console.log('Previous page clicked, current page:', page);
+                    go(page - 1);
+                  }} 
+                  disabled={page <= 1} 
+                  aria-label="Previous page"
+                >
                   <ChevronUp size={16} />
                 </Button>
                 <span className="text-sm text-muted-foreground">Page {page} / {numPages || 1}</span>
-                <Button variant="outline" size="sm" onClick={() => go(page + 1)} disabled={page >= numPages} aria-label="Next page">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    console.log('Next page clicked, current page:', page);
+                    go(page + 1);
+                  }} 
+                  disabled={page >= numPages} 
+                  aria-label="Next page"
+                >
                   <ChevronDown size={16} />
                 </Button>
               </div>
