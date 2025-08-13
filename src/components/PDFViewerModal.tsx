@@ -276,7 +276,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                     className={`block w-full rounded border mb-2 overflow-hidden ${p === page ? 'ring-2 ring-primary' : ''}`}
                   >
                     <div className="flex justify-center bg-background">
-                      <Page pageNumber={p} width={90} renderTextLayer={false} renderAnnotationLayer={false} />
+                      <Page pageNumber={p} width={70} renderTextLayer={false} renderAnnotationLayer={false} />
                     </div>
                   </button>
                 ))}
