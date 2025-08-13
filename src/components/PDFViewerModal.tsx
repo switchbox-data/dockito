@@ -148,7 +148,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
         const viewport = firstPage.getViewport({ scale: 1 });
         const available = viewerRef.current.clientHeight || 0;
         if (viewport?.height && available > 0) {
-          const nextScale = Math.max(0.5, Math.min(3, available / viewport.height));
+          const autoFitScale = Math.max(0.5, Math.min(3, available / viewport.height));
+          const nextScale = Math.max(0.5, autoFitScale - 0.1); // Start one zoom level out
           setScale(nextScale);
           autoFitDoneRef.current = true;
         }
