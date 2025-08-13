@@ -175,15 +175,23 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
       if (el && viewerRef.current) {
         programmaticScrollRef.current = true;
         
-        // Use scrollIntoView for more reliable scrolling
-        el.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
+        // Calculate scroll position relative to the viewer container
+        const containerRect = viewerRef.current.getBoundingClientRect();
+        const elementRect = el.getBoundingClientRect();
+        const currentScrollTop = viewerRef.current.scrollTop;
+        
+        // Calculate the target scroll position to center the page
+        const targetScrollTop = currentScrollTop + (elementRect.top - containerRect.top) - 20;
+        
+        // Scroll instantly to the target page
+        viewerRef.current.scrollTo({
+          top: targetScrollTop,
+          behavior: 'auto' // Instant scroll, no smooth animation
         });
         
         window.setTimeout(() => {
           programmaticScrollRef.current = false;
-        }, 300); // Increased timeout for smooth scroll
+        }, 100);
       }
     });
   };
