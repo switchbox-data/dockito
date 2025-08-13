@@ -328,8 +328,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
             <div className="absolute bottom-3 right-3 pointer-events-auto">
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setScale(s => Math.max(0.6, s - 0.1))} aria-label="Zoom out">-</Button>
-                <Button variant="outline" size="sm" onClick={() => setScale(s => Math.min(2, s + 0.1))} aria-label="Zoom in">+</Button>
+                <Button variant="outline" size="sm" className="w-8" onClick={() => setScale(s => Math.max(0.6, s - 0.1))} aria-label="Zoom out">-</Button>
+                <Button variant="outline" size="sm" className="w-8" onClick={() => setScale(s => Math.min(2, s + 0.1))} aria-label="Zoom in">+</Button>
               </div>
             </div>
 
