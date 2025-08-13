@@ -269,7 +269,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           <aside className="hidden md:block w-40 h-[88vh] overflow-auto rounded-lg border bg-muted p-2">
             
             {current && (
-              <Document key={current.uuid} file={blobUrl ?? buildFileUrl(current)} loading={<LoadingGlyph size={20} />}>
+              <Document key={current.uuid} file={blobUrl ?? buildFileUrl(current)} loading={<LoadingGlyph size={36} />}>
                 {pagesArr.map((p) => (
                   <div key={p} className="mb-3 text-center">
                     <button
