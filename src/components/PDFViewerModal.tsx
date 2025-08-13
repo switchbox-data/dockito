@@ -266,7 +266,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           </div>
         </DialogHeader>
         <div className="flex gap-3" ref={containerRef}>
-          <aside className="hidden md:block w-fit h-[88vh] overflow-auto rounded-lg border bg-muted p-2">
+          <aside className="hidden md:block w-40 h-[88vh] overflow-auto rounded-lg border bg-muted p-2">
             
             {current && (
               <Document key={current.uuid} file={blobUrl ?? buildFileUrl(current)} loading={<LoadingGlyph size={20} />}>
