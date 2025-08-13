@@ -226,7 +226,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     if (!root) return;
 
     const updateVisiblePage = () => {
-      if (programmaticScrollRef.current) return;
+      if (programmaticScrollRef.current) return; // Don't update during programmatic scrolling
       let best = 1;
       let bestRatio = 0;
       const rootRect = root.getBoundingClientRect();
@@ -241,7 +241,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           best = p;
         }
       });
-      if (best !== page) {
+      // Only update if we have a significant change and we're not in the middle of programmatic scrolling
+      if (best !== page && bestRatio > 0.5) {
         setPage(best);
         if (current) pageMemory.set(current.uuid, best);
       }
