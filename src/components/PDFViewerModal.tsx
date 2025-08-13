@@ -164,36 +164,19 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
   const scrollToPage = (p: number) => {
     const target = Math.min(Math.max(p, 1), numPages || 1);
-    
-    // Update page state immediately for UI responsiveness
-    setPage(target);
+    const el = pageRefs.current[target];
+    if (el && viewerRef.current) {
+      programmaticScrollRef.current = true;
+      viewerRef.current.scrollTo({
+        top: el.offsetTop,
+        behavior: 'auto',
+      });
+      window.setTimeout(() => {
+        programmaticScrollRef.current = false;
+      }, 120);
+    }
     pageMemory.set(current.uuid, target);
-    
-    // Wait for next frame to ensure page state update is reflected
-    requestAnimationFrame(() => {
-      const el = pageRefs.current[target];
-      if (el && viewerRef.current) {
-        programmaticScrollRef.current = true;
-        
-        // Calculate scroll position relative to the viewer container
-        const containerRect = viewerRef.current.getBoundingClientRect();
-        const elementRect = el.getBoundingClientRect();
-        const currentScrollTop = viewerRef.current.scrollTop;
-        
-        // Calculate the target scroll position to center the page
-        const targetScrollTop = currentScrollTop + (elementRect.top - containerRect.top) - 20;
-        
-        // Scroll instantly to the target page
-        viewerRef.current.scrollTo({
-          top: targetScrollTop,
-          behavior: 'auto' // Instant scroll, no smooth animation
-        });
-        
-        window.setTimeout(() => {
-          programmaticScrollRef.current = false;
-        }, 100);
-      }
-    });
+    setPage(target);
   };
 
   const go = (p: number) => {
@@ -226,7 +209,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     if (!root) return;
 
     const updateVisiblePage = () => {
-      if (programmaticScrollRef.current) return; // Don't update during programmatic scrolling
+      if (programmaticScrollRef.current) return;
       let best = 1;
       let bestRatio = 0;
       const rootRect = root.getBoundingClientRect();
@@ -241,8 +224,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           best = p;
         }
       });
-      // Only update if we have a significant change and we're not in the middle of programmatic scrolling
-      if (best !== page && bestRatio > 0.5) {
+      if (best !== page) {
         setPage(best);
         if (current) pageMemory.set(current.uuid, best);
       }
@@ -286,29 +268,11 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
               </Button>
               <div className="mx-3 h-5 w-px bg-border" />
               <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => {
-                    console.log('Previous page clicked, current page:', page);
-                    go(page - 1);
-                  }} 
-                  disabled={page <= 1} 
-                  aria-label="Previous page"
-                >
+                <Button variant="outline" size="sm" onClick={() => go(page - 1)} disabled={page <= 1} aria-label="Previous page">
                   <ChevronUp size={16} />
                 </Button>
                 <span className="text-sm text-muted-foreground">Page {page} / {numPages || 1}</span>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => {
-                    console.log('Next page clicked, current page:', page);
-                    go(page + 1);
-                  }} 
-                  disabled={page >= numPages} 
-                  aria-label="Next page"
-                >
+                <Button variant="outline" size="sm" onClick={() => go(page + 1)} disabled={page >= numPages} aria-label="Next page">
                   <ChevronDown size={16} />
                 </Button>
               </div>
