@@ -1,4 +1,4 @@
-import { CalendarDays, Building2, User, Gavel, Layers, Tag, Clock, ExternalLink } from "lucide-react";
+import { CalendarDays, Building2, Layers, Tag, Clock, ExternalLink } from "lucide-react";
 type Docket = {
   uuid: string;
   docket_govid: string;
@@ -38,11 +38,10 @@ export const DocketHeader = ({ docket }: Props) => {
       </div>
       <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Info icon={<Building2 size={16} />} label="Petitioners" value={docket.petitioner_strings?.join(", ") || "—"} />
-        <Info icon={<User size={16} />} label="Hearing officer" value={docket.hearing_officer} />
-        <Info icon={<Gavel size={16} />} label="Assigned judge" value={docket.assigned_judge} />
+        <Info icon={<Tag size={16} />} label="Type" value={docket.docket_type} />
+        <Info icon={<Layers size={16} />} label="Subtype" value={docket.docket_subtype} />
         <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
         <Info icon={<Clock size={16} />} label="Closed" value={fmt(docket.closed_date)} />
-        <Info icon={<Layers size={16} />} label="Subtype" value={docket["docket_subtype" as any] as any} />
       </div>
       {docket.docket_description && (
         <p className="relative z-10 mt-4 text-sm text-muted-foreground max-w-3xl">{docket.docket_description}</p>
