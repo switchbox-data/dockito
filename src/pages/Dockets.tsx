@@ -195,8 +195,6 @@ export default function DocketsPage() {
         );
       }
       if (selectedIndustries.length) query = query.in("industry", selectedIndustries);
-      // Skip docket_type filter for now due to TypeScript issues
-      // if (docketTypes.length) query = query.in("docket_type", docketTypes);
       if (startDate) query = query.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
       if (endDate) query = query.lte("opened_date", format(endOfMonth(endDate!), "yyyy-MM-dd"));
 
@@ -204,6 +202,11 @@ export default function DocketsPage() {
       if (error) throw error;
       
       let dockets = (data ?? []) as any[];
+
+      // Apply client-side filters that couldn't be done in the query
+      if (docketTypes.length) {
+        dockets = dockets.filter((d: any) => d.docket_type && docketTypes.includes(d.docket_type));
+      }
 
       // Filter by petitioners if selected
       if (petitioners.length) {
