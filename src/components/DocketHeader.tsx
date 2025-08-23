@@ -1,5 +1,19 @@
 import { CalendarDays, Building2, User, Gavel, Layers, Tag, Clock, ExternalLink } from "lucide-react";
-import { Docket } from "@/data/mock";
+type Docket = {
+  uuid: string;
+  docket_govid: string;
+  docket_title: string | null;
+  docket_description: string | null;
+  industry: string | null;
+  docket_type: string | null;
+  petitioner_strings: string[] | null;
+  opened_date: string;
+  closed_date?: string | null;
+  docket_subtype: string | null;
+  current_status: string | null;
+  hearing_officer?: string | null;
+  assigned_judge?: string | null;
+};
 import { format } from "date-fns";
 
 type Props = { docket: Docket };
@@ -23,7 +37,7 @@ export const DocketHeader = ({ docket }: Props) => {
         </div>
       </div>
       <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Info icon={<Building2 size={16} />} label="Petitioner" value={docket.petitioner} />
+        <Info icon={<Building2 size={16} />} label="Petitioners" value={docket.petitioner_strings?.join(", ") || "—"} />
         <Info icon={<User size={16} />} label="Hearing officer" value={docket.hearing_officer} />
         <Info icon={<Gavel size={16} />} label="Assigned judge" value={docket.assigned_judge} />
         <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />

@@ -59,7 +59,9 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
 
   const organizations = useMemo(() => {
     const set = new Set<string>();
-    filings.forEach((f) => f.organization_author_strings.forEach((o) => set.add(o)));
+    filings.forEach((f) => {
+      f.organization_author_strings?.forEach((o) => set.add(o));
+    });
     return Array.from(set).sort();
   }, [filings]);
 
@@ -81,7 +83,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
   const filtered = useMemo(() => {
     let list = [...filings];
     if (selectedOrgs.length)
-      list = list.filter((f) => f.organization_author_strings.some((o) => selectedOrgs.includes(o)));
+      list = list.filter((f) => f.organization_author_strings?.some((o) => selectedOrgs.includes(o)));
     if (selectedTypes.length)
       list = list.filter((f) => f.filling_type && selectedTypes.includes(f.filling_type));
     if (query.trim()) {
@@ -91,7 +93,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           (f.filling_name?.toLowerCase().includes(q) ?? false) ||
           (f.filling_description?.toLowerCase().includes(q) ?? false) ||
           (f.filling_type?.toLowerCase().includes(q) ?? false) ||
-          f.organization_author_strings.some((o) => o.toLowerCase().includes(q));
+          f.organization_author_strings?.some((o) => o.toLowerCase().includes(q));
 
         const inAttachments = f.attachments.some((a: any) =>
           (a.attachment_title?.toLowerCase().includes(q) ?? false) ||
@@ -519,7 +521,9 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                   <div className="text-sm text-muted-foreground mt-0.5 flex flex-wrap items-center gap-2">
                     <span>{format(new Date(f.filed_date), "PPP")}</span>
                     <span>•</span>
-                    <span className="truncate">{f.organization_author_strings.join(", ")}</span>
+                    <span className="truncate">
+                      Filed by: {f.organization_author_strings?.join(", ") || "—"}
+                    </span>
                   </div>
                 </div>
               </button>

@@ -3,7 +3,21 @@ import { useParams } from "react-router-dom";
 import { DocketHeader } from "@/components/DocketHeader";
 import { FilingsList } from "@/components/FilingsList";
 import type { FilingWithAttachments } from "@/components/FilingsList";
-import type { Docket as DocketType } from "@/data/mock";
+type DocketType = {
+  uuid: string;
+  docket_govid: string;
+  docket_title: string | null;
+  docket_description: string | null;
+  industry: string | null;
+  docket_type: string | null;
+  petitioner_strings: string[] | null;
+  opened_date: string;
+  closed_date?: string | null;
+  docket_subtype: string | null;
+  current_status: string | null;
+  hearing_officer?: string | null;
+  assigned_judge?: string | null;
+};
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -20,7 +34,7 @@ const DocketPage = () => {
         .eq("docket_govid", docket_govid!)
         .maybeSingle();
       if (error) throw error;
-      return data as DocketType | null;
+      return data as any;
     },
   });
 
