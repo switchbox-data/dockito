@@ -429,7 +429,7 @@ export default function DocketsPage() {
                             >
                               <div className="flex items-center gap-2">
                                 <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                                <span>{t}</span>
+                                <span>{t?.trim()}</span>
                               </div>
                             </CommandItem>
                           );
