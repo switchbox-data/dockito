@@ -628,7 +628,7 @@ export default function DocketsPage() {
                         </div>
                       </CardTitle>
                     </CardHeader>
-                     <CardContent className="pt-2 space-y-3">
+                     <CardContent className="pt-0 space-y-3">
                        <div className="space-y-2">
                          <div className="text-base text-foreground font-semibold">{d.docket_govid}</div>
                          <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
