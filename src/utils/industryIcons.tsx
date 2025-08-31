@@ -6,6 +6,7 @@ import {
   Factory, 
   Building, 
   Cable,
+  Thermometer,
   LucideIcon 
 } from "lucide-react";
 
@@ -27,9 +28,10 @@ export const getIndustryIcon = (industry: string): LucideIcon => {
       return Phone; // Phone services
     case "facilite gen":
     case "facility generation":
+    case "facilite generation":
       return Factory; // Electrical generation facilities
     case "steam":
-      return Building; // District steam heating
+      return Thermometer; // District steam heating
     case "transmission":
       return Cable; // Electrical transmission lines
     case "miscellaneous":
