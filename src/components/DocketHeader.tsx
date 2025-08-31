@@ -42,6 +42,9 @@ export const DocketHeader = ({ docket }: Props) => {
         </div>
       </div>
       <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
+        <Info icon={<Tag size={16} />} label="Type" value={docket.docket_type} />
+        <Info icon={<Layers size={16} />} label="Subtype" value={docket.docket_subtype} />
         <div className="flex items-start gap-3 rounded-lg border bg-background/60 px-3 py-2">
           <div className="shrink-0 text-foreground/80"><Building2 size={16} /></div>
           <div className="min-w-0">
@@ -57,9 +60,6 @@ export const DocketHeader = ({ docket }: Props) => {
             )}
           </div>
         </div>
-        <Info icon={<Tag size={16} />} label="Type" value={docket.docket_type} />
-        <Info icon={<Layers size={16} />} label="Subtype" value={docket.docket_subtype} />
-        <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
       </div>
       <a
         href={`https://documents.dps.ny.gov/public/MatterManagement/CaseMaster.aspx?Mattercaseno=${docket.docket_govid}`}
