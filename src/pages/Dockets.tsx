@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
+import { OrganizationHeader } from "@/components/OrganizationHeader";
 
 import { X } from "lucide-react";
 
@@ -297,6 +298,13 @@ export default function DocketsPage() {
         );
       }
 
+      // Filter by locked organization if present
+      if (lockedOrg) {
+        dockets = dockets.filter((d: any) => 
+          d.petitioner_strings && d.petitioner_strings.includes(lockedOrg)
+        );
+      }
+
       return dockets;
     },
     enabled: !!(range && months.length),
@@ -386,10 +394,18 @@ export default function DocketsPage() {
 
   return (
     <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-6 space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">New York PSC Dockets</h1>
-        <p className="text-muted-foreground">Public Service Commission • State: NY • Explore and filter dockets</p>
-      </header>
+      {lockedOrg ? (
+        <OrganizationHeader 
+          orgName={lockedOrg} 
+          docketCount={items.length}
+          dateRange={{ start: startDate, end: endDate }}
+        />
+      ) : (
+        <header className="space-y-2">
+          <h1 className="text-3xl font-semibold tracking-tight">New York PSC Dockets</h1>
+          <p className="text-muted-foreground">Public Service Commission • State: NY • Explore and filter dockets</p>
+        </header>
+      )}
       <div className="sticky top-0 z-50">
         <div className="relative border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
@@ -613,9 +629,7 @@ export default function DocketsPage() {
               </button>
             </Badge>
           ))}
-          {lockedOrg ? (
-            <Badge variant="secondary" className="px-2 py-1">Petitioner: {lockedOrg}</Badge>
-          ) : (
+          {lockedOrg ? null : (
             petitioners.map((p) => (
               <Badge key={`pet-${p}`} variant="secondary" className="px-2 py-1">
                 <span className="mr-1">Petitioner: {p}</span>
