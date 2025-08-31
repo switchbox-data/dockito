@@ -737,7 +737,7 @@ export default function DocketsPage() {
         {isFetchingNextPage && (
           <div className="text-center text-muted-foreground">Loading more…</div>
         )}
-        {!hasNextPage && items.length > 0 && (
+        {!hasNextPage && items.length > 0 && !lockedOrg && (
           <div className="text-center text-muted-foreground">You've reached the end.</div>
         )}
       </section>
