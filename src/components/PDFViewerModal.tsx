@@ -251,7 +251,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="sm:max-w-[800px] md:max-w-[900px] max-h-[96vh] md:max-h-[96vh]"
+        className="sm:max-w-[900px] md:max-w-[1000px] max-h-[96vh] md:max-h-[96vh]"
         tabIndex={-1}
         onKeyDownCapture={(e) => {
           if (!open) return;
