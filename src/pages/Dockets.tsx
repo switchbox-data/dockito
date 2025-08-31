@@ -1,21 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown } from "lucide-react";
+import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay } from "date-fns";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Slider } from "@/components/ui/slider";
-import { cn } from "@/lib/utils";
-import { Link, useNavigate } from "react-router-dom";
-import { format, addMonths, startOfMonth, endOfMonth } from "date-fns";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Calendar } from "@/components/ui/calendar";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { ChevronDown, Check, X, Users, Shapes, Calendar as CalendarIcon, Factory } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
+import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
+import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 
 const PAGE_SIZE = 30;
 
@@ -381,6 +382,10 @@ export default function DocketsPage() {
                             >
                               <div className="flex items-center gap-2">
                                 <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                                {(() => {
+                                  const IndustryIcon = getIndustryIcon(ind);
+                                  return <IndustryIcon size={14} className={getIndustryColor(ind)} />;
+                                })()}
                                 <span>{ind}</span>
                               </div>
                             </CommandItem>
@@ -605,7 +610,15 @@ export default function DocketsPage() {
                       <CardTitle className="text-base flex items-center justify-between gap-3">
                         <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
                         <div className="flex flex-col items-end gap-1">
-                          {d.industry && <Badge variant="outline">{d.industry}</Badge>}
+                          {d.industry && (
+                            <Badge variant="outline" className="inline-flex items-center gap-1.5">
+                              {(() => {
+                                const IndustryIcon = getIndustryIcon(d.industry);
+                                return <IndustryIcon size={12} className={getIndustryColor(d.industry)} />;
+                              })()}
+                              {d.industry}
+                            </Badge>
+                          )}
                           <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
                         </div>
                       </CardTitle>

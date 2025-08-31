@@ -1,5 +1,6 @@
 import { CalendarDays, Building2, Layers, Tag, Clock, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
 type Docket = {
   uuid: string;
   docket_govid: string;
@@ -29,7 +30,13 @@ export const DocketHeader = ({ docket }: Props) => {
         <div className="flex items-start justify-between">
           <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs border">{docket.industry ?? "other"}</span>
+            <span className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs border inline-flex items-center gap-1.5">
+              {(() => {
+                const IndustryIcon = getIndustryIcon(docket.industry || "other");
+                return <IndustryIcon size={12} className={getIndustryColor(docket.industry || "other")} />;
+              })()}
+              {docket.industry ?? "other"}
+            </span>
             {docket.current_status && (
               <span className="px-3 py-1 rounded-full bg-accent/10 text-foreground text-xs border">{docket.current_status}</span>
             )}
