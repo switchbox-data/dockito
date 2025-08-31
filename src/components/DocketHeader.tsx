@@ -26,16 +26,18 @@ export const DocketHeader = ({ docket }: Props) => {
     <header className="relative overflow-hidden rounded-xl border bg-card p-6 shadow-[var(--shadow-elegant)]">
       <div className="absolute inset-0 pointer-events-none opacity-70" style={{ background: "var(--gradient-primary)" }} />
       <div className="relative z-10 grid gap-4">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex-[0.9]">
-            <h1 className="text-lg md:text-xl font-semibold tracking-tight mb-1">{docket.docket_title}</h1>
-            <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
-          </div>
-          <div className="flex md:justify-end items-center gap-2 self-start shrink-0">
+        <div className="flex items-start justify-between">
+          <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
+          <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs border">{docket.industry ?? "other"}</span>
             {docket.current_status && (
               <span className="px-3 py-1 rounded-full bg-accent/10 text-foreground text-xs border">{docket.current_status}</span>
             )}
+          </div>
+        </div>
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div className="flex-[0.9]">
+            <h1 className="text-lg md:text-xl font-semibold tracking-tight mb-1">{docket.docket_title}</h1>
           </div>
         </div>
       </div>
