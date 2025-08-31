@@ -27,7 +27,7 @@ export const DocketHeader = ({ docket }: Props) => {
       <div className="absolute inset-0 pointer-events-none opacity-70" style={{ background: "var(--gradient-primary)" }} />
       <div className="relative z-10 grid gap-4 md:grid-cols-3">
         <div className="md:col-span-2">
-          <h1 className="text-xl md:text-2xl font-semibold tracking-tight mb-1">{docket.docket_title}</h1>
+          <h1 className="text-lg md:text-xl lg:text-2xl font-medium leading-snug tracking-tight mb-1 break-words">{docket.docket_title}</h1>
           <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
         </div>
         <div className="flex md:justify-end items-center gap-2 self-start">
