@@ -45,22 +45,21 @@ export const DocketHeader = ({ docket }: Props) => {
         <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
         <Info icon={<Tag size={16} />} label="Type" value={docket.docket_type} />
         <Info icon={<Layers size={16} />} label="Subtype" value={docket.docket_subtype} />
-        <div className="flex items-start gap-3 rounded-lg border bg-background/60 px-3 py-2">
-          <div className="shrink-0 text-foreground/80"><Building2 size={16} /></div>
-          <div className="min-w-0">
-            <div className="text-xs text-muted-foreground">Petitioners</div>
-            {docket.petitioner_strings?.length ? (
-              <div className="mt-1 flex flex-wrap gap-1">
-                {docket.petitioner_strings.map((p) => (
-                  <Badge key={p} variant="outline" className="px-2 py-0.5">{p}</Badge>
-                ))}
-              </div>
-            ) : (
-              <div className="text-sm">—</div>
-            )}
+      </div>
+      
+      {docket.petitioner_strings?.length && (
+        <div className="relative z-10 mt-6 pt-4 border-t border-border/50">
+          <div className="flex items-center gap-2 mb-3">
+            <Building2 size={16} className="text-foreground/80" />
+            <span className="text-sm font-medium text-foreground">Petitioners</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {docket.petitioner_strings.map((p) => (
+              <Badge key={p} variant="secondary" className="px-3 py-1.5 text-sm">{p}</Badge>
+            ))}
           </div>
         </div>
-      </div>
+      )}
       <a
         href={`https://documents.dps.ny.gov/public/MatterManagement/CaseMaster.aspx?Mattercaseno=${docket.docket_govid}`}
         target="_blank"
