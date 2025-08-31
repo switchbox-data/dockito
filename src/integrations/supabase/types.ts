@@ -7,72 +7,38 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
-      artifical_persons: {
-        Row: {
-          aliases: string[]
-          artifical_person_type: string | null
-          created_at: string
-          description: string | null
-          is_corporate_entity: boolean
-          is_human: boolean
-          name: string
-          updated_at: string
-          uuid: string
-        }
-        Insert: {
-          aliases: string[]
-          artifical_person_type?: string | null
-          created_at?: string
-          description?: string | null
-          is_corporate_entity: boolean
-          is_human: boolean
-          name: string
-          updated_at?: string
-          uuid?: string
-        }
-        Update: {
-          aliases?: string[]
-          artifical_person_type?: string | null
-          created_at?: string
-          description?: string | null
-          is_corporate_entity?: boolean
-          is_human?: boolean
-          name?: string
-          updated_at?: string
-          uuid?: string
-        }
-        Relationships: []
-      }
       attachments: {
         Row: {
           attachment_file_extension: string
           attachment_file_name: string
-          attachment_subtype: string | null
+          attachment_subtype: string
           attachment_title: string
-          attachment_type: string | null
-          attachment_url: string | null
+          attachment_type: string
+          attachment_url: string
           blake2b_hash: string
           created_at: string
+          openscrapers_id: string
           parent_filling_uuid: string
           updated_at: string
           uuid: string
         }
         Insert: {
-          attachment_file_extension: string
-          attachment_file_name: string
-          attachment_subtype?: string | null
-          attachment_title: string
-          attachment_type?: string | null
-          attachment_url?: string | null
-          blake2b_hash: string
+          attachment_file_extension?: string
+          attachment_file_name?: string
+          attachment_subtype?: string
+          attachment_title?: string
+          attachment_type?: string
+          attachment_url?: string
+          blake2b_hash?: string
           created_at?: string
+          openscrapers_id: string
           parent_filling_uuid: string
           updated_at?: string
           uuid?: string
@@ -80,12 +46,13 @@ export type Database = {
         Update: {
           attachment_file_extension?: string
           attachment_file_name?: string
-          attachment_subtype?: string | null
+          attachment_subtype?: string
           attachment_title?: string
-          attachment_type?: string | null
-          attachment_url?: string | null
+          attachment_type?: string
+          attachment_url?: string
           blake2b_hash?: string
           created_at?: string
+          openscrapers_id?: string
           parent_filling_uuid?: string
           updated_at?: string
           uuid?: string
@@ -100,52 +67,91 @@ export type Database = {
           },
         ]
       }
+      docket_petitioned_by_org: {
+        Row: {
+          created_at: string
+          docket_uuid: string
+          petitioner_uuid: string
+          uuid: string
+        }
+        Insert: {
+          created_at?: string
+          docket_uuid?: string
+          petitioner_uuid?: string
+          uuid?: string
+        }
+        Update: {
+          created_at?: string
+          docket_uuid?: string
+          petitioner_uuid?: string
+          uuid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "docket_petitioned_by_org_docket_uuid_fkey"
+            columns: ["docket_uuid"]
+            isOneToOne: false
+            referencedRelation: "dockets"
+            referencedColumns: ["uuid"]
+          },
+          {
+            foreignKeyName: "docket_petitioned_by_org_petitioner_uuid_fkey"
+            columns: ["petitioner_uuid"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["uuid"]
+          },
+        ]
+      }
       dockets: {
         Row: {
-          assigned_judge: string | null
+          assigned_judge: string
           closed_date: string | null
           created_at: string
-          current_status: string | null
-          docket_description: string | null
+          current_status: string
+          docket_description: string
           docket_govid: string
-          docket_subtype: string | null
-          docket_title: string | null
-          hearing_officer: string | null
-          industry: string | null
+          docket_subtype: string
+          docket_title: string
+          docket_type: string
+          hearing_officer: string
+          industry: string
           opened_date: string
-          petitioner: string | null
+          petitioner_strings: string[]
           updated_at: string
           uuid: string
         }
         Insert: {
-          assigned_judge?: string | null
+          assigned_judge?: string
           closed_date?: string | null
           created_at?: string
-          current_status?: string | null
-          docket_description?: string | null
+          current_status?: string
+          docket_description?: string
           docket_govid?: string
-          docket_subtype?: string | null
-          docket_title?: string | null
-          hearing_officer?: string | null
-          industry?: string | null
+          docket_subtype?: string
+          docket_title?: string
+          docket_type?: string
+          hearing_officer?: string
+          industry?: string
           opened_date: string
-          petitioner?: string | null
+          petitioner_strings?: string[]
           updated_at?: string
           uuid?: string
         }
         Update: {
-          assigned_judge?: string | null
+          assigned_judge?: string
           closed_date?: string | null
           created_at?: string
-          current_status?: string | null
-          docket_description?: string | null
+          current_status?: string
+          docket_description?: string
           docket_govid?: string
-          docket_subtype?: string | null
-          docket_title?: string | null
-          hearing_officer?: string | null
-          industry?: string | null
+          docket_subtype?: string
+          docket_title?: string
+          docket_type?: string
+          hearing_officer?: string
+          industry?: string
           opened_date?: string
-          petitioner?: string | null
+          petitioner_strings?: string[]
           updated_at?: string
           uuid?: string
         }
@@ -157,24 +163,28 @@ export type Database = {
           docket_govid: string
           docket_uuid: string
           filed_date: string
-          filling_description: string | null
-          filling_name: string | null
-          filling_type: string | null
+          filling_description: string
+          filling_govid: string
+          filling_name: string
+          filling_type: string
           individual_author_strings: string[]
+          openscrapers_id: string
           organization_author_strings: string[]
           updated_at: string
           uuid: string
         }
         Insert: {
           created_at?: string
-          docket_govid: string
+          docket_govid?: string
           docket_uuid: string
           filed_date: string
-          filling_description?: string | null
-          filling_name?: string | null
-          filling_type?: string | null
-          individual_author_strings: string[]
-          organization_author_strings: string[]
+          filling_description?: string
+          filling_govid?: string
+          filling_name?: string
+          filling_type?: string
+          individual_author_strings?: string[]
+          openscrapers_id: string
+          organization_author_strings?: string[]
           updated_at?: string
           uuid?: string
         }
@@ -183,10 +193,12 @@ export type Database = {
           docket_govid?: string
           docket_uuid?: string
           filed_date?: string
-          filling_description?: string | null
-          filling_name?: string | null
-          filling_type?: string | null
+          filling_description?: string
+          filling_govid?: string
+          filling_name?: string
+          filling_type?: string
           individual_author_strings?: string[]
+          openscrapers_id?: string
           organization_author_strings?: string[]
           updated_at?: string
           uuid?: string
@@ -201,7 +213,7 @@ export type Database = {
           },
         ]
       }
-      fillings_individual_authors_relation: {
+      fillings_filed_by_org_relation: {
         Row: {
           author_individual_uuid: string
           created_at: string
@@ -225,7 +237,7 @@ export type Database = {
             foreignKeyName: "fillings_individual_authors_relatio_author_individual_uuid_fkey"
             columns: ["author_individual_uuid"]
             isOneToOne: false
-            referencedRelation: "artifical_persons"
+            referencedRelation: "organizations"
             referencedColumns: ["uuid"]
           },
           {
@@ -237,7 +249,7 @@ export type Database = {
           },
         ]
       }
-      fillings_organization_authors_relation: {
+      fillings_on_behalf_of_org_relation: {
         Row: {
           author_organization_uuid: string
           created_at: string
@@ -261,7 +273,7 @@ export type Database = {
             foreignKeyName: "fillings_organization_authors_rel_author_organization_uuid_fkey"
             columns: ["author_organization_uuid"]
             isOneToOne: false
-            referencedRelation: "artifical_persons"
+            referencedRelation: "organizations"
             referencedColumns: ["uuid"]
           },
           {
@@ -272,6 +284,39 @@ export type Database = {
             referencedColumns: ["uuid"]
           },
         ]
+      }
+      organizations: {
+        Row: {
+          aliases: string[]
+          artifical_person_type: string
+          created_at: string
+          description: string
+          name: string
+          org_suffix: string
+          updated_at: string
+          uuid: string
+        }
+        Insert: {
+          aliases?: string[]
+          artifical_person_type?: string
+          created_at?: string
+          description?: string
+          name?: string
+          org_suffix?: string
+          updated_at?: string
+          uuid?: string
+        }
+        Update: {
+          aliases?: string[]
+          artifical_person_type?: string
+          created_at?: string
+          description?: string
+          name?: string
+          org_suffix?: string
+          updated_at?: string
+          uuid?: string
+        }
+        Relationships: []
       }
     }
     Views: {
