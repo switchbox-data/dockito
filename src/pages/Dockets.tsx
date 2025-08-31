@@ -428,7 +428,7 @@ export default function DocketsPage() {
                               }
                             >
                               <div className="flex items-start gap-2">
-                                <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                                <Check size={14} className={cn("opacity-0 mt-0.5 shrink-0", selected && "opacity-100")} />
                                 <span className="leading-tight">{t?.trim()}</span>
                               </div>
                             </CommandItem>
