@@ -606,34 +606,32 @@ export default function DocketsPage() {
                 >
                   <Card className={cn("transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background", isSelected ? "bg-muted" : "")}
                   >
-                    <CardHeader>
-                      <CardTitle className="text-base flex items-start justify-between gap-3">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex flex-wrap gap-1">
-                            {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
-                            {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-1">
-                          {d.industry && (
-                            <Badge variant="outline" className="inline-flex items-center gap-1.5">
-                              {(() => {
-                                const IndustryIcon = getIndustryIcon(d.industry);
-                                return <IndustryIcon size={12} className={getIndustryColor(d.industry)} />;
-                              })()}
-                              {d.industry}
-                            </Badge>
-                          )}
-                          <span className="text-xs text-muted-foreground mt-0.5">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
-                        </div>
-                      </CardTitle>
-                    </CardHeader>
-                     <CardContent className="-mt-2 space-y-3">
+                     <CardContent className="p-4 space-y-3">
+                       <div className="flex items-start justify-between gap-3 mb-3">
+                         <div className="flex flex-wrap gap-1">
+                           {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
+                           {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
+                         </div>
+                         <div className="flex flex-col items-end gap-1">
+                           {d.industry && (
+                             <Badge variant="outline" className="inline-flex items-center gap-1.5">
+                               {(() => {
+                                 const IndustryIcon = getIndustryIcon(d.industry);
+                                 return <IndustryIcon size={12} className={getIndustryColor(d.industry)} />;
+                               })()}
+                               {d.industry}
+                             </Badge>
+                           )}
+                           <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                         </div>
+                       </div>
+                       
                        <div className="space-y-2">
                          <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
                          <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
                        </div>
-                        <div className="flex flex-wrap gap-2">
+                       
+                       <div className="flex flex-wrap gap-2">
                          {d.petitioner_strings?.slice(0, 2).map(p => (
                            <Badge key={p} variant="secondary" className="text-xs">{p}</Badge>
                          ))}
