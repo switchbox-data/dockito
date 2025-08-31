@@ -16,6 +16,7 @@ type Docket = {
   hearing_officer?: string | null;
   assigned_judge?: string | null;
 };
+import { Link } from "react-router-dom";
 import { format } from "date-fns";
 
 type Props = { docket: Docket };
@@ -62,7 +63,9 @@ export const DocketHeader = ({ docket }: Props) => {
           </div>
           <div className="flex flex-wrap gap-2">
             {docket.petitioner_strings.map((p) => (
-              <Badge key={p} variant="outline" className="px-3 py-1.5 text-sm bg-background border-primary/20 text-foreground hover:border-primary/30 transition-colors cursor-default">{p}</Badge>
+              <Link key={p} to={`/org/${encodeURIComponent(p)}`} className="inline-block">
+                <Badge variant="outline" className="px-3 py-1.5 text-sm bg-background border-primary/20 text-foreground hover:border-primary/30 transition-colors cursor-pointer hover:underline underline-offset-4">{p}</Badge>
+              </Link>
             ))}
           </div>
         </div>

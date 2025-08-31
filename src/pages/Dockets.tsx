@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown } from "lucide-react";
 import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay } from "date-fns";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
-import { useNavigate } from "react-router-dom";
+
 import { X } from "lucide-react";
 
 const PAGE_SIZE = 30;
@@ -36,18 +36,61 @@ type Docket = {
 
 const sanitize = (s: string) => s.replace(/[,%]/g, " ").trim();
 
-function useDateBounds() {
+function useDateBounds(lockedOrg?: string | null) {
   return useQuery({
-    queryKey: ["dockets-date-bounds"],
+    queryKey: ["dockets-date-bounds", { org: lockedOrg ?? null }],
     queryFn: async () => {
+      // If an organization is locked, compute bounds for that org only
+      if (lockedOrg) {
+        const { data: org, error: orgErr } = await supabase
+          .from("organizations")
+          .select("uuid")
+          .eq("name", lockedOrg)
+          .maybeSingle();
+        if (orgErr) throw orgErr;
+        const orgId = (org as any)?.uuid as string | undefined;
+        if (!orgId) return { min: null, max: null } as { min: Date | null; max: Date | null };
+
+        const { data: rels, error: relErr } = await supabase
+          .from("docket_petitioned_by_org")
+          .select("docket_uuid")
+          .eq("petitioner_uuid", orgId);
+        if (relErr) throw relErr;
+        const docketUuids = Array.from(new Set((rels ?? []).map((r: any) => r.docket_uuid).filter(Boolean)));
+        if (!docketUuids.length) return { min: null, max: null } as { min: Date | null; max: Date | null };
+
+        const [{ data: minRow, error: minErr }, { data: maxRow, error: maxErr }] = await Promise.all([
+          supabase
+            .from("dockets")
+            .select("opened_date")
+            .in("uuid", docketUuids)
+            .order("opened_date", { ascending: true })
+            .limit(1)
+            .maybeSingle(),
+          supabase
+            .from("dockets")
+            .select("opened_date")
+            .in("uuid", docketUuids)
+            .order("opened_date", { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+        ]);
+        if (minErr) throw minErr;
+        if (maxErr) throw maxErr;
+        const min = (minRow as any)?.opened_date ? new Date((minRow as any).opened_date) : null;
+        const max = (maxRow as any)?.opened_date ? new Date((maxRow as any).opened_date) : null;
+        return { min, max } as { min: Date | null; max: Date | null };
+      }
+
+      // Global bounds
       const [{ data: minRow, error: minErr }, { data: maxRow, error: maxErr }] = await Promise.all([
         supabase.from("dockets").select("opened_date").order("opened_date", { ascending: true }).limit(1).maybeSingle(),
         supabase.from("dockets").select("opened_date").order("opened_date", { ascending: false }).limit(1).maybeSingle(),
       ]);
       if (minErr) throw minErr;
       if (maxErr) throw maxErr;
-      const min = minRow?.opened_date ? new Date(minRow.opened_date) : null;
-      const max = maxRow?.opened_date ? new Date(maxRow.opened_date) : null;
+      const min = (minRow as any)?.opened_date ? new Date((minRow as any).opened_date) : null;
+      const max = (maxRow as any)?.opened_date ? new Date((maxRow as any).opened_date) : null;
       return { min, max } as { min: Date | null; max: Date | null };
     },
   });
@@ -81,9 +124,11 @@ export default function DocketsPage() {
   const cardRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const navigate = useNavigate();
-
+  const { orgName } = useParams();
+  const lockedOrg = useMemo(() => (orgName ? decodeURIComponent(orgName) : null), [orgName]);
+  
   // Date slider uses month indices
-  const { data: bounds } = useDateBounds();
+  const { data: bounds } = useDateBounds(lockedOrg);
   const months = useMemo(() => {
     if (!bounds?.min || !bounds?.max) return [] as Date[];
     return monthsBetween(bounds.min, bounds.max);
@@ -93,10 +138,14 @@ export default function DocketsPage() {
   // Initialize range once bounds are known
   useEffect(() => {
     if (months.length && !range) {
-      // Default to last 10 years (120 months)
-      setRange([Math.max(0, months.length - Math.min(120, months.length)), months.length - 1]);
+      if (lockedOrg) {
+        setRange([0, months.length - 1]);
+      } else {
+        // Default to last 10 years (120 months)
+        setRange([Math.max(0, months.length - Math.min(120, months.length)), months.length - 1]);
+      }
     }
-  }, [months, range]);
+  }, [months, range, lockedOrg]);
 
   const startDate = useMemo(() => (range && months.length ? months[range[0]] : undefined), [range, months]);
   const endDate = useMemo(() => (range && months.length ? months[range[1]] : undefined), [range, months]);
@@ -180,7 +229,7 @@ export default function DocketsPage() {
   } = useInfiniteQuery<any[], Error>({
     queryKey: [
       "dockets-list",
-      { search: normalizedSearch, industries: selectedIndustries.join(","), docketTypes: docketTypes.join(","), petitioners: petitioners.join(","), sortDir, start: startDate?.toISOString(), end: endDate?.toISOString() },
+      { org: lockedOrg ?? null, search: normalizedSearch, industries: selectedIndustries.join(","), docketTypes: docketTypes.join(","), petitioners: petitioners.join(","), sortDir, start: startDate?.toISOString(), end: endDate?.toISOString() },
     ],
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => (lastPage?.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined),
@@ -288,10 +337,16 @@ export default function DocketsPage() {
   }, [isFetchingNextPage, hasNextPage, fetchNextPage]);
 
   useEffect(() => {
-    document.title = "NY PSC Dockets | Dockito";
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "Browse and filter New York PSC dockets by industry, type, dates, and more.");
-  }, []);
+    if (lockedOrg) {
+      document.title = `${lockedOrg}  NY PSC Dockets | Dockito`;
+      const meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute("content", `Dockets petitioned by ${lockedOrg} at the NY PSC.`);
+    } else {
+      document.title = "NY PSC Dockets | Dockito";
+      const meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute("content", "Browse and filter New York PSC dockets by industry, type, dates, and more.");
+    }
+  }, [lockedOrg]);
 
   const pages = (data?.pages ?? []) as Docket[][];
   const items = pages.flat();
@@ -315,7 +370,7 @@ export default function DocketsPage() {
 
     // quick keys
     if (e.key === '/') { e.preventDefault(); searchRef.current?.focus(); return; }
-    if (e.key.toLowerCase() === 'p') { e.preventDefault(); setPetOpen(true); return; }
+    if (e.key.toLowerCase() === 'p') { if (lockedOrg) return; e.preventDefault(); setPetOpen(true); return; }
     if (e.key.toLowerCase() === 'i') { e.preventDefault(); setIndustryOpen(true); return; }
     if (e.key.toLowerCase() === 't') { e.preventDefault(); setTypeOpen(true); return; }
     if (e.key.toLowerCase() === 's') { e.preventDefault(); setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); return; }
@@ -441,48 +496,50 @@ export default function DocketsPage() {
               </Popover>
 
               {/* Petitioners multi-select (ranked by frequency within current filters) */}
-              <Popover open={petOpen} onOpenChange={setPetOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                    <span className="inline-flex items-center gap-2">
-                      <Users size={16} className="text-muted-foreground" />
-                      {petitioners.length ? `Petitioners (${petitioners.length})` : "Petitioners"}
-                    </span>
-                    <ChevronDown size={14} />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="p-0 z-50 bg-popover border">
-                  <Command>
-                    <CommandInput placeholder="Search petitioners..." />
-                    <CommandList>
-                      <CommandEmpty>No results.</CommandEmpty>
-                      <CommandGroup heading="Petitioners">
-                        <CommandItem onSelect={() => setPetitioners([])}>Clear</CommandItem>
-                        <CommandItem onSelect={() => setPetitioners(petitionerOptions.map(p => p.name))}>Select all</CommandItem>
-                        {petitionerOptions.map(({ name, count }) => {
-                          const selected = petitioners.includes(name);
-                          return (
-                            <CommandItem
-                              key={name}
-                              onSelect={() =>
-                                setPetitioners((prev) =>
-                                  prev.includes(name) ? prev.filter((v) => v !== name) : [...prev, name]
-                                )
-                              }
-                            >
-                              <div className="flex items-center gap-2">
-                                <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                                <span>{name}</span>
-                                <span className="ml-1 text-muted-foreground text-xs">({count})</span>
-                              </div>
-                            </CommandItem>
-                          );
-                        })}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              {!lockedOrg && (
+                <Popover open={petOpen} onOpenChange={setPetOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                      <span className="inline-flex items-center gap-2">
+                        <Users size={16} className="text-muted-foreground" />
+                        {petitioners.length ? `Petitioners (${petitioners.length})` : "Petitioners"}
+                      </span>
+                      <ChevronDown size={14} />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0 z-50 bg-popover border">
+                    <Command>
+                      <CommandInput placeholder="Search petitioners..." />
+                      <CommandList>
+                        <CommandEmpty>No results.</CommandEmpty>
+                        <CommandGroup heading="Petitioners">
+                          <CommandItem onSelect={() => setPetitioners([])}>Clear</CommandItem>
+                          <CommandItem onSelect={() => setPetitioners(petitionerOptions.map(p => p.name))}>Select all</CommandItem>
+                          {petitionerOptions.map(({ name, count }) => {
+                            const selected = petitioners.includes(name);
+                            return (
+                              <CommandItem
+                                key={name}
+                                onSelect={() =>
+                                  setPetitioners((prev) =>
+                                    prev.includes(name) ? prev.filter((v) => v !== name) : [...prev, name]
+                                  )
+                                }
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
+                                  <span>{name}</span>
+                                  <span className="ml-1 text-muted-foreground text-xs">({count})</span>
+                                </div>
+                              </CommandItem>
+                            );
+                          })}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              )}
 
               {/* Date range (month) in a modal dialog) */}
               <Dialog open={dateOpen} onOpenChange={setDateOpen}>
@@ -556,19 +613,23 @@ export default function DocketsPage() {
               </button>
             </Badge>
           ))}
-          {petitioners.map((p) => (
-            <Badge key={`pet-${p}`} variant="secondary" className="px-2 py-1">
-              <span className="mr-1">Petitioner: {p}</span>
-              <button
-                type="button"
-                aria-label={`Remove petitioner ${p}`}
-                onClick={() => setPetitioners((prev) => prev.filter((v) => v !== p))}
-                className="inline-flex"
-              >
-                <X size={12} />
-              </button>
-            </Badge>
-          ))}
+          {lockedOrg ? (
+            <Badge variant="secondary" className="px-2 py-1">Petitioner: {lockedOrg}</Badge>
+          ) : (
+            petitioners.map((p) => (
+              <Badge key={`pet-${p}`} variant="secondary" className="px-2 py-1">
+                <span className="mr-1">Petitioner: {p}</span>
+                <button
+                  type="button"
+                  aria-label={`Remove petitioner ${p}`}
+                  onClick={() => setPetitioners((prev) => prev.filter((v) => v !== p))}
+                  className="inline-flex"
+                >
+                  <X size={12} />
+                </button>
+              </Badge>
+            ))
+          )}
           {normalizedSearch && (
             <Badge variant="secondary" className="px-2 py-1">
               <span className="mr-1">Search: {normalizedSearch}</span>
@@ -631,15 +692,22 @@ export default function DocketsPage() {
                          <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
                        </div>
                        
-                       <div className="flex flex-wrap gap-2">
-                         {d.petitioner_strings?.slice(0, 2).map(p => (
-                           <Badge key={p} variant="secondary" className="text-xs">{p}</Badge>
-                         ))}
-                         {d.petitioner_strings && d.petitioner_strings.length > 2 && (
-                           <Badge variant="secondary" className="text-xs">+{d.petitioner_strings.length - 2} more</Badge>
-                         )}
-                         {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
-                       </div>
+                        <div className="flex flex-wrap gap-2">
+                          {d.petitioner_strings?.slice(0, 2).map(p => (
+                            <Badge
+                              key={p}
+                              variant="secondary"
+                              className="text-xs cursor-pointer hover:underline underline-offset-4"
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/org/${encodeURIComponent(p)}`); }}
+                            >
+                              {p}
+                            </Badge>
+                          ))}
+                          {d.petitioner_strings && d.petitioner_strings.length > 2 && (
+                            <Badge variant="secondary" className="text-xs">+{d.petitioner_strings.length - 2} more</Badge>
+                          )}
+                          {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
+                        </div>
                     </CardContent>
                   </Card>
                 </Link>

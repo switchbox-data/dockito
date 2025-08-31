@@ -21,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Navigate to="/dockets" replace />} />
           <Route path="/dockets" element={<DocketsPage />} />
           <Route path="/docket/:docket_govid" element={<DocketPage />} />
+          <Route path="/org/:orgName" element={<DocketsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
