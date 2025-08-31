@@ -1,4 +1,5 @@
 import { CalendarDays, Building2, Layers, Tag, Clock, ExternalLink } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 type Docket = {
   uuid: string;
   docket_govid: string;
@@ -37,7 +38,21 @@ export const DocketHeader = ({ docket }: Props) => {
         </div>
       </div>
       <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Info icon={<Building2 size={16} />} label="Petitioners" value={docket.petitioner_strings?.join(", ") || "—"} />
+        <div className="flex items-start gap-3 rounded-lg border bg-background/60 px-3 py-2">
+          <div className="shrink-0 text-foreground/80"><Building2 size={16} /></div>
+          <div className="min-w-0">
+            <div className="text-xs text-muted-foreground">Petitioners</div>
+            {docket.petitioner_strings?.length ? (
+              <div className="mt-1 flex flex-wrap gap-1">
+                {docket.petitioner_strings.map((p) => (
+                  <Badge key={p} variant="outline" className="px-2 py-0.5">{p}</Badge>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm">—</div>
+            )}
+          </div>
+        </div>
         <Info icon={<Tag size={16} />} label="Type" value={docket.docket_type} />
         <Info icon={<Layers size={16} />} label="Subtype" value={docket.docket_subtype} />
         <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />

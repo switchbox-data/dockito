@@ -38,6 +38,26 @@ const DocketPage = () => {
     },
   });
 
+  const { data: petitioners } = useQuery<string[]>({
+    queryKey: ["docket-petitioners", docket?.uuid],
+    enabled: !!docket?.uuid,
+    queryFn: async () => {
+      const { data: rels, error: relErr } = await supabase
+        .from("docket_petitioned_by_org")
+        .select("petitioner_uuid")
+        .eq("docket_uuid", docket!.uuid);
+      if (relErr) throw relErr;
+      const uuids = Array.from(new Set((rels ?? []).map((r: any) => r.petitioner_uuid).filter(Boolean)));
+      if (!uuids.length) return [];
+      const { data: orgs, error: orgErr } = await supabase
+        .from("organizations")
+        .select("uuid,name")
+        .in("uuid", uuids);
+      if (orgErr) throw orgErr;
+      return (orgs ?? []).map((o: any) => o.name).sort();
+    },
+  });
+
   const { data: filings, isLoading: filingsLoading } = useQuery<FilingWithAttachments[]>({
     queryKey: ["docket-filings", docket?.docket_govid],
     enabled: !!docket,
@@ -95,7 +115,7 @@ const DocketPage = () => {
 
   return (
     <main className="container py-8 space-y-6">
-      <DocketHeader docket={docket} />
+      <DocketHeader docket={{ ...docket, petitioner_strings: petitioners ?? docket.petitioner_strings }} />
       {filingsLoading ? (
         <div className="text-muted-foreground">Loading filings…</div>
       ) : (

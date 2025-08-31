@@ -133,7 +133,7 @@ export default function DocketsPage() {
     staleTime: 60_000,
   });
 
-  const { data: petitionerOptions = [] } = useQuery<{ name: string; count: number }[]>({
+  const { data: petitionerOptions = [] } = useQuery<{ id: string; name: string; count: number }[]>({
     queryKey: [
       "petitioners-ranked",
       {
@@ -145,23 +145,25 @@ export default function DocketsPage() {
       },
     ],
     queryFn: async () => {
-      // Get organizations from petitioner strings first as fallback
-      const { data: docketsData, error: docketsError } = await supabase
-        .from("dockets")
-        .select("petitioner_strings");
-      if (docketsError) throw docketsError;
-      
+      const { data: rels, error: relErr } = await supabase
+        .from("docket_petitioned_by_org")
+        .select("petitioner_uuid");
+      if (relErr) throw relErr;
+      const uuids = Array.from(new Set((rels ?? []).map((r: any) => r.petitioner_uuid).filter(Boolean)));
+      if (!uuids.length) return [];
+      const { data: orgs, error: orgErr } = await supabase
+        .from("organizations")
+        .select("uuid,name")
+        .in("uuid", uuids);
+      if (orgErr) throw orgErr;
+      const nameById = new Map<string, string>();
+      (orgs ?? []).forEach((o: any) => nameById.set(o.uuid, o.name));
       const counts = new Map<string, number>();
-      (docketsData ?? []).forEach((d: any) => {
-        if (d.petitioner_strings) {
-          d.petitioner_strings.forEach((p: string) => {
-            counts.set(p, (counts.get(p) ?? 0) + 1);
-          });
-        }
+      (rels ?? []).forEach((r: any) => {
+        if (r.petitioner_uuid) counts.set(r.petitioner_uuid, (counts.get(r.petitioner_uuid) ?? 0) + 1);
       });
-      
       return Array.from(counts.entries())
-        .map(([name, count]) => ({ name, count }))
+        .map(([id, count]) => ({ id, name: nameById.get(id) ?? id, count }))
         .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
     },
     staleTime: 30_000,
@@ -203,6 +205,35 @@ export default function DocketsPage() {
       if (error) throw error;
       
       let dockets = (data ?? []) as any[];
+
+      // Attach petitioners via relation table
+      const docketUuids = dockets.map((d: any) => d.uuid).filter(Boolean);
+      if (docketUuids.length) {
+        const { data: rels } = await supabase
+          .from("docket_petitioned_by_org")
+          .select("docket_uuid,petitioner_uuid")
+          .in("docket_uuid", docketUuids);
+        const petUuids = Array.from(new Set((rels ?? []).map((r: any) => r.petitioner_uuid).filter(Boolean)));
+        let orgs: any[] = [];
+        if (petUuids.length) {
+          const { data: orgRows } = await supabase
+            .from("organizations")
+            .select("uuid,name")
+            .in("uuid", petUuids);
+          orgs = orgRows ?? [];
+        }
+        const nameById = new Map<string, string>();
+        orgs.forEach((o: any) => nameById.set(o.uuid, o.name));
+        const namesByDocket = new Map<string, string[]>();
+        (rels ?? []).forEach((r: any) => {
+          if (!r.docket_uuid) return;
+          const arr = namesByDocket.get(r.docket_uuid) ?? [];
+          const n = nameById.get(r.petitioner_uuid);
+          if (n && !arr.includes(n)) arr.push(n);
+          namesByDocket.set(r.docket_uuid, arr);
+        });
+        dockets = dockets.map((d: any) => ({ ...d, petitioner_strings: namesByDocket.get(d.uuid) ?? [] }));
+      }
 
       // Apply client-side filters that couldn't be done in the query
       if (docketTypes.length) {
