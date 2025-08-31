@@ -1,14 +1,15 @@
 import { 
   Zap, 
   Flame, 
-  Waves, 
-  Radio, 
-  Train, 
+  Wifi, 
+  Phone, 
+  Factory, 
   Building, 
+  Cable,
   LucideIcon 
 } from "lucide-react";
 
-export type IndustryType = "electric" | "gas" | "water" | "telecom" | "railroad" | "miscellaneous" | string;
+export type IndustryType = "electric" | "gas" | "cable" | "communication" | "facilite gen" | "steam" | "transmission" | "miscellaneous" | string;
 
 export const getIndustryIcon = (industry: string): LucideIcon => {
   const normalizedIndustry = industry?.toLowerCase();
@@ -20,17 +21,17 @@ export const getIndustryIcon = (industry: string): LucideIcon => {
     case "gas":
     case "natural gas":
       return Flame;
-    case "water":
-    case "water/sewer":
-      return Waves;
-    case "telecom":
-    case "telecommunications":
-    case "telephone":
-      return Radio;
-    case "railroad":
-    case "rail":
-    case "transportation":
-      return Train;
+    case "cable":
+      return Wifi; // Internet/cable services
+    case "communication":
+      return Phone; // Phone services
+    case "facilite gen":
+    case "facility generation":
+      return Factory; // Electrical generation facilities
+    case "steam":
+      return Building; // District steam heating
+    case "transmission":
+      return Cable; // Electrical transmission lines
     case "miscellaneous":
     case "other":
     default:
@@ -48,17 +49,17 @@ export const getIndustryColor = (industry: string): string => {
     case "gas":
     case "natural gas":
       return "text-orange-600 dark:text-orange-400";
-    case "water":
-    case "water/sewer":
-      return "text-blue-600 dark:text-blue-400";
-    case "telecom":
-    case "telecommunications":
-    case "telephone":
-      return "text-purple-600 dark:text-purple-400";
-    case "railroad":
-    case "rail":
-    case "transportation":
-      return "text-green-600 dark:text-green-400";
+    case "cable":
+      return "text-blue-600 dark:text-blue-400"; // Internet/cable
+    case "communication":
+      return "text-green-600 dark:text-green-400"; // Phone services
+    case "facilite gen":
+    case "facility generation":
+      return "text-purple-600 dark:text-purple-400"; // Power generation
+    case "steam":
+      return "text-red-600 dark:text-red-400"; // Steam heating
+    case "transmission":
+      return "text-indigo-600 dark:text-indigo-400"; // Electrical transmission
     case "miscellaneous":
     case "other":
     default:
