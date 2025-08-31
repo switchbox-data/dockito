@@ -92,7 +92,8 @@ export default function DocketsPage() {
   // Initialize range once bounds are known
   useEffect(() => {
     if (months.length && !range) {
-      setRange([Math.max(0, months.length - Math.min(12, months.length)), months.length - 1]);
+      // Default to last 10 years (120 months)
+      setRange([Math.max(0, months.length - Math.min(120, months.length)), months.length - 1]);
     }
   }, [months, range]);
 
