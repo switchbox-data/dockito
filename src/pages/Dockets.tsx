@@ -610,7 +610,10 @@ export default function DocketsPage() {
                       <CardTitle className="text-base flex items-start justify-between gap-3">
                         <div className="flex flex-col gap-1">
                           <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
-                          <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                          <div className="flex flex-wrap gap-1">
+                            {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
+                            {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
+                          </div>
                         </div>
                         <div className="flex flex-col items-end gap-1">
                           {d.industry && (
@@ -622,8 +625,7 @@ export default function DocketsPage() {
                               {d.industry}
                             </Badge>
                           )}
-                          {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
-                          {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
+                          <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
                         </div>
                       </CardTitle>
                     </CardHeader>
