@@ -60,7 +60,6 @@ export const DocketHeader = ({ docket }: Props) => {
         <Info icon={<Tag size={16} />} label="Type" value={docket.docket_type} />
         <Info icon={<Layers size={16} />} label="Subtype" value={docket.docket_subtype} />
         <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
-        <Info icon={<Clock size={16} />} label="Closed" value={fmt(docket.closed_date)} />
       </div>
       <a
         href={`https://documents.dps.ny.gov/public/MatterManagement/CaseMaster.aspx?Mattercaseno=${docket.docket_govid}`}
