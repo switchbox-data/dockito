@@ -609,11 +609,11 @@ export default function DocketsPage() {
                     <CardHeader>
                       <CardTitle className="text-base flex items-start justify-between gap-3">
                         <div className="flex flex-col gap-1">
-                          <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
                           <div className="flex flex-wrap gap-1">
                             {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
                             {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
                           </div>
+                          <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
                         </div>
                         <div className="flex flex-col items-end gap-1">
                           {d.industry && (
