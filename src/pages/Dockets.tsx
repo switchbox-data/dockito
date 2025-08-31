@@ -154,33 +154,105 @@ export default function DocketsPage() {
 
   const normalizedSearch = useMemo(() => sanitize(search), [search]);
 
-  const { data: industries = [] } = useQuery<string[]>({
-    queryKey: ["docket-industries"],
+  const { data: industries = [] } = useQuery<{ name: string; count: number }[]>({
+    queryKey: ["docket-industries", { org: lockedOrg ?? null }],
     queryFn: async () => {
-      const { data, error } = await supabase.from("dockets").select("industry").not("industry", "is", null);
-      if (error) throw error;
-      const set = new Set<string>();
-      (data as { industry: string | null }[]).forEach((r) => {
-        if (r.industry) set.add(r.industry);
-      });
-      return Array.from(set).sort();
+      if (lockedOrg) {
+        // For org pages: get industries from org's dockets with counts
+        const { data: org, error: orgErr } = await supabase
+          .from("organizations")
+          .select("uuid")
+          .eq("name", lockedOrg)
+          .maybeSingle();
+        if (orgErr) throw orgErr;
+        const orgId = (org as any)?.uuid as string | undefined;
+        if (!orgId) return [];
+
+        const { data: rels, error: relErr } = await supabase
+          .from("docket_petitioned_by_org")
+          .select("docket_uuid")
+          .eq("petitioner_uuid", orgId);
+        if (relErr) throw relErr;
+        const docketUuids = Array.from(new Set((rels ?? []).map((r: any) => r.docket_uuid).filter(Boolean)));
+        if (!docketUuids.length) return [];
+
+        const { data, error } = await supabase
+          .from("dockets")
+          .select("industry")
+          .in("uuid", docketUuids)
+          .not("industry", "is", null);
+        if (error) throw error;
+        
+        const counts = new Map<string, number>();
+        (data as { industry: string | null }[]).forEach((r) => {
+          if (r.industry) counts.set(r.industry, (counts.get(r.industry) ?? 0) + 1);
+        });
+        return Array.from(counts.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
+      } else {
+        // For main page: get all industries without counts
+        const { data, error } = await supabase.from("dockets").select("industry").not("industry", "is", null);
+        if (error) throw error;
+        const set = new Set<string>();
+        (data as { industry: string | null }[]).forEach((r) => {
+          if (r.industry) set.add(r.industry);
+        });
+        return Array.from(set).sort().map(name => ({ name, count: 0 }));
+      }
     },
     staleTime: 60_000,
   });
 
-  const { data: docketTypeOptions = [] } = useQuery<string[]>({
-    queryKey: ["docket-types"],
+  const { data: docketTypeOptions = [] } = useQuery<{ name: string; count: number }[]>({
+    queryKey: ["docket-types", { org: lockedOrg ?? null }],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("dockets")
-        .select("docket_type")
-        .not("docket_type", "is", null);
-      if (error) throw error;
-      const set = new Set<string>();
-      (data as any[]).forEach((r) => {
-        if (r.docket_type) set.add(r.docket_type);
-      });
-      return Array.from(set).sort();
+      if (lockedOrg) {
+        // For org pages: get types from org's dockets with counts
+        const { data: org, error: orgErr } = await supabase
+          .from("organizations")
+          .select("uuid")
+          .eq("name", lockedOrg)
+          .maybeSingle();
+        if (orgErr) throw orgErr;
+        const orgId = (org as any)?.uuid as string | undefined;
+        if (!orgId) return [];
+
+        const { data: rels, error: relErr } = await supabase
+          .from("docket_petitioned_by_org")
+          .select("docket_uuid")
+          .eq("petitioner_uuid", orgId);
+        if (relErr) throw relErr;
+        const docketUuids = Array.from(new Set((rels ?? []).map((r: any) => r.docket_uuid).filter(Boolean)));
+        if (!docketUuids.length) return [];
+
+        const { data, error } = await supabase
+          .from("dockets")
+          .select("docket_type")
+          .in("uuid", docketUuids)
+          .not("docket_type", "is", null);
+        if (error) throw error;
+        
+        const counts = new Map<string, number>();
+        (data as any[]).forEach((r) => {
+          if (r.docket_type) counts.set(r.docket_type, (counts.get(r.docket_type) ?? 0) + 1);
+        });
+        return Array.from(counts.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
+      } else {
+        // For main page: get all types without counts
+        const { data, error } = await supabase
+          .from("dockets")
+          .select("docket_type")
+          .not("docket_type", "is", null);
+        if (error) throw error;
+        const set = new Set<string>();
+        (data as any[]).forEach((r) => {
+          if (r.docket_type) set.add(r.docket_type);
+        });
+        return Array.from(set).sort().map(name => ({ name, count: 0 }));
+      }
     },
     staleTime: 60_000,
   });
@@ -440,25 +512,26 @@ export default function DocketsPage() {
                       <CommandEmpty>No results.</CommandEmpty>
                       <CommandGroup heading="Industries">
                         <CommandItem onSelect={() => setSelectedIndustries([])}>Clear</CommandItem>
-                        <CommandItem onSelect={() => setSelectedIndustries(industries)}>Select all</CommandItem>
-                        {industries.map((ind) => {
-                          const selected = selectedIndustries.includes(ind);
+                        <CommandItem onSelect={() => setSelectedIndustries(industries.map(i => i.name))}>Select all</CommandItem>
+                        {industries.map(({ name, count }) => {
+                          const selected = selectedIndustries.includes(name);
                           return (
                             <CommandItem
-                              key={ind}
+                              key={name}
                               onSelect={() =>
                                 setSelectedIndustries((prev) =>
-                                  prev.includes(ind) ? prev.filter((v) => v !== ind) : [...prev, ind]
+                                  prev.includes(name) ? prev.filter((v) => v !== name) : [...prev, name]
                                 )
                               }
                             >
                               <div className="flex items-center gap-2">
                                 <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
                                 {(() => {
-                                  const IndustryIcon = getIndustryIcon(ind);
-                                  return <IndustryIcon size={14} className={getIndustryColor(ind)} />;
+                                  const IndustryIcon = getIndustryIcon(name);
+                                  return <IndustryIcon size={14} className={getIndustryColor(name)} />;
                                 })()}
-                                <span>{ind}</span>
+                                <span>{name}</span>
+                                {lockedOrg && <span className="ml-1 text-muted-foreground text-xs">({count})</span>}
                               </div>
                             </CommandItem>
                           );
@@ -487,21 +560,22 @@ export default function DocketsPage() {
                       <CommandEmpty>No results.</CommandEmpty>
                       <CommandGroup heading="Types">
                         <CommandItem onSelect={() => setDocketTypes([])}>Clear</CommandItem>
-                        <CommandItem onSelect={() => setDocketTypes(docketTypeOptions)}>Select all</CommandItem>
-                        {docketTypeOptions.map((t) => {
-                          const selected = docketTypes.includes(t);
+                        <CommandItem onSelect={() => setDocketTypes(docketTypeOptions.map(t => t.name))}>Select all</CommandItem>
+                        {docketTypeOptions.map(({ name, count }) => {
+                          const selected = docketTypes.includes(name);
                           return (
                             <CommandItem
-                              key={t}
+                              key={name}
                               onSelect={() =>
                                 setDocketTypes((prev) =>
-                                  prev.includes(t) ? prev.filter((v) => v !== t) : [...prev, t]
+                                  prev.includes(name) ? prev.filter((v) => v !== name) : [...prev, name]
                                 )
                               }
                             >
                               <div className="flex items-start gap-2">
                                 <Check size={14} className={cn("opacity-0 mt-0.5 shrink-0", selected && "opacity-100")} />
-                                <span className="leading-tight">{t?.trim()}</span>
+                                <span className="leading-tight">{name?.trim()}</span>
+                                {lockedOrg && <span className="ml-1 text-muted-foreground text-xs">({count})</span>}
                               </div>
                             </CommandItem>
                           );
