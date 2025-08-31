@@ -610,12 +610,9 @@ export default function DocketsPage() {
                         </div>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="font-medium">{d.docket_title ?? "Untitled docket"}</div>
-                      {d.docket_description && (
-                        <p className="text-sm text-muted-foreground line-clamp-3">{d.docket_description}</p>
-                      )}
-                       <div className="flex flex-wrap gap-2">
+                     <CardContent className="space-y-3">
+                       <div className="font-medium">{d.docket_title ?? "Untitled docket"}</div>
+                        <div className="flex flex-wrap gap-2">
                          {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
                          {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
                          {d.petitioner_strings?.slice(0, 2).map(p => (
