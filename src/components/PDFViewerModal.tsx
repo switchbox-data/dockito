@@ -98,7 +98,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
        })
        .catch((err) => {
          if (aborted) return;
-         setLoadErr(err?.message || 'Failed to fetch PDF');
+         setLoadErr('Failed to load PDF');
        })
        .finally(() => {
          if (!aborted) setProbing(false);
@@ -294,8 +294,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
               {current && (
                 loadErr ? (
                   <div className="p-6 text-sm">
-                    <div className="mb-2 font-medium">Failed to load PDF</div>
-                    <div className="mb-3 text-muted-foreground">{loadErr}</div>
+                    <div className="mb-3 text-muted-foreground">Unable to display this document.</div>
                     <a
                       href={buildFileUrl(current)}
                       target="_blank"
@@ -310,8 +309,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                     key={current.uuid}
                     file={blobUrl ?? buildFileUrl(current)}
                     onLoadSuccess={onDocumentLoadSuccess}
-                    onLoadError={(e) => setLoadErr((e as Error)?.message || 'Failed to load PDF')}
-                    onSourceError={(e) => setLoadErr((e as Error)?.message || 'Failed to load PDF')}
+                    onLoadError={() => setLoadErr('Failed to load PDF')}
+                    onSourceError={() => setLoadErr('Failed to load PDF')}
                     loading={<LoadingGlyph size={36} />}
                   >
                     {pagesArr.map((p) => (
