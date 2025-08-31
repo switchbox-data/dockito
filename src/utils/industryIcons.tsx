@@ -27,8 +27,10 @@ export const getIndustryIcon = (industry: string): LucideIcon => {
     case "communication":
       return Phone; // Phone services
     case "facilite gen":
-    case "facility generation":
     case "facilite generation":
+    case "facility gen":
+    case "facility gen.":
+    case "facility generation":
       return Factory; // Electrical generation facilities
     case "steam":
       return Thermometer; // District steam heating
@@ -56,6 +58,9 @@ export const getIndustryColor = (industry: string): string => {
     case "communication":
       return "text-green-600 dark:text-green-400"; // Phone services
     case "facilite gen":
+    case "facilite generation":
+    case "facility gen":
+    case "facility gen.":
     case "facility generation":
       return "text-purple-600 dark:text-purple-400"; // Power generation
     case "steam":
