@@ -136,17 +136,18 @@ export default function DocketsPage() {
   }, [bounds]);
   const [range, setRange] = useState<[number, number] | null>(null);
 
-  // Initialize range once bounds are known
+  // Initialize/reset range when context changes
   useEffect(() => {
-    if (months.length && !range) {
+    if (months.length) {
       if (lockedOrg) {
+        // For org pages: show full range of that org's activity
         setRange([0, months.length - 1]);
       } else {
-        // Default to last 10 years (120 months)
+        // For main dockets page: default to last 10 years (120 months)
         setRange([Math.max(0, months.length - Math.min(120, months.length)), months.length - 1]);
       }
     }
-  }, [months, range, lockedOrg]);
+  }, [months, lockedOrg]); // Reset whenever months or lockedOrg changes
 
   const startDate = useMemo(() => (range && months.length ? months[range[0]] : undefined), [range, months]);
   const endDate = useMemo(() => (range && months.length ? months[range[1]] : undefined), [range, months]);
