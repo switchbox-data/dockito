@@ -289,7 +289,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           </div>
         </DialogHeader>
         <div className="flex gap-3" ref={containerRef}>
-          <aside className="hidden md:block w-40 h-[60vh] overflow-auto rounded-lg border bg-muted p-2">
+          <aside className="hidden md:block w-40 h-[calc(96vh-140px)] overflow-auto rounded-lg border bg-muted p-2">
             
             {current && (
               <Document 
@@ -320,7 +320,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           <main className="flex-1 relative">
             
 
-            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[60vh] overflow-auto">
+            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[calc(96vh-140px)] overflow-auto">
               {current && (
                 loadErr ? (
                   <div className="p-6 text-sm">
