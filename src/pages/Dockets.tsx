@@ -607,7 +607,7 @@ export default function DocketsPage() {
                   <Card className={cn("transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background", isSelected ? "bg-muted" : "")}
                   >
                     <CardHeader>
-                      <CardTitle className="text-base flex items-center justify-between gap-3">
+                      <CardTitle className="text-base flex items-start justify-between gap-3">
                         <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
                         <div className="flex flex-col items-end gap-1">
                           {d.industry && (
