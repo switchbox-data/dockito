@@ -55,9 +55,9 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
   const current = attachments[index];
 
-  const buildFileUrl = (a: Att) => {
+  const buildFileUrl = (a: Att, useOriginal = false) => {
     const hash = a?.blake2b_hash?.toString().trim();
-     if (hash) {
+     if (hash && !useOriginal) {
        return `https://temporary-openscrapersapi-x6wb2.ondigitalocean.app/public/raw_attachments/${encodeURIComponent(hash)}/raw`;
      }
      return a?.attachment_url!;
@@ -81,25 +81,48 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
      let aborted = false;
 
-     fetch(url, { method: 'GET', mode: 'cors' })
-       .then(async (res) => {
-         if (!res.ok) {
-           throw new Error(`HTTP ${res.status} ${res.statusText}`);
-         }
-         const ct = res.headers.get('content-type') || '';
-         if (!ct.includes('pdf')) {
-           console.warn('Unexpected content-type for PDF:', ct);
-         }
-         const blob = await res.blob();
-         if (aborted) return;
-         const objectUrl = URL.createObjectURL(blob);
-         blobCache.set(current.uuid, objectUrl);
-         setBlobUrl(objectUrl);
-       })
-       .catch((err) => {
-         if (aborted) return;
-         setLoadErr('Failed to load PDF');
-       })
+      fetch(url, { method: 'GET', mode: 'cors' })
+        .then(async (res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status} ${res.statusText}`);
+          }
+          const ct = res.headers.get('content-type') || '';
+          if (!ct.includes('pdf')) {
+            console.warn('Unexpected content-type for PDF:', ct);
+          }
+          const blob = await res.blob();
+          if (aborted) return;
+          const objectUrl = URL.createObjectURL(blob);
+          blobCache.set(current.uuid, objectUrl);
+          setBlobUrl(objectUrl);
+        })
+        .catch(async (err) => {
+          if (aborted) return;
+          
+          // Try the original URL as fallback if S3 fails
+          const hasHash = current?.blake2b_hash?.toString().trim();
+          if (hasHash && url.includes('temporary-openscrapersapi')) {
+            console.log('S3 fetch failed, trying original URL as fallback');
+            const originalUrl = buildFileUrl(current, true);
+            
+            try {
+              const fallbackRes = await fetch(originalUrl, { method: 'GET', mode: 'cors' });
+              if (fallbackRes.ok) {
+                const blob = await fallbackRes.blob();
+                if (!aborted) {
+                  const objectUrl = URL.createObjectURL(blob);
+                  blobCache.set(current.uuid, objectUrl);
+                  setBlobUrl(objectUrl);
+                  return;
+                }
+              }
+            } catch (fallbackErr) {
+              console.error('Fallback fetch also failed:', fallbackErr);
+            }
+          }
+          
+          setLoadErr('Failed to load PDF');
+        })
        .finally(() => {
          if (!aborted) setProbing(false);
        });
@@ -302,14 +325,6 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                 loadErr ? (
                   <div className="p-6 text-sm">
                     <div className="mb-3 text-muted-foreground">Unable to display this document.</div>
-                    <a
-                      href={buildFileUrl(current)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline"
-                    >
-                      Open raw file
-                    </a>
                   </div>
                 ) : (
                   <Document
