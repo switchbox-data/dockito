@@ -608,7 +608,10 @@ export default function DocketsPage() {
                   >
                     <CardHeader>
                       <CardTitle className="text-base flex items-start justify-between gap-3">
-                        <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
+                        <div className="flex flex-col gap-1">
+                          <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
+                          <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                        </div>
                         <div className="flex flex-col items-end gap-1">
                           {d.industry && (
                             <Badge variant="outline" className="inline-flex items-center gap-1.5">
@@ -619,15 +622,14 @@ export default function DocketsPage() {
                               {d.industry}
                             </Badge>
                           )}
-                          <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                          {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
+                          {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
                         </div>
                       </CardTitle>
                     </CardHeader>
                      <CardContent className="space-y-3">
                        <div className="font-medium">{d.docket_title ?? "Untitled docket"}</div>
                         <div className="flex flex-wrap gap-2">
-                         {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
-                         {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
                          {d.petitioner_strings?.slice(0, 2).map(p => (
                            <Badge key={p} variant="outline">{p}</Badge>
                          ))}
