@@ -624,13 +624,13 @@ export default function DocketsPage() {
                               {d.industry}
                             </Badge>
                           )}
-                          <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                          <span className="text-xs text-muted-foreground mt-0.5">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
                         </div>
                       </CardTitle>
                     </CardHeader>
-                     <CardContent className="pt-0 space-y-3">
+                     <CardContent className="-mt-2 space-y-3">
                        <div className="space-y-2">
-                         <div className="text-base text-foreground font-semibold">{d.docket_govid}</div>
+                         <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
                          <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
                        </div>
                         <div className="flex flex-wrap gap-2">
