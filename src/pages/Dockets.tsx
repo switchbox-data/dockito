@@ -607,7 +607,7 @@ export default function DocketsPage() {
                   <Card className={cn("transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background", isSelected ? "bg-muted" : "")}
                   >
                      <CardContent className="p-4 space-y-3">
-                       <div className="flex items-start justify-between gap-3 mb-3">
+                       <div className="flex items-start justify-between gap-3 mb-1">
                          <div className="flex flex-wrap gap-1">
                            {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
                            {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
