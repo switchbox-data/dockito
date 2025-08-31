@@ -628,10 +628,10 @@ export default function DocketsPage() {
                         </div>
                       </CardTitle>
                     </CardHeader>
-                     <CardContent className="space-y-4">
-                       <div className="space-y-2">
-                          <div className="text-xs text-muted-foreground">{d.docket_govid}</div>
-                          <h3 className="text-[15px] font-medium leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
+                     <CardContent className="space-y-3">
+                       <div className="space-y-1">
+                         <div className="text-sm text-muted-foreground font-medium">{d.docket_govid}</div>
+                         <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
                        </div>
                         <div className="flex flex-wrap gap-2">
                          {d.petitioner_strings?.slice(0, 2).map(p => (
