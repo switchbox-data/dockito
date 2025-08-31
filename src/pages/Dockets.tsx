@@ -613,7 +613,6 @@ export default function DocketsPage() {
                             {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
                             {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
                           </div>
-                          <span className="underline-offset-2 group-hover:underline">{d.docket_govid}</span>
                         </div>
                         <div className="flex flex-col items-end gap-1">
                           {d.industry && (
@@ -631,8 +630,8 @@ export default function DocketsPage() {
                     </CardHeader>
                      <CardContent className="space-y-4">
                        <div className="space-y-2">
-                         <div className="text-sm text-muted-foreground font-medium">{d.docket_govid}</div>
-                         <h3 className="text-base font-semibold leading-tight text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
+                          <div className="text-xs text-muted-foreground">{d.docket_govid}</div>
+                          <h3 className="text-[15px] font-medium leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
                        </div>
                         <div className="flex flex-wrap gap-2">
                          {d.petitioner_strings?.slice(0, 2).map(p => (
