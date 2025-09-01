@@ -460,7 +460,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
   }, [filtered, viewer]);
 
   // Focus and clamp selection
-  // Note: Removed automatic focus on mount to prevent interfering with scroll-to-top navigation
+  useEffect(() => { containerRef.current?.focus(); }, []);
   useEffect(() => {
     if (!filtered.length) { setSelectedIndex(0); setSelectedAttachmentIdx(null); return; }
     if (selectedIndex > filtered.length - 1) setSelectedIndex(filtered.length - 1);
