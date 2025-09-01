@@ -625,7 +625,7 @@ export default function DocketsPage() {
           docketCount={orgAggregateData?.totalCount || items.length}
           petitionedCount={orgAggregateData?.petitionedCount}
           filedCount={orgAggregateData?.filedCount}
-          dateRange={{ start: startDate, end: endDate }}
+          dateBounds={orgAggregateData?.dateBounds}
         />
       ) : (
         <header className="space-y-2">

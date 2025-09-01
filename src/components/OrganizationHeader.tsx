@@ -5,11 +5,18 @@ type Props = {
   docketCount?: number;
   petitionedCount?: number;
   filedCount?: number;
-  dateRange?: { start: Date | null; end: Date | null };
+  dateBounds?: { min: string | null; max: string | null };
 };
 
-export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, filedCount, dateRange }: Props) => {
-  const formatDate = (d?: Date | null) => (d ? d.toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : "—");
+export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, filedCount, dateBounds }: Props) => {
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return "—";
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    } catch {
+      return "—";
+    }
+  };
 
   return (
     <header className="relative overflow-hidden rounded-xl border bg-card p-6 shadow-[var(--shadow-elegant)] mb-6">
@@ -62,14 +69,14 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
             </div>
           )}
           
-          {dateRange && (
+          {dateBounds && (dateBounds.min || dateBounds.max) && (
             <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
                 <Calendar size={16} />
               </div>
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Activity Period</div>
-                <div className="text-sm">{formatDate(dateRange.start)} — {formatDate(dateRange.end)}</div>
+                <div className="text-sm">{formatDate(dateBounds.min)} — {formatDate(dateBounds.max)}</div>
               </div>
             </div>
           )}
