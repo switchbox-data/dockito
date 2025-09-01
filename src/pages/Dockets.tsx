@@ -19,7 +19,7 @@ import { OrganizationHeader } from "@/components/OrganizationHeader";
 
 import { X } from "lucide-react";
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 50;
 
 type Docket = {
   uuid: string;
@@ -257,9 +257,11 @@ export default function DocketsPage() {
     queryFn: async ({ pageParam }) => {
       const offset = pageParam as number;
       
-      // For organization pages, use the edge function
+      // For organization pages, use the edge function with server-side pagination
       if (lockedOrg) {
-        const { data: dockets, error } = await supabase.functions.invoke('get-org-dockets', {
+        const page = Math.floor(offset / PAGE_SIZE) + 1;
+        
+        const { data, error } = await supabase.functions.invoke('get-org-dockets', {
           body: {
             orgName: lockedOrg,
             filters: {
@@ -267,7 +269,12 @@ export default function DocketsPage() {
               endDate: endDate ? format(endOfMonth(endDate), "yyyy-MM-dd") : undefined,
               sortBy: 'opened_date',
               sortOrder: sortDir,
-              industries: selectedIndustries.length ? selectedIndustries : undefined
+              industries: selectedIndustries.length ? selectedIndustries : undefined,
+              docketTypes: docketTypes.length ? docketTypes : undefined
+            },
+            pagination: {
+              page,
+              limit: PAGE_SIZE
             }
           }
         });
@@ -277,10 +284,9 @@ export default function DocketsPage() {
           throw error;
         }
         
-        // Apply client-side pagination and filters that couldn't be done server-side
-        let filteredDockets = dockets || [];
+        // Apply client-side search filter since it's not supported server-side yet
+        let filteredDockets = data?.dockets || [];
         
-        // Apply search filter
         if (normalizedSearch) {
           filteredDockets = filteredDockets.filter((d: any) => 
             d.docket_govid?.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
@@ -289,17 +295,7 @@ export default function DocketsPage() {
           );
         }
         
-        // Apply docket type filter
-        if (docketTypes.length) {
-          filteredDockets = filteredDockets.filter((d: any) => 
-            d.docket_type && docketTypes.includes(d.docket_type)
-          );
-        }
-        
-        // Apply pagination
-        const start = offset;
-        const end = offset + PAGE_SIZE;
-        return filteredDockets.slice(start, end);
+        return filteredDockets;
       }
       
       // For main page, use regular query
@@ -367,7 +363,7 @@ export default function DocketsPage() {
       return dockets;
     },
     enabled: !!(range && months.length),
-    staleTime: 30_000,
+    staleTime: 5 * 60 * 1000, // 5 minutes for better performance
   });
 
   // Prefetch logic: load page 2 immediately after first page, then keep one page ahead after user-triggered fetches

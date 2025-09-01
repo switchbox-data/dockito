@@ -101,6 +101,20 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["uuid"]
           },
+          {
+            foreignKeyName: "fk_docket_petitioned_by_org_docket_uuid"
+            columns: ["docket_uuid"]
+            isOneToOne: false
+            referencedRelation: "dockets"
+            referencedColumns: ["uuid"]
+          },
+          {
+            foreignKeyName: "fk_docket_petitioned_by_org_petitioner_uuid"
+            columns: ["petitioner_uuid"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["uuid"]
+          },
         ]
       }
       dockets: {
