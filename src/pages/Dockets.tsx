@@ -950,8 +950,6 @@ export default function DocketsPage() {
         </div>
       </section>
 
-      <Separator />
-
       <section aria-label="Results" className="space-y-4">
         {isLoading && items.length === 0 ? (
           <div className="text-muted-foreground">Loading dockets…</div>

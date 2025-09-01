@@ -275,8 +275,6 @@ export default function OrganizationsPage() {
         </section>
       )}
 
-      <Separator />
-
       <section aria-label="Results" className="space-y-4">
         {isLoading && items.length === 0 ? (
           <div className="text-muted-foreground">Loading organizations…</div>
