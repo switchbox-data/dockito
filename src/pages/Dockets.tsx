@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, 
-  FileText, DollarSign, AlertTriangle, FileCheck, Shield, 
-  BarChart3, Gavel, MessageSquare, HelpCircle } from "lucide-react";
+  Handshake, DollarSign, AlertTriangle, FileCheck, Shield, 
+  BarChart3, Gavel, Zap, HelpCircle } from "lucide-react";
 import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay } from "date-fns";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ const getDocketTypeIcon = (type: string) => {
   const typeKey = type?.toLowerCase().trim();
   switch (typeKey) {
     case 'petition':
-      return FileText; // Someone asking for something
+      return Handshake; // Prayer hands - someone asking for something
     case 'tariff':
       return DollarSign; // Rate changes
     case 'complaint':
@@ -54,7 +54,7 @@ const getDocketTypeIcon = (type: string) => {
     case 'audit':
       return BarChart3; // Audits
     case 'incident':
-      return MessageSquare; // Incidents
+      return Zap; // Incidents (like electrical issues)
     case 'compliance':
       return Shield; // Compliance
     case 'commission instituted new case proceeding':
