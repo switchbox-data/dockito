@@ -746,38 +746,39 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           </Popover>
 
           {/* Date range (months) */}
-          <Dialog open={dateOpen} onOpenChange={setDateOpen}>
-            <DialogTrigger asChild>
+          <Popover open={dateOpen} onOpenChange={setDateOpen}>
+            <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0 hover:border-primary/30" disabled={months.length <= 1}>
                 <span className="inline-flex items-center gap-2">
                   <Calendar size={16} className="text-muted-foreground" />
                   {months.length === 1 ? format(months[0], "MMM yyyy") : months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}
                 </span>
+                <ChevronDown size={14} />
               </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[620px]">
-              <DialogHeader>
-                <DialogTitle>Select month range</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3">
-                <Slider
-                  value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
-                  min={0}
-                  max={Math.max(0, (months.length || 1) - 1)}
-                  step={1}
-                  onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
-                />
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>{months.length && range ? format(months[range[0]], "MMM yyyy") : "–"}</span>
-                  <span>{months.length && range ? format(months[range[1]], "MMM yyyy") : "–"}</span>
+            </PopoverTrigger>
+            <PopoverContent className="w-[500px] p-4 z-50 bg-popover border" align="start">
+              <div className="space-y-4">
+                <h4 className="font-medium text-sm">Select month range</h4>
+                <div className="space-y-3">
+                  <Slider
+                    value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
+                    min={0}
+                    max={Math.max(0, (months.length || 1) - 1)}
+                    step={1}
+                    onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
+                  />
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>{months.length && range ? format(months[range[0]], "MMM yyyy") : "–"}</span>
+                    <span>{months.length && range ? format(months[range[1]], "MMM yyyy") : "–"}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                  <Button variant="secondary" size="sm" onClick={() => setRange(months.length ? [0, months.length - 1] : null)}>Reset</Button>
+                  <Button size="sm" onClick={() => setDateOpen(false)}>Done</Button>
                 </div>
               </div>
-              <DialogFooter>
-                <Button variant="secondary" onClick={() => setRange(months.length ? [0, months.length - 1] : null)}>Reset</Button>
-                <Button onClick={() => setDateOpen(false)}>Done</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+            </PopoverContent>
+          </Popover>
 
           <div className="ml-2 flex items-center gap-2">
             {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
