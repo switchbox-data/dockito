@@ -844,14 +844,24 @@ export default function DocketsPage() {
                       <ChevronDown size={14} />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 z-50 bg-popover border">
-                    <Command>
-                      <CommandInput placeholder="Search petitioners..." />
-                      <CommandList>
+                  <PopoverContent className="w-[500px] p-0 z-50 bg-popover border max-h-[400px]" align="start">
+                    <Command className="h-full">
+                      <CommandInput placeholder="Search petitioners..." className="text-sm" />
+                      <CommandList className="max-h-[320px]">
                         <CommandEmpty>No results.</CommandEmpty>
                         <CommandGroup heading="Petitioners">
-                          <CommandItem onSelect={() => setPetitioners([])}>Clear</CommandItem>
-                          <CommandItem onSelect={() => setPetitioners(petitionerOptions.map(p => p.name))}>Select all</CommandItem>
+                          <CommandItem onSelect={() => setPetitioners([])} className="py-2">
+                            <div className="flex items-center gap-2">
+                              <X size={14} className="text-muted-foreground" />
+                              <span className="font-medium">Clear all</span>
+                            </div>
+                          </CommandItem>
+                          <CommandItem onSelect={() => setPetitioners(petitionerOptions.map(p => p.name))} className="py-2">
+                            <div className="flex items-center gap-2">
+                              <Check size={14} className="text-muted-foreground" />
+                              <span className="font-medium">Select all</span>
+                            </div>
+                          </CommandItem>
                           {petitionerOptions.map(({ name, count }) => {
                             const selected = petitioners.includes(name);
                             return (
@@ -862,11 +872,13 @@ export default function DocketsPage() {
                                     prev.includes(name) ? prev.filter((v) => v !== name) : [...prev, name]
                                   )
                                 }
+                                className="py-2"
                               >
-                                <div className="flex items-center gap-2">
-                                  <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                                  <span>{name}</span>
-                                  <span className="ml-1 text-muted-foreground text-xs">({count})</span>
+                                <div className="flex items-center gap-2 w-full">
+                                  <Check size={14} className={selected ? "opacity-100 text-primary" : "opacity-0"} />
+                                  <Users size={14} className="text-muted-foreground flex-shrink-0" />
+                                  <span className="flex-1 truncate">{name}</span>
+                                  <span className="text-muted-foreground text-xs flex-shrink-0">({count})</span>
                                 </div>
                               </CommandItem>
                             );
