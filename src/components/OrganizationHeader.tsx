@@ -16,11 +16,11 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
       <div className="absolute inset-0 pointer-events-none opacity-70" style={{ background: "var(--gradient-primary)" }} />
       <div className="relative z-10 grid gap-4">
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <Building2 size={24} className="text-primary shrink-0" />
+          <div className="flex items-start gap-3">
+            <Building2 size={28} className="text-primary shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm text-muted-foreground">Organization</p>
-              <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{orgName}</h1>
+              <p className="text-xs text-muted-foreground leading-tight">Organization</p>
+              <h1 className="text-lg md:text-xl font-semibold tracking-tight leading-tight">{orgName}</h1>
             </div>
           </div>
         </div>
