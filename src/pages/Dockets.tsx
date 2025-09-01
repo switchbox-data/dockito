@@ -1062,7 +1062,7 @@ export default function DocketsPage() {
                           </div>
                          </div>
                         
-                         <div className="border-t border-border/50 pt-3">
+                          <div className="border-t border-border/50 pt-3 mt-4">
                           <div className="space-y-2">
                            <div className="flex items-center justify-between">
                              <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
@@ -1072,7 +1072,7 @@ export default function DocketsPage() {
                          </div>
                          </div>
                          
-                         <div className="border-t border-border/50 pt-3">
+                         <div className="border-t border-border/50 pt-3 mt-4">
                          <div className="flex flex-wrap gap-2">
                           {d.petitioner_strings?.slice(0, 2).map(p => (
                              <Badge
