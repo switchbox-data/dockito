@@ -210,7 +210,7 @@ export const DocketHeader = ({ docket }: Props) => {
                 </Badge>
               )}
               {docket.docket_subtype && (
-                <Badge variant="outline" className="text-xs bg-slate-50 border-slate-200 inline-flex items-center gap-1.5">
+                <Badge variant="outline" className="text-xs bg-slate-50 border-gray-300 inline-flex items-center gap-1.5">
                   <Layers size={12} className="text-slate-600" />
                   {docket.docket_subtype}
                 </Badge>
