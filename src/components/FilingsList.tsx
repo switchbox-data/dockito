@@ -756,7 +756,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                 <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[500px] p-4 z-50 bg-popover border" align="start">
+            <PopoverContent className="w-[500px] p-4 z-50 bg-popover border" align="end">
               <div className="space-y-4">
                 <h4 className="font-medium text-sm">Select month range</h4>
                 <div className="space-y-3">
