@@ -171,6 +171,27 @@ export const DocketHeader = ({ docket }: Props) => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Query to get unique organizations count for this docket
+  const { data: uniqueOrgsCount = 0 } = useQuery({
+    queryKey: ["docket-unique-orgs", docket.docket_govid],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("fillings")
+        .select("organization_author_strings")
+        .eq("docket_govid", docket.docket_govid)
+        .not("organization_author_strings", "is", null);
+      if (error) throw error;
+      const uniqueOrgs = new Set();
+      data?.forEach(f => {
+        if (f.organization_author_strings) {
+          f.organization_author_strings.forEach((org: string) => uniqueOrgs.add(org));
+        }
+      });
+      return uniqueOrgs.size;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   return (
     <header className="relative overflow-hidden rounded-xl border bg-card p-6 shadow-[var(--shadow-elegant)]">
       <div className="absolute inset-0 pointer-events-none opacity-70" style={{ background: "var(--gradient-primary)" }} />
@@ -222,9 +243,10 @@ export const DocketHeader = ({ docket }: Props) => {
           </div>
         </div>
       </div>
-      <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-2">
-        <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
+      <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-3">
         <Info icon={<Files size={16} />} label="Filings" value={filingCount.toLocaleString()} />
+        <Info icon={<Building2 size={16} />} label="Organizations" value={uniqueOrgsCount.toLocaleString()} />
+        <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
       </div>
       
       {docket.petitioner_strings?.length && (
