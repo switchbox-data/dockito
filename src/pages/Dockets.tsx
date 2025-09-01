@@ -772,7 +772,7 @@ export default function DocketsPage() {
                 onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
               />
 
-              {/* Industry multi-select */}
+              {/* Industry Filter */}
               <Popover open={industryMenuOpen} onOpenChange={setIndustryMenuOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
@@ -783,40 +783,51 @@ export default function DocketsPage() {
                     <ChevronDown size={14} />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="p-0 z-50 bg-popover border">
-                  <Command>
-                    <CommandInput placeholder="Search industries..." />
-                    <CommandList>
-                      <CommandEmpty>No results.</CommandEmpty>
-                      <CommandGroup heading="Industries">
-                        <CommandItem onSelect={() => setSelectedIndustries([])}>Clear</CommandItem>
-                        <CommandItem onSelect={() => setSelectedIndustries(industries.map(i => i.name))}>Select all</CommandItem>
-                        {industries.map(({ name, count }) => {
-                          const selected = selectedIndustries.includes(name);
-                          return (
-                            <CommandItem
-                              key={name}
-                              onSelect={() =>
-                                setSelectedIndustries((prev) =>
-                                  prev.includes(name) ? prev.filter((v) => v !== name) : [...prev, name]
-                                )
+                <PopoverContent className="w-[600px] p-0 z-50 bg-popover border max-h-[500px] overflow-y-auto" align="start">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-sm font-semibold">Industries</h3>
+                      <div className="flex items-center gap-2">
+                        {selectedIndustries.length > 0 && (
+                          <Button variant="outline" size="sm" onClick={() => setSelectedIndustries([])}>Clear all</Button>
+                        )}
+                        <Button size="sm" onClick={() => setIndustryMenuOpen(false)}>Done</Button>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-2">
+                      {industries.map((industry) => {
+                        const isSelected = selectedIndustries.includes(industry.name);
+                        const Icon = getIndustryIcon(industry.name);
+                        return (
+                          <button
+                            key={industry.name}
+                            onClick={() => {
+                              if (isSelected) {
+                                setSelectedIndustries(prev => prev.filter(i => i !== industry.name));
+                              } else {
+                                setSelectedIndustries(prev => [...prev, industry.name]);
                               }
-                            >
-                              <div className="flex items-center gap-2">
-                                <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                                {(() => {
-                                  const IndustryIcon = getIndustryIcon(name);
-                                  return <IndustryIcon size={14} className={getIndustryColor(name)} />;
-                                })()}
-                                <span>{name}</span>
-                                {lockedOrg && <span className="ml-1 text-muted-foreground text-xs">({count})</span>}
-                              </div>
-                            </CommandItem>
-                          );
-                        })}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
+                            }}
+                            className={cn(
+                              "flex items-center gap-2 p-3 rounded-md border transition-colors text-left",
+                              isSelected 
+                                ? "bg-primary text-primary-foreground border-primary" 
+                                : "hover:bg-muted/50 border-border"
+                            )}
+                          >
+                            <Icon className={cn("h-4 w-4 flex-shrink-0", getIndustryColor(industry.name))} />
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium text-sm truncate">{industry.name}</div>
+                              {lockedOrg && industry.count > 0 && (
+                                <div className="text-xs opacity-70">{industry.count}</div>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </PopoverContent>
               </Popover>
 
