@@ -586,6 +586,15 @@ export default function DocketsPage() {
   const pages = (data?.pages ?? []) as Docket[][];
   const items = pages.flat();
 
+  // Derived loading states to prevent flicker
+  const hasAnyPage = pages.length > 0;
+  const showCardSkeletons = lockedOrg
+    ? items.length === 0 && (isLoading || isFetching || isAggregateLoading || !orgAggregateData)
+    : items.length === 0 && (isLoading || isFetching);
+  const showNoDockets = lockedOrg
+    ? !!orgAggregateData && orgAggregateData.totalCount === 0 && !isLoading && !isFetching
+    : !isLoading && !isFetching && items.length === 0;
+
   // Focus container on mount
   useEffect(() => { containerRef.current?.focus(); }, []);
 
@@ -959,17 +968,16 @@ export default function DocketsPage() {
       </section>
 
       <section aria-label="Results" className="space-y-4">
-        {items.length === 0 ? (
-          (isLoading || isFetching || (lockedOrg && isAggregateLoading)) ? (
-            <div className="grid gap-4 md:grid-cols-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <DocketCardSkeleton key={i} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-muted-foreground">No dockets found.</div>
-          )
+        {showCardSkeletons ? (
+          <div className="grid gap-4 md:grid-cols-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <DocketCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : showNoDockets ? (
+          <div className="text-muted-foreground">No dockets found.</div>
         ) : (
+
           <div className="grid gap-4 md:grid-cols-2">
             {items.map((d, idx) => {
               const isSelected = selectedIdx === idx;
