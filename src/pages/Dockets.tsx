@@ -41,46 +41,24 @@ function useDateBounds(lockedOrg?: string | null) {
   return useQuery({
     queryKey: ["dockets-date-bounds", { org: lockedOrg ?? null }],
     queryFn: async () => {
-      // If an organization is locked, compute bounds for that org only
+      // If an organization is locked, use the edge function
       if (lockedOrg) {
-        const { data: org, error: orgErr } = await supabase
-          .from("organizations")
-          .select("uuid")
-          .eq("name", lockedOrg)
-          .maybeSingle();
-        if (orgErr) throw orgErr;
-        const orgId = (org as any)?.uuid as string | undefined;
-        if (!orgId) return { min: null, max: null } as { min: Date | null; max: Date | null };
-
-        const { data: rels, error: relErr } = await supabase
-          .from("docket_petitioned_by_org")
-          .select("docket_uuid")
-          .eq("petitioner_uuid", orgId);
-        if (relErr) throw relErr;
-        const docketUuids = Array.from(new Set((rels ?? []).map((r: any) => r.docket_uuid).filter(Boolean)));
-        if (!docketUuids.length) return { min: null, max: null } as { min: Date | null; max: Date | null };
-
-        const [{ data: minRow, error: minErr }, { data: maxRow, error: maxErr }] = await Promise.all([
-          supabase
-            .from("dockets")
-            .select("opened_date")
-            .in("uuid", docketUuids)
-            .order("opened_date", { ascending: true })
-            .limit(1)
-            .maybeSingle(),
-          supabase
-            .from("dockets")
-            .select("opened_date")
-            .in("uuid", docketUuids)
-            .order("opened_date", { ascending: false })
-            .limit(1)
-            .maybeSingle(),
-        ]);
-        if (minErr) throw minErr;
-        if (maxErr) throw maxErr;
-        const min = (minRow as any)?.opened_date ? new Date((minRow as any).opened_date) : null;
-        const max = (maxRow as any)?.opened_date ? new Date((maxRow as any).opened_date) : null;
-        return { min, max } as { min: Date | null; max: Date | null };
+        const { data, error } = await supabase.functions.invoke('get-org-dockets', {
+          body: {
+            orgName: lockedOrg,
+            aggregateOnly: true
+          }
+        });
+        
+        if (error) {
+          console.error('Error fetching org date bounds:', error);
+          throw error;
+        }
+        
+        return {
+          min: data.dateBounds.min ? new Date(data.dateBounds.min) : null,
+          max: data.dateBounds.max ? new Date(data.dateBounds.max) : null
+        } as { min: Date | null; max: Date | null };
       }
 
       // Global bounds
@@ -158,38 +136,21 @@ export default function DocketsPage() {
     queryKey: ["docket-industries", { org: lockedOrg ?? null }],
     queryFn: async () => {
       if (lockedOrg) {
-        // For org pages: get industries from org's dockets with counts
-        const { data: org, error: orgErr } = await supabase
-          .from("organizations")
-          .select("uuid")
-          .eq("name", lockedOrg)
-          .maybeSingle();
-        if (orgErr) throw orgErr;
-        const orgId = (org as any)?.uuid as string | undefined;
-        if (!orgId) return [];
-
-        const { data: rels, error: relErr } = await supabase
-          .from("docket_petitioned_by_org")
-          .select("docket_uuid")
-          .eq("petitioner_uuid", orgId);
-        if (relErr) throw relErr;
-        const docketUuids = Array.from(new Set((rels ?? []).map((r: any) => r.docket_uuid).filter(Boolean)));
-        if (!docketUuids.length) return [];
-
-        const { data, error } = await supabase
-          .from("dockets")
-          .select("industry")
-          .in("uuid", docketUuids)
-          .not("industry", "is", null);
-        if (error) throw error;
-        
-        const counts = new Map<string, number>();
-        (data as { industry: string | null }[]).forEach((r) => {
-          if (r.industry) counts.set(r.industry, (counts.get(r.industry) ?? 0) + 1);
+        // For org pages: use the edge function to get industries with counts
+        const { data, error } = await supabase.functions.invoke('get-org-dockets', {
+          body: {
+            orgName: lockedOrg,
+            aggregateOnly: true
+          }
         });
-        return Array.from(counts.entries())
-          .map(([name, count]) => ({ name, count }))
-          .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
+        
+        if (error) {
+          console.error('Error fetching org industries:', error);
+          throw error;
+        }
+        
+        return data.industries.map((i: any) => ({ name: i.industry, count: i.count }))
+          .sort((a: any, b: any) => (b.count - a.count) || a.name.localeCompare(b.name));
       } else {
         // For main page: get all industries without counts
         const { data, error } = await supabase.from("dockets").select("industry").not("industry", "is", null);
@@ -208,38 +169,24 @@ export default function DocketsPage() {
     queryKey: ["docket-types", { org: lockedOrg ?? null }],
     queryFn: async () => {
       if (lockedOrg) {
-        // For org pages: get types from org's dockets with counts
-        const { data: org, error: orgErr } = await supabase
-          .from("organizations")
-          .select("uuid")
-          .eq("name", lockedOrg)
-          .maybeSingle();
-        if (orgErr) throw orgErr;
-        const orgId = (org as any)?.uuid as string | undefined;
-        if (!orgId) return [];
-
-        const { data: rels, error: relErr } = await supabase
-          .from("docket_petitioned_by_org")
-          .select("docket_uuid")
-          .eq("petitioner_uuid", orgId);
-        if (relErr) throw relErr;
-        const docketUuids = Array.from(new Set((rels ?? []).map((r: any) => r.docket_uuid).filter(Boolean)));
-        if (!docketUuids.length) return [];
-
-        const { data, error } = await supabase
-          .from("dockets")
-          .select("docket_type")
-          .in("uuid", docketUuids)
-          .not("docket_type", "is", null);
-        if (error) throw error;
-        
-        const counts = new Map<string, number>();
-        (data as any[]).forEach((r) => {
-          if (r.docket_type) counts.set(r.docket_type, (counts.get(r.docket_type) ?? 0) + 1);
+        // For org pages: use the edge function to get types
+        const { data, error } = await supabase.functions.invoke('get-org-dockets', {
+          body: {
+            orgName: lockedOrg,
+            aggregateOnly: true
+          }
         });
-        return Array.from(counts.entries())
-          .map(([name, count]) => ({ name, count }))
-          .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
+        
+        if (error) {
+          console.error('Error fetching org docket types:', error);
+          // Fallback to empty for now
+          return [];
+        }
+        
+        return (data.docketTypes || []).map((item: any) => ({ 
+          name: item.docket_type, 
+          count: item.count 
+        }));
       } else {
         // For main page: get all types without counts
         const { data, error } = await supabase
@@ -310,6 +257,52 @@ export default function DocketsPage() {
     queryFn: async ({ pageParam }) => {
       const offset = pageParam as number;
       
+      // For organization pages, use the edge function
+      if (lockedOrg) {
+        const { data: dockets, error } = await supabase.functions.invoke('get-org-dockets', {
+          body: {
+            orgName: lockedOrg,
+            filters: {
+              startDate: startDate ? format(startOfMonth(startDate), "yyyy-MM-dd") : undefined,
+              endDate: endDate ? format(endOfMonth(endDate), "yyyy-MM-dd") : undefined,
+              sortBy: 'opened_date',
+              sortOrder: sortDir,
+              industries: selectedIndustries.length ? selectedIndustries : undefined
+            }
+          }
+        });
+        
+        if (error) {
+          console.error('Error fetching org dockets:', error);
+          throw error;
+        }
+        
+        // Apply client-side pagination and filters that couldn't be done server-side
+        let filteredDockets = dockets || [];
+        
+        // Apply search filter
+        if (normalizedSearch) {
+          filteredDockets = filteredDockets.filter((d: any) => 
+            d.docket_govid?.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
+            d.docket_title?.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
+            d.docket_description?.toLowerCase().includes(normalizedSearch.toLowerCase())
+          );
+        }
+        
+        // Apply docket type filter
+        if (docketTypes.length) {
+          filteredDockets = filteredDockets.filter((d: any) => 
+            d.docket_type && docketTypes.includes(d.docket_type)
+          );
+        }
+        
+        // Apply pagination
+        const start = offset;
+        const end = offset + PAGE_SIZE;
+        return filteredDockets.slice(start, end);
+      }
+      
+      // For main page, use regular query
       let query = supabase
         .from("dockets")
         .select("*")
@@ -368,13 +361,6 @@ export default function DocketsPage() {
       if (petitioners.length) {
         dockets = dockets.filter((d: any) => 
           d.petitioner_strings && d.petitioner_strings.some((p: string) => petitioners.includes(p))
-        );
-      }
-
-      // Filter by locked organization if present
-      if (lockedOrg) {
-        dockets = dockets.filter((d: any) => 
-          d.petitioner_strings && d.petitioner_strings.includes(lockedOrg)
         );
       }
 
