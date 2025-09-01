@@ -890,8 +890,8 @@ export default function DocketsPage() {
                 </Popover>
               )}
 
-              {/* Date range (months) */}
-              <Popover open={dateOpen} onOpenChange={setDateOpen}>
+              {/* Types Menu */}
+              <Popover open={typeMenuOpen} onOpenChange={setTypeMenuOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     <span className="inline-flex items-center gap-2">
@@ -975,8 +975,8 @@ export default function DocketsPage() {
                 </PopoverContent>
               </Popover>
 
-              {/* Types Menu */}
-              <Popover open={typeMenuOpen} onOpenChange={setTypeMenuOpen}>
+              {/* Date range (months) */}
+              <Popover open={dateOpen} onOpenChange={setDateOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     <span className="inline-flex items-center gap-2">
