@@ -60,29 +60,17 @@ export default function OrganizationsPage() {
       
       let organizations = (data ?? []) as Organization[];
 
-      // Get docket counts for each organization (only counting actual existing dockets)
+      // Get docket counts for each organization
       if (organizations.length) {
         const orgUuids = organizations.map(org => org.uuid);
         const { data: rels } = await supabase
           .from("docket_petitioned_by_org")
-          .select("petitioner_uuid, docket_uuid")
+          .select("petitioner_uuid")
           .in("petitioner_uuid", orgUuids);
-        
-        // Get unique docket UUIDs to verify they exist
-        const docketUuids = Array.from(new Set((rels ?? []).map((r: any) => r.docket_uuid).filter(Boolean)));
-        let existingDocketUuids = new Set<string>();
-        
-        if (docketUuids.length) {
-          const { data: existingDockets } = await supabase
-            .from("dockets")
-            .select("uuid")
-            .in("uuid", docketUuids);
-          existingDocketUuids = new Set((existingDockets ?? []).map((d: any) => d.uuid));
-        }
         
         const counts = new Map<string, number>();
         (rels ?? []).forEach((r: any) => {
-          if (r.petitioner_uuid && r.docket_uuid && existingDocketUuids.has(r.docket_uuid)) {
+          if (r.petitioner_uuid) {
             counts.set(r.petitioner_uuid, (counts.get(r.petitioner_uuid) ?? 0) + 1);
           }
         });
