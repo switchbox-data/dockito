@@ -864,16 +864,18 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             </Button>
           </div>
         </div>
+        </div>
       </div>
 
-        {/* Row 2: selected chips */}
-        {(selectedOrgs.length > 0 || selectedTypes.length > 0) && (
-          <div className="flex flex-wrap items-center gap-2">
+      {/* Filter badges section - separate from sticky bar, matches Dockets page architecture */}
+      {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
+        <section aria-label="Active filters" className="mb-4">
+          <div className="flex flex-wrap gap-2 text-sm px-1">
             {selectedOrgs.map((o) => (
               <Badge key={`org-${o}`} variant="secondary" className="px-2 py-1">
                 <div className="flex items-center gap-1.5 mr-1">
                   <Users size={12} className="text-muted-foreground" />
-                  <span>{o}</span>
+                  <span>Organization: {o}</span>
                 </div>
                 <button
                   type="button"
@@ -887,10 +889,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             ))}
             {selectedTypes.map((t) => (
               <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
-              <div className="flex items-center gap-1.5 mr-1">
-                <Shapes size={12} className="text-muted-foreground" />
-                <span>{t}</span>
-              </div>
+                <div className="flex items-center gap-1.5 mr-1">
+                  <Shapes size={12} className="text-muted-foreground" />
+                  <span>Type: {t}</span>
+                </div>
                 <button
                   type="button"
                   onClick={() => setSelectedTypes((prev) => prev.filter((v) => v !== t))}
@@ -901,9 +903,41 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                 </button>
               </Badge>
             ))}
+            {query && (
+              <Badge variant="secondary" className="px-2 py-1">
+                <div className="flex items-center gap-1.5 mr-1">
+                  <Search size={12} className="text-muted-foreground" />
+                  <span>Search: {query}</span>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  onClick={() => setQuery("")}
+                  className="inline-flex"
+                >
+                  <X size={12} />
+                </button>
+              </Badge>
+            )}
+            {!isFullRange && (
+              <Badge variant="secondary" className="px-2 py-1">
+                <div className="flex items-center gap-1.5 mr-1">
+                  <Calendar size={12} className="text-muted-foreground" />
+                  <span>Date: {months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}</span>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Reset date range"
+                  onClick={() => setRange(months.length ? [0, months.length - 1] : null)}
+                  className="inline-flex"
+                >
+                  <X size={12} />
+                </button>
+              </Badge>
+            )}
           </div>
-        )}
-      </div>
+        </section>
+      )}
 
       <div className="space-y-2">
         {filtered.map((f, idx) => {
