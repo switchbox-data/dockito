@@ -132,25 +132,40 @@ export default function DocketsPage() {
 
   const normalizedSearch = useMemo(() => sanitize(search), [search]);
 
+  // Get aggregate data (including total count) for org pages
+  const { data: orgAggregateData } = useQuery({
+    queryKey: ["org-aggregate-data", { org: lockedOrg ?? null }],
+    queryFn: async () => {
+      if (!lockedOrg) return null;
+      
+      const { data, error } = await supabase.functions.invoke('get-org-dockets', {
+        body: {
+          orgName: lockedOrg,
+          aggregateOnly: true
+        }
+      });
+      
+      if (error) {
+        console.error('Error fetching org aggregate data:', error);
+        throw error;
+      }
+      
+      return data;
+    },
+    enabled: !!lockedOrg,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const { data: industries = [] } = useQuery<{ name: string; count: number }[]>({
     queryKey: ["docket-industries", { org: lockedOrg ?? null }],
     queryFn: async () => {
       if (lockedOrg) {
-        // For org pages: use the edge function to get industries with counts
-        const { data, error } = await supabase.functions.invoke('get-org-dockets', {
-          body: {
-            orgName: lockedOrg,
-            aggregateOnly: true
-          }
-        });
-        
-        if (error) {
-          console.error('Error fetching org industries:', error);
-          throw error;
+        // Use the aggregate data we already fetched
+        if (orgAggregateData) {
+          return orgAggregateData.industries.map((i: any) => ({ name: i.industry, count: i.count }))
+            .sort((a: any, b: any) => (b.count - a.count) || a.name.localeCompare(b.name));
         }
-        
-        return data.industries.map((i: any) => ({ name: i.industry, count: i.count }))
-          .sort((a: any, b: any) => (b.count - a.count) || a.name.localeCompare(b.name));
+        return [];
       } else {
         // For main page: get all industries without counts
         const { data, error } = await supabase.from("dockets").select("industry").not("industry", "is", null);
@@ -162,6 +177,7 @@ export default function DocketsPage() {
         return Array.from(set).sort().map(name => ({ name, count: 0 }));
       }
     },
+    enabled: !lockedOrg || !!orgAggregateData,
     staleTime: 60_000,
   });
 
@@ -169,24 +185,14 @@ export default function DocketsPage() {
     queryKey: ["docket-types", { org: lockedOrg ?? null }],
     queryFn: async () => {
       if (lockedOrg) {
-        // For org pages: use the edge function to get types
-        const { data, error } = await supabase.functions.invoke('get-org-dockets', {
-          body: {
-            orgName: lockedOrg,
-            aggregateOnly: true
-          }
-        });
-        
-        if (error) {
-          console.error('Error fetching org docket types:', error);
-          // Fallback to empty for now
-          return [];
+        // Use the aggregate data we already fetched
+        if (orgAggregateData) {
+          return (orgAggregateData.docketTypes || []).map((item: any) => ({ 
+            name: item.docket_type, 
+            count: item.count 
+          }));
         }
-        
-        return (data.docketTypes || []).map((item: any) => ({ 
-          name: item.docket_type, 
-          count: item.count 
-        }));
+        return [];
       } else {
         // For main page: get all types without counts
         const { data, error } = await supabase
@@ -201,6 +207,7 @@ export default function DocketsPage() {
         return Array.from(set).sort().map(name => ({ name, count: 0 }));
       }
     },
+    enabled: !lockedOrg || !!orgAggregateData,
     staleTime: 60_000,
   });
 
@@ -452,7 +459,7 @@ export default function DocketsPage() {
       {lockedOrg ? (
         <OrganizationHeader 
           orgName={lockedOrg} 
-          docketCount={items.length}
+          docketCount={orgAggregateData?.totalCount || items.length}
           dateRange={{ start: startDate, end: endDate }}
         />
       ) : (
