@@ -922,7 +922,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           <div className="flex items-center gap-3 min-w-0 flex-1">
                             <FileIcon ext={a.attachment_file_extension} />
                             <div className="min-w-0 flex-1">
-                              <div className="text-sm font-medium break-words">{a.attachment_title}</div>
+                            <div className="text-sm font-normal leading-snug text-foreground break-words">{a.attachment_title}</div>
                             </div>
                           </div>
                           <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none shrink-0 ml-3", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
@@ -948,7 +948,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                           <FileIcon ext={a.attachment_file_extension} />
                           <div className="min-w-0 flex-1">
-                            <div className="text-sm font-medium break-words">{a.attachment_title}</div>
+                            <div className="text-sm font-normal leading-snug text-foreground break-words">{a.attachment_title}</div>
                             
                           </div>
                         </div>
