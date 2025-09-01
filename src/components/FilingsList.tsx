@@ -914,10 +914,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           }}
                           onClick={() => setViewer({ filingId: f.uuid, index: idx })}
                           data-selected={isSelectedAtt}
-                          className={cn(
-                              "group flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
-                              isSelectedAtt ? "border-primary" : undefined
-                          )}
+                           className={cn(
+                               "group flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                               isSelectedAtt ? "border-primary" : "hover:border-primary/30"
+                           )}
                         >
                           <div className="flex items-center gap-3 min-w-0 flex-1">
                             <FileIcon ext={a.attachment_file_extension} />
@@ -940,10 +940,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           target="_blank"
                           rel="noopener noreferrer"
                             data-selected={isSelectedAtt}
-                            className={cn(
-                              "group flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
-                              isSelectedAtt ? "border-primary" : undefined
-                            )}
+                             className={cn(
+                               "group flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                               isSelectedAtt ? "border-primary" : "hover:border-primary/30"
+                             )}
                       >
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                           <FileIcon ext={a.attachment_file_extension} />
