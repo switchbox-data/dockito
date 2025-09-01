@@ -853,7 +853,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                               isSelectedAtt ? "border-primary" : undefined
                           )}
                         >
-                          <div className="flex items-start gap-3 min-w-0 flex-1">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
                             <FileIcon ext={a.attachment_file_extension} />
                             <div className="min-w-0 flex-1">
                               <div className="text-sm font-medium break-words">{a.attachment_title}</div>
@@ -879,7 +879,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                               isSelectedAtt ? "border-primary" : undefined
                             )}
                       >
-                        <div className="flex items-start gap-3 min-w-0 flex-1">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                           <FileIcon ext={a.attachment_file_extension} />
                           <div className="min-w-0 flex-1">
                             <div className="text-sm font-medium break-words">{a.attachment_title}</div>
