@@ -623,6 +623,8 @@ export default function DocketsPage() {
         <OrganizationHeader 
           orgName={lockedOrg} 
           docketCount={orgAggregateData?.totalCount || items.length}
+          petitionedCount={orgAggregateData?.petitionedCount}
+          filedCount={orgAggregateData?.filedCount}
           dateRange={{ start: startDate, end: endDate }}
         />
       ) : (

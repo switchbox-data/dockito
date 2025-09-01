@@ -59,6 +59,8 @@ Deno.serve(async (req) => {
     const getDocketUuids = async () => {
       const relationshipTypes = filters?.relationshipTypes || ['petitioned', 'filed']
       let allDocketUuids = new Set<string>()
+      let petitionedCount = 0
+      let filedCount = 0
       
       // Get petitioned dockets if requested
       if (relationshipTypes.includes('petitioned')) {
@@ -81,7 +83,10 @@ Deno.serve(async (req) => {
             break
           }
           
-          batchRelations.forEach(r => allDocketUuids.add(r.docket_uuid))
+          batchRelations.forEach(r => {
+            allDocketUuids.add(r.docket_uuid)
+            petitionedCount++
+          })
           
           if (batchRelations.length < batchSize) {
             break
@@ -125,7 +130,10 @@ Deno.serve(async (req) => {
               .in('uuid', chunk)
             
             if (!fillingsError && fillings) {
-              fillings.forEach(f => allDocketUuids.add(f.docket_uuid))
+              fillings.forEach(f => {
+                allDocketUuids.add(f.docket_uuid)
+                filedCount++
+              })
             }
           }
           
@@ -137,14 +145,16 @@ Deno.serve(async (req) => {
         }
       }
       
-      return Array.from(allDocketUuids)
+      return { docketUuids: Array.from(allDocketUuids), petitionedCount, filedCount }
     }
 
     if (aggregateOnly) {
       console.log('Getting aggregate data for org:', orgName)
       
-      const docketUuids = await getDocketUuids()
+      const relationshipTypes = filters?.relationshipTypes || ['petitioned', 'filed']
+      const { docketUuids, petitionedCount, filedCount } = await getDocketUuids()
       console.log(`Found ${docketUuids.length} docket UUIDs for org ${orgName}`)
+      console.log(`Petitioned: ${petitionedCount}, Filed: ${filedCount}`)
 
       if (docketUuids.length === 0) {
         return new Response(
@@ -229,14 +239,16 @@ Deno.serve(async (req) => {
           dateBounds,
           industries: Array.from(industryMap.entries()).map(([industry, count]) => ({ industry, count })),
           docketTypes: Array.from(typeMap.entries()).map(([docket_type, count]) => ({ docket_type, count })),
-          totalCount: docketUuids.length // Use the original count of all dockets, not filtered ones
+          totalCount: docketUuids.length,
+          petitionedCount: relationshipTypes.includes('petitioned') ? petitionedCount : 0,
+          filedCount: relationshipTypes.includes('filed') ? filedCount : 0
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     // Main docket query
-    const docketUuids = await getDocketUuids()
+    const { docketUuids } = await getDocketUuids()
     console.log(`Found ${docketUuids.length} docket UUIDs for org ${orgName}`)
 
     if (docketUuids.length === 0) {
