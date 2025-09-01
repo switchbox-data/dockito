@@ -267,7 +267,7 @@ export const DocketHeader = ({ docket }: Props) => {
           <div className="flex flex-wrap gap-2">
             {docket.petitioner_strings.map((p) => (
               <Link key={p} to={`/org/${encodeURIComponent(p)}`} className="inline-block">
-                <Badge variant="outline" className="px-3 py-1.5 text-sm bg-background border-gray-300 cursor-pointer hover:bg-muted hover:border-gray-400 transition-colors">{p}</Badge>
+                <Badge variant="outline" className="px-3 py-1.5 text-sm bg-background border-gray-300 cursor-pointer hover:border-gray-500 transition-colors">{p}</Badge>
               </Link>
             ))}
           </div>
