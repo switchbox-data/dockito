@@ -915,7 +915,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           onClick={() => setViewer({ filingId: f.uuid, index: idx })}
                           data-selected={isSelectedAtt}
                            className={cn(
-                               "group flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                               "group/att flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                                isSelectedAtt ? "border-primary" : "hover:border-primary/30"
                            )}
                         >
@@ -925,7 +925,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                             <div className="text-sm font-normal leading-snug text-foreground break-words">{a.attachment_title}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none shrink-0 ml-3", "group-hover:border-primary/50", isSelectedAtt ? "bg-muted text-foreground border-muted-foreground/20" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none shrink-0 ml-3", "group-hover/att:border-primary/50", isSelectedAtt ? "bg-muted text-foreground border-muted-foreground/20" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
                         </button>
                       );
                     }
@@ -941,7 +941,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           rel="noopener noreferrer"
                             data-selected={isSelectedAtt}
                              className={cn(
-                               "group flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                               "group/att flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                                isSelectedAtt ? "border-primary" : "hover:border-primary/30"
                              )}
                       >
@@ -952,7 +952,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                             
                           </div>
                         </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 shrink-0 ml-3", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 shrink-0 ml-3", "group-hover/att:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}>
                           <LinkIcon size={16} /> Download
                         </span>
                       </a>
