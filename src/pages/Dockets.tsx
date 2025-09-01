@@ -127,6 +127,49 @@ const getDocketTypeBadgeColors = (type: string) => {
   }
 };
 
+// Helper function to get darker border colors for docket type badge hover
+const getDocketTypeHoverBorderColors = (type: string) => {
+  const typeKey = type?.toLowerCase().trim();
+  switch (typeKey) {
+    case 'petition':
+      return 'group-hover:border-blue-600'; // Blue theme
+    case 'tariff':
+      return 'group-hover:border-green-600'; // Green theme
+    case 'complaint':
+      return 'group-hover:border-red-600'; // Red theme
+    case 'contract':
+      return 'group-hover:border-purple-600'; // Purple theme
+    case 'audit':
+      return 'group-hover:border-orange-600'; // Orange theme
+    case 'incident':
+      return 'group-hover:border-red-600'; // Red theme (matching incident color)
+    case 'compliance':
+      return 'group-hover:border-emerald-600'; // Emerald theme
+    case 'commission instituted new case proceeding':
+      return 'group-hover:border-indigo-600'; // Indigo theme
+    case 'rulemaking':
+      return 'group-hover:border-slate-600'; // Slate theme
+    case 'exception from disclosure':
+      return 'group-hover:border-gray-600'; // Gray theme
+    case 'company workpapers':
+      return 'group-hover:border-amber-600'; // Amber theme
+    case 'analysis':
+      return 'group-hover:border-cyan-600'; // Cyan theme
+    case 'investigation':
+      return 'group-hover:border-pink-600'; // Pink theme
+    case 'office policy and procedures':
+      return 'group-hover:border-teal-600'; // Teal theme
+    case 'authorization':
+      return 'group-hover:border-lime-600'; // Lime theme
+    case 'complaint and inquiry':
+      return 'group-hover:border-rose-600'; // Rose theme
+    case 'policy initiative':
+      return 'group-hover:border-yellow-600'; // Yellow theme
+    default:
+      return 'group-hover:border-gray-600'; // Default theme
+  }
+};
+
 // Helper function to get semantic colors for docket types
 const getDocketTypeColor = (type: string) => {
   const typeKey = type?.toLowerCase().trim();
@@ -995,7 +1038,7 @@ export default function DocketsPage() {
                        <div className="flex items-start justify-between gap-3 mb-1">
                          <div className="flex flex-wrap gap-1">
                              {d.docket_type && (
-                               <Badge variant="outline" className={`inline-flex items-center gap-1.5 transition-colors group-hover:bg-opacity-80 ${getDocketTypeBadgeColors(d.docket_type)}`}>
+                               <Badge variant="outline" className={`inline-flex items-center gap-1.5 transition-colors ${getDocketTypeBadgeColors(d.docket_type)} ${getDocketTypeHoverBorderColors(d.docket_type)}`}>
                                  {(() => {
                                    const TypeIcon = getDocketTypeIcon(d.docket_type);
                                    const typeColor = getDocketTypeColor(d.docket_type);
