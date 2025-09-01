@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     const { orgName, filters, aggregateOnly, pagination } = await req.json() as GetOrgDocketsRequest
@@ -55,40 +55,26 @@ Deno.serve(async (req) => {
     const orgId = org.uuid
 
     if (aggregateOnly) {
-      // Use a single JOIN query for better performance instead of chunking
-      let query = supabase
+      console.log('Getting aggregate data for org:', orgName)
+      
+      // Get all docket UUIDs for this organization first
+      const { data: docketRelations, error: relationsError } = await supabase
         .from('docket_petitioned_by_org')
-        .select(`
-          dockets!inner(
-            opened_date,
-            industry,
-            docket_type
-          )
-        `)
+        .select('docket_uuid')
         .eq('petitioner_uuid', orgId)
 
-      // Apply date filters directly in the query
-      if (filters?.startDate) {
-        query = query.gte('dockets.opened_date', filters.startDate)
-      }
-      if (filters?.endDate) {
-        query = query.lte('dockets.opened_date', filters.endDate)
-      }
-
-      const { data: aggregateData, error: aggregateError } = await query
-
-      if (aggregateError) {
-        console.error('Error getting aggregate data:', aggregateError)
+      if (relationsError) {
+        console.error('Error getting docket relations:', relationsError)
         return new Response(
-          JSON.stringify({ error: 'Failed to get aggregate data' }),
+          JSON.stringify({ error: 'Failed to get docket relations', details: relationsError.message }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
 
-      const dockets = aggregateData?.map(rel => rel.dockets).flat() || []
-      console.log(`Found ${dockets.length} dockets for aggregation for org ${orgName}`)
+      const docketUuids = docketRelations?.map(rel => rel.docket_uuid) || []
+      console.log(`Found ${docketUuids.length} docket UUIDs for org ${orgName}`)
 
-      if (dockets.length === 0) {
+      if (docketUuids.length === 0) {
         return new Response(
           JSON.stringify({
             dateBounds: { min: null, max: null },
@@ -100,8 +86,51 @@ Deno.serve(async (req) => {
         )
       }
 
+      // Function to chunk array into smaller pieces
+      const chunkArray = (array: any[], size: number) => {
+        const chunks = []
+        for (let i = 0; i < array.length; i += size) {
+          chunks.push(array.slice(i, i + size))
+        }
+        return chunks
+      }
+
+      // Chunk the UUIDs to avoid URL length issues
+      const chunks = chunkArray(docketUuids, 50)
+      
+      let allDockets: any[] = []
+      
+      // Fetch dockets in chunks
+      for (const chunk of chunks) {
+        let chunkQuery = supabase
+          .from('dockets')
+          .select('opened_date, industry, docket_type')
+          .in('uuid', chunk)
+
+        // Apply date filters
+        if (filters?.startDate) {
+          chunkQuery = chunkQuery.gte('opened_date', filters.startDate)
+        }
+        if (filters?.endDate) {
+          chunkQuery = chunkQuery.lte('opened_date', filters.endDate)
+        }
+
+        const { data: chunkDockets, error: chunkError } = await chunkQuery
+
+        if (chunkError) {
+          console.error('Error getting chunk dockets:', chunkError)
+          continue
+        }
+
+        if (chunkDockets) {
+          allDockets = allDockets.concat(chunkDockets)
+        }
+      }
+
+      console.log(`Found ${allDockets.length} dockets for aggregation for org ${orgName}`)
+
       // Calculate aggregates efficiently
-      const dates = dockets
+      const dates = allDockets
         .map(d => d.opened_date)
         .filter(date => date)
         .sort()
@@ -114,7 +143,7 @@ Deno.serve(async (req) => {
       const industryMap = new Map<string, number>()
       const typeMap = new Map<string, number>()
 
-      dockets.forEach(d => {
+      allDockets.forEach(d => {
         if (d.industry) {
           industryMap.set(d.industry, (industryMap.get(d.industry) || 0) + 1)
         }
@@ -128,99 +157,119 @@ Deno.serve(async (req) => {
           dateBounds,
           industries: Array.from(industryMap.entries()).map(([industry, count]) => ({ industry, count })),
           docketTypes: Array.from(typeMap.entries()).map(([docket_type, count]) => ({ docket_type, count })),
-          totalCount: dockets.length
+          totalCount: allDockets.length
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Main docket query with server-side pagination for better performance
-    const page = pagination?.page || 1
-    const limit = pagination?.limit || 50
-    const offset = (page - 1) * limit
-
-    let query = supabase
+    // Main docket query - go back to chunking approach for now
+    const { data: docketRelations, error: relationsError } = await supabase
       .from('docket_petitioned_by_org')
-      .select(`
-        dockets!inner(
-          uuid,
-          docket_govid,
-          docket_title,
-          docket_description,
-          opened_date,
-          closed_date,
-          current_status,
-          industry,
-          docket_type,
-          docket_subtype,
-          assigned_judge,
-          hearing_officer,
-          petitioner_strings
-        )
-      `)
+      .select('docket_uuid')
       .eq('petitioner_uuid', orgId)
 
-    // Apply filters to the dockets relation
-    if (filters?.startDate) {
-      query = query.gte('dockets.opened_date', filters.startDate)
-    }
-    if (filters?.endDate) {
-      query = query.lte('dockets.opened_date', filters.endDate)
-    }
-    if (filters?.industries && filters.industries.length > 0) {
-      query = query.in('dockets.industry', filters.industries)
-    }
-    if (filters?.docketTypes && filters.docketTypes.length > 0) {
-      query = query.in('dockets.docket_type', filters.docketTypes)
-    }
-
-    // Apply sorting
-    const sortBy = filters?.sortBy || 'opened_date'
-    const sortOrder = filters?.sortOrder || 'desc'
-    
-    if (sortOrder === 'asc') {
-      query = query.order(`dockets.${sortBy}`, { ascending: true })
-    } else {
-      query = query.order(`dockets.${sortBy}`, { ascending: false })
-    }
-
-    // Apply pagination
-    query = query.range(offset, offset + limit - 1)
-
-    const { data: docketData, error: docketError } = await query
-
-    if (docketError) {
-      console.error('Error getting dockets:', docketError)
+    if (relationsError) {
+      console.error('Error getting docket relations:', relationsError)
       return new Response(
-        JSON.stringify({ error: 'Failed to get dockets' }),
+        JSON.stringify({ error: 'Failed to get docket relations', details: relationsError.message }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    const dockets = docketData?.map(rel => rel.dockets).flat() || []
-    console.log(`Found ${dockets.length} dockets for org ${orgName} (page ${page})`)
+    const docketUuids = docketRelations?.map(rel => rel.docket_uuid) || []
+    console.log(`Found ${docketUuids.length} docket UUIDs for org ${orgName}`)
 
-    // Get total count for pagination metadata (only if it's the first page to avoid extra queries)
-    let totalCount = 0
-    if (page === 1) {
-      const { count, error: countError } = await supabase
-        .from('docket_petitioned_by_org')
-        .select('*', { count: 'exact', head: true })
-        .eq('petitioner_uuid', orgId)
+    if (docketUuids.length === 0) {
+      return new Response(
+        JSON.stringify({ dockets: [], pagination: { page: 1, limit: 50, totalCount: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false } }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
-      if (!countError) {
-        totalCount = count || 0
+    // Function to chunk array into smaller pieces
+    const chunkArray = (array: any[], size: number) => {
+      const chunks = []
+      for (let i = 0; i < array.length; i += size) {
+        chunks.push(array.slice(i, i + size))
+      }
+      return chunks
+    }
+
+    // Chunk the UUIDs to avoid URL length issues
+    const chunks = chunkArray(docketUuids, 50)
+    
+    let allDockets: any[] = []
+    
+    // Fetch dockets in chunks
+    for (const chunk of chunks) {
+      let chunkQuery = supabase
+        .from('dockets')
+        .select('uuid, docket_govid, docket_title, docket_description, opened_date, closed_date, current_status, industry, docket_type, docket_subtype, assigned_judge, hearing_officer, petitioner_strings')
+        .in('uuid', chunk)
+
+      // Apply filters
+      if (filters?.startDate) {
+        chunkQuery = chunkQuery.gte('opened_date', filters.startDate)
+      }
+      if (filters?.endDate) {
+        chunkQuery = chunkQuery.lte('opened_date', filters.endDate)
+      }
+      if (filters?.industries && filters.industries.length > 0) {
+        chunkQuery = chunkQuery.in('industry', filters.industries)
+      }
+      if (filters?.docketTypes && filters.docketTypes.length > 0) {
+        chunkQuery = chunkQuery.in('docket_type', filters.docketTypes)
+      }
+
+      const { data: chunkDockets, error: chunkError } = await chunkQuery
+
+      if (chunkError) {
+        console.error('Error getting chunk dockets:', chunkError)
+        continue
+      }
+
+      if (chunkDockets) {
+        allDockets = allDockets.concat(chunkDockets)
       }
     }
 
+    console.log(`Found ${allDockets.length} dockets for org ${orgName}`)
+
+    // Sort the results
+    const sortBy = filters?.sortBy || 'opened_date'
+    const sortOrder = filters?.sortOrder || 'desc'
+
+    allDockets.sort((a, b) => {
+      let aVal = a[sortBy]
+      let bVal = b[sortBy]
+
+      if (sortBy === 'opened_date') {
+        aVal = new Date(aVal || '').getTime()
+        bVal = new Date(bVal || '').getTime()
+      }
+
+      if (sortOrder === 'asc') {
+        return aVal > bVal ? 1 : -1
+      } else {
+        return aVal < bVal ? 1 : -1
+      }
+    })
+
+    // Apply pagination
+    const page = pagination?.page || 1
+    const limit = pagination?.limit || 50
+    const offset = (page - 1) * limit
+    const paginatedDockets = allDockets.slice(offset, offset + limit)
+
     const response = {
-      dockets,
+      dockets: paginatedDockets,
       pagination: {
         page,
         limit,
-        totalCount: page === 1 ? totalCount : null, // Only include on first page
-        totalPages: page === 1 ? Math.ceil(totalCount / limit) : null,
-        hasNextPage: dockets.length === limit, // If we got a full page, assume there might be more
+        totalCount: allDockets.length,
+        totalPages: Math.ceil(allDockets.length / limit),
+        hasNextPage: offset + limit < allDockets.length,
         hasPreviousPage: page > 1
       }
     }
