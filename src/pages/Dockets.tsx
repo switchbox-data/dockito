@@ -915,7 +915,7 @@ export default function DocketsPage() {
                     
                     <div className="space-y-4">
                       <div>
-                        <h4 className="text-xs font-medium text-muted-foreground mb-2">TYPES</h4>
+                        
                         <div className="grid grid-cols-4 gap-2">
                           {docketTypeOptions.map((type) => {
                             const isSelected = docketTypes.includes(type.name);
