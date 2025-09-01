@@ -1056,7 +1056,7 @@ export default function DocketsPage() {
                         }
                       }}
                     >
-                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <Icon className={cn("h-4 w-4 flex-shrink-0", getDocketTypeColor(type.name))} />
                       <div className="min-w-0 flex-1">
                         <div className="font-medium text-sm truncate">{type.name}</div>
                         {lockedOrg && type.count > 0 && (
