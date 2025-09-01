@@ -72,7 +72,7 @@ export const CommandK = () => {
           </CommandItem>
           <CommandItem
             onSelect={() => {
-              navigate('/organizations');
+              navigate('/orgs');
               setOpen(false);
             }}
           >
