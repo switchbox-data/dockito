@@ -547,8 +547,8 @@ export default function DocketsPage() {
           body: {
             orgName: lockedOrg,
             filters: {
-              startDate: startDate ? format(startOfMonth(startDate), "yyyy-MM-dd") : undefined,
-              endDate: endDate ? format(endOfMonth(endDate), "yyyy-MM-dd") : undefined,
+              startDate: startDate && !isNaN(startDate.getTime()) ? format(startOfMonth(startDate), "yyyy-MM-dd") : undefined,
+              endDate: endDate && !isNaN(endDate.getTime()) ? format(endOfMonth(endDate), "yyyy-MM-dd") : undefined,
               sortBy: 'opened_date',
               sortOrder: sortDir,
               industries: selectedIndustries.length ? selectedIndustries : undefined,
@@ -597,8 +597,8 @@ export default function DocketsPage() {
       if (selectedIndustries.length) query = query.in("industry", selectedIndustries);
       if (docketTypes.length) query = query.in("docket_type", docketTypes);
       if (docketSubtypes.length) query = query.in("docket_subtype", docketSubtypes);
-      if (startDate) query = query.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
-      if (endDate) query = query.lte("opened_date", format(endOfMonth(endDate!), "yyyy-MM-dd"));
+      if (startDate && !isNaN(startDate.getTime())) query = query.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
+      if (endDate && !isNaN(endDate.getTime())) query = query.lte("opened_date", format(endOfMonth(endDate), "yyyy-MM-dd"));
 
       const { data, error } = await query;
       if (error) throw error;
@@ -1041,7 +1041,7 @@ export default function DocketsPage() {
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     <span className="inline-flex items-center gap-2">
                       <CalendarIcon size={16} className="text-muted-foreground" />
-                      {startDate ? format(startDate, "MMM yyyy") : "–"} – {endDate ? format(endDate, "MMM yyyy") : "–"}
+                      {startDate && !isNaN(startDate.getTime()) ? format(startDate, "MMM yyyy") : "–"} – {endDate && !isNaN(endDate.getTime()) ? format(endDate, "MMM yyyy") : "–"}
                     </span>
                     <ChevronDown size={14} />
                   </Button>
@@ -1342,7 +1342,7 @@ export default function DocketsPage() {
                            <div className="space-y-2 pb-2">
                            <div className="flex items-center justify-between">
                              <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
-                             <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                             <span className="text-xs text-muted-foreground">Opened: {d.opened_date && !isNaN(new Date(d.opened_date).getTime()) ? format(new Date(d.opened_date), "MMM d, yyyy") : "—"}</span>
                            </div>
                             <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
                           </div>
