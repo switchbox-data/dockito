@@ -781,70 +781,115 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           const isSelected = selectedIndex === idx;
           return (
             <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className={cn("rounded-lg border p-3 transition-colors hover:border-primary/30", isSelected ? "bg-muted" : "bg-card")}>
-              <button
-              className={cn(
-                "w-full flex items-center gap-3 text-left rounded-md px-2 py-1 transition-colors"
-              )}
-                onClick={() => { setSelectedIndex(idx); setSelectedAttachmentIdx(isOpen ? null : (f.attachments.length ? 0 : null)); setOpenIds((prev) => { const next = new Set(prev); if (isOpen) next.delete(f.uuid); else next.add(f.uuid); return next; }); }}
-                aria-expanded={isOpen}
-              >
-                {isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2 justify-between">
-                    <div className="flex items-center gap-2">
-                      {f.filling_type && (
-                        <Badge variant="outline" className={`inline-flex items-center gap-1.5 ${getFilingTypeBadgeColors(f.filling_type)}`}>
-                          {(() => {
-                            const TypeIcon = getFilingTypeIcon(f.filling_type);
-                            const typeColor = getFilingTypeColor(f.filling_type);
-                            return <TypeIcon size={12} className={typeColor} />;
-                          })()}
-                          {f.filling_type}
-                        </Badge>
-                      )}
+              <div className="relative">
+                {/* Connecting line when open */}
+                {isOpen && f.attachments.length > 0 && (
+                  <div className="absolute left-[17px] top-[38px] bottom-0 w-px bg-border/40 z-0"></div>
+                )}
+                
+                <button
+                className={cn(
+                  "w-full flex items-center gap-3 text-left rounded-md px-2 py-1 transition-colors relative z-10"
+                )}
+                  onClick={() => { setSelectedIndex(idx); setSelectedAttachmentIdx(isOpen ? null : (f.attachments.length ? 0 : null)); setOpenIds((prev) => { const next = new Set(prev); if (isOpen) next.delete(f.uuid); else next.add(f.uuid); return next; }); }}
+                  aria-expanded={isOpen}
+                >
+                  <div className="relative z-10">
+                    {isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2 justify-between">
+                      <div className="flex items-center gap-2">
+                        {f.filling_type && (
+                          <Badge variant="outline" className={`inline-flex items-center gap-1.5 ${getFilingTypeBadgeColors(f.filling_type)}`}>
+                            {(() => {
+                              const TypeIcon = getFilingTypeIcon(f.filling_type);
+                              const typeColor = getFilingTypeColor(f.filling_type);
+                              return <TypeIcon size={12} className={typeColor} />;
+                            })()}
+                            {f.filling_type}
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="text-sm text-muted-foreground">{format(new Date(f.filed_date), "PPP")}</span>
                     </div>
-                    <span className="text-sm text-muted-foreground">{format(new Date(f.filed_date), "PPP")}</span>
+                    <h3 className="font-medium leading-tight mt-1">{f.filling_name ?? f.filling_type ?? "Filing"}</h3>
+                    <div className="text-sm text-muted-foreground mt-1 flex flex-wrap items-center gap-2">
+                      <span>Filed by:</span>
+                      {f.organization_author_strings?.map((org, idx) => (
+                        <Badge 
+                          key={idx} 
+                          variant="outline" 
+                          className="bg-background border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/org/${encodeURIComponent(org)}`); }}
+                        >
+                          {org}
+                        </Badge>
+                      )) || <span>—</span>}
+                    </div>
                   </div>
-                  <h3 className="font-medium leading-tight mt-1">{f.filling_name ?? f.filling_type ?? "Filing"}</h3>
-                  <div className="text-sm text-muted-foreground mt-1 flex flex-wrap items-center gap-2">
-                    <span>Filed by:</span>
-                    {f.organization_author_strings?.map((org, idx) => (
-                      <Badge 
-                        key={idx} 
-                        variant="outline" 
-                        className="bg-background border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/org/${encodeURIComponent(org)}`); }}
-                      >
-                        {org}
-                      </Badge>
-                    )) || <span>—</span>}
-                  </div>
-                </div>
-              </button>
+                </button>
 
               {isOpen && (
-                <div className="mt-3 grid gap-2">
+                <div className="ml-[41px] mt-3 grid gap-2 relative">
                   {f.attachments.length === 0 && (
                     <div className="text-sm text-muted-foreground">No attachments.</div>
                   )}
                   {f.attachments.map((a, idx) => {
                     const isPdf = a.attachment_file_extension.toLowerCase() === "pdf";
                     const isSelectedAtt = isSelected && selectedAttachmentIdx === idx;
+                    
+                    // Connection line for each attachment
+                    const attachmentConnector = (
+                      <div className="absolute -left-[24px] top-[14px] w-6 h-px bg-border/40" 
+                           style={{ top: `${idx * 64 + 14}px` }}></div>
+                    );
+                    
                     if (isPdf) {
                       return (
-                        <button
-                          key={a.uuid}
-                          type="button"
+                        <div key={a.uuid} className="relative">
+                          {attachmentConnector}
+                          <button
+                            type="button"
+                            ref={(el) => {
+                              if (!attachmentRefs.current[f.uuid]) attachmentRefs.current[f.uuid] = [];
+                              attachmentRefs.current[f.uuid][idx] = el;
+                            }}
+                            onClick={() => setViewer({ filingId: f.uuid, index: idx })}
+                            data-selected={isSelectedAtt}
+                            className={cn(
+                                "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
+                                isSelectedAtt ? "border-primary" : undefined
+                            )}
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <FileIcon ext={a.attachment_file_extension} />
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium truncate">{a.attachment_title}</div>
+                                <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
+                              </div>
+                            </div>
+                            <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
+                          </button>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={a.uuid} className="relative">
+                        {attachmentConnector}
+                        <a
                           ref={(el) => {
                             if (!attachmentRefs.current[f.uuid]) attachmentRefs.current[f.uuid] = [];
                             attachmentRefs.current[f.uuid][idx] = el;
                           }}
-                          onClick={() => setViewer({ filingId: f.uuid, index: idx })}
-                          data-selected={isSelectedAtt}
-                          className={cn(
-                              "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
-                              isSelectedAtt ? "border-primary" : undefined
-                          )}
+                            href={a.attachment_url ?? "#"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                              data-selected={isSelectedAtt}
+                              className={cn(
+                                "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
+                                isSelectedAtt ? "border-primary" : undefined
+                              )}
                         >
                           <div className="flex items-center gap-3 min-w-0">
                             <FileIcon ext={a.attachment_file_extension} />
@@ -853,41 +898,16 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                               <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
-                        </button>
-                      );
-                    }
-                    return (
-                      <a
-                        key={a.uuid}
-                        ref={(el) => {
-                          if (!attachmentRefs.current[f.uuid]) attachmentRefs.current[f.uuid] = [];
-                          attachmentRefs.current[f.uuid][idx] = el;
-                        }}
-                          href={a.attachment_url ?? "#"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                            data-selected={isSelectedAtt}
-                            className={cn(
-                              "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
-                              isSelectedAtt ? "border-primary" : undefined
-                            )}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <FileIcon ext={a.attachment_file_extension} />
-                          <div className="min-w-0">
-                            <div className="text-sm font-medium truncate">{a.attachment_title}</div>
-                            <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
-                          </div>
-                        </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}>
-                          <LinkIcon size={16} /> Download
-                        </span>
-                      </a>
+                            <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}>
+                            <LinkIcon size={16} /> Download
+                          </span>
+                        </a>
+                      </div>
                     );
                   })}
                 </div>
               )}
+              </div>
 
               {viewer && viewer.filingId === f.uuid && (
                 <PDFViewerModal
