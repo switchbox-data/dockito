@@ -950,12 +950,12 @@ export default function DocketsPage() {
                        
                         <div className="flex flex-wrap gap-2">
                           {d.petitioner_strings?.slice(0, 2).map(p => (
-                            <Badge
-                              key={p}
-                              variant="secondary"
-                              className="text-xs cursor-pointer hover:underline underline-offset-4"
-                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/org/${encodeURIComponent(p)}`); }}
-                            >
+                             <Badge
+                               key={p}
+                               variant="outline"
+                               className="text-xs cursor-pointer bg-background border-gray-300 hover:border-gray-400 transition-colors"
+                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/org/${encodeURIComponent(p)}`); }}
+                             >
                               {p}
                             </Badge>
                           ))}
