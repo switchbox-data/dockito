@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, 
   Heart, DollarSign, Frown, FileCheck, Search, 
-  BarChart3, Gavel, Flame, Lock, HelpCircle } from "lucide-react";
+  BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
+  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb } from "lucide-react";
 import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay } from "date-fns";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,24 @@ const getDocketTypeIcon = (type: string) => {
       return FileCheck; // Compliance
     case 'commission instituted new case proceeding':
       return Gavel; // Commission proceedings
+    case 'rulemaking':
+      return Book; // Making rules/laws
+    case 'exception from disclosure':
+      return EyeOff; // Hiding information/confidential
+    case 'company workpapers':
+      return FileSpreadsheet; // Internal documents/calculations
+    case 'analysis':
+      return TrendingUp; // Analyzing data/trends
+    case 'investigation':
+      return Microscope; // Investigating/examining closely
+    case 'office policy and procedures':
+      return Clipboard; // Internal policies/procedures
+    case 'authorization':
+      return CheckCircle; // Authorization/permission granted
+    case 'complaint and inquiry':
+      return MessageCircle; // Questions/inquiries combined with complaints
+    case 'policy initiative':
+      return Lightbulb; // New initiatives/bright ideas
     default:
       return HelpCircle; // Miscellaneous and others
   }
@@ -84,6 +103,24 @@ const getDocketTypeColor = (type: string) => {
       return 'text-emerald-600'; // Emerald for approval/compliance
     case 'commission instituted new case proceeding':
       return 'text-indigo-600'; // Indigo for official proceedings
+    case 'rulemaking':
+      return 'text-slate-600'; // Slate for legal/regulatory
+    case 'exception from disclosure':
+      return 'text-gray-600'; // Gray for confidential/hidden
+    case 'company workpapers':
+      return 'text-amber-600'; // Amber for internal documents
+    case 'analysis':
+      return 'text-cyan-600'; // Cyan for data analysis
+    case 'investigation':
+      return 'text-pink-600'; // Pink for investigation/examination
+    case 'office policy and procedures':
+      return 'text-teal-600'; // Teal for organizational policies
+    case 'authorization':
+      return 'text-lime-600'; // Lime for approval/authorization
+    case 'complaint and inquiry':
+      return 'text-rose-600'; // Rose for mixed complaints/questions
+    case 'policy initiative':
+      return 'text-yellow-600'; // Yellow for bright ideas/initiatives
     default:
       return 'text-muted-foreground'; // Default muted color
   }
