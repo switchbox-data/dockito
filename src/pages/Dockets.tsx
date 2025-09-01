@@ -270,6 +270,7 @@ export default function DocketsPage() {
   const [docketSubtypes, setDocketSubtypes] = useState<string[]>([]);
   const [petitioners, setPetitioners] = useState<string[]>([]);
   const [typeMenuOpen, setTypeMenuOpen] = useState(false);
+  const [industryMenuOpen, setIndustryMenuOpen] = useState(false);
   const [subtypeSearch, setSubtypeSearch] = useState("");
   const [petOpen, setPetOpen] = useState(false);
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
@@ -726,7 +727,7 @@ export default function DocketsPage() {
     // quick keys
     if (e.key === '/') { e.preventDefault(); searchRef.current?.focus(); return; }
     if (e.key.toLowerCase() === 'p') { if (lockedOrg) return; e.preventDefault(); setPetOpen(true); return; }
-    if (e.key.toLowerCase() === 'i') { e.preventDefault(); setIndustryOpen(true); return; }
+    if (e.key.toLowerCase() === 'i') { e.preventDefault(); setIndustryMenuOpen(true); return; }
     if (e.key.toLowerCase() === 't') { e.preventDefault(); setTypeMenuOpen(true); return; }
     if (e.key.toLowerCase() === 's') { e.preventDefault(); setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); return; }
     if (e.key.toLowerCase() === 'd') { e.preventDefault(); setDateOpen(true); return; }
@@ -819,42 +820,6 @@ export default function DocketsPage() {
                 </PopoverContent>
               </Popover>
 
-
-              {/* Relationship Type filter (only for org pages) */}
-              {lockedOrg && (
-                <Popover open={relationshipOpen} onOpenChange={setRelationshipOpen}>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                      <span className="inline-flex items-center gap-2">
-                        <Link2 size={16} className="text-muted-foreground" />
-                        {relationshipTypes.length === 2 ? "Both" : relationshipTypes.length === 1 ? (relationshipTypes[0] === "petitioned" ? "Petitioned" : "Filed") : "None"}
-                      </span>
-                      <ChevronDown size={14} />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0 z-50 bg-popover border">
-                    <Command>
-                      <CommandList>
-                        <CommandGroup heading="Relationship Type">
-                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned", "filed"])}>Both</CommandItem>
-                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned"])}>
-                            <div className="flex items-center gap-2">
-                              <Check size={14} className={relationshipTypes.includes("petitioned") && !relationshipTypes.includes("filed") ? "opacity-100" : "opacity-0"} />
-                              <span>Petitioned Only</span>
-                            </div>
-                          </CommandItem>
-                          <CommandItem onSelect={() => setRelationshipTypes(["filed"])}>
-                            <div className="flex items-center gap-2">
-                              <Check size={14} className={relationshipTypes.includes("filed") && !relationshipTypes.includes("petitioned") ? "opacity-100" : "opacity-0"} />
-                              <span>Filed Only</span>
-                            </div>
-                          </CommandItem>
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              )}
 
               {/* Petitioners multi-select (ranked by frequency within current filters) */}
               {!lockedOrg && (
@@ -1135,6 +1100,42 @@ export default function DocketsPage() {
                   </div>
                 </PopoverContent>
               </Popover>
+
+              {/* Relationship Type filter (only for org pages) */}
+              {lockedOrg && (
+                <Popover open={relationshipOpen} onOpenChange={setRelationshipOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                      <span className="inline-flex items-center gap-2">
+                        <Link2 size={16} className="text-muted-foreground" />
+                        {relationshipTypes.length === 2 ? "Both" : relationshipTypes.length === 1 ? (relationshipTypes[0] === "petitioned" ? "Petitioned" : "Filed") : "None"}
+                      </span>
+                      <ChevronDown size={14} />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0 z-50 bg-popover border">
+                    <Command>
+                      <CommandList>
+                        <CommandGroup heading="Relationship Type">
+                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned", "filed"])}>Both</CommandItem>
+                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned"])}>
+                            <div className="flex items-center gap-2">
+                              <Check size={14} className={relationshipTypes.includes("petitioned") && !relationshipTypes.includes("filed") ? "opacity-100" : "opacity-0"} />
+                              <span>Petitioned Only</span>
+                            </div>
+                          </CommandItem>
+                          <CommandItem onSelect={() => setRelationshipTypes(["filed"])}>
+                            <div className="flex items-center gap-2">
+                              <Check size={14} className={relationshipTypes.includes("filed") && !relationshipTypes.includes("petitioned") ? "opacity-100" : "opacity-0"} />
+                              <span>Filed Only</span>
+                            </div>
+                          </CommandItem>
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              )}
 
               {/* Sort */}
               <div className="shrink-0">
