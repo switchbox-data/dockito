@@ -782,9 +782,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           return (
             <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className={cn("rounded-lg border p-3 transition-colors hover:border-primary/30", isSelected ? "bg-muted" : "bg-card")}>
               <div className="relative">
-                {/* Connecting line when open */}
+                {/* Main connecting line starting below the arrow */}
                 {isOpen && f.attachments.length > 0 && (
-                  <div className="absolute left-[17px] top-[38px] bottom-0 w-px bg-border/40 z-0"></div>
+                  <div className="absolute left-[17px] top-[38px] w-px bg-border z-0" 
+                       style={{ height: `${f.attachments.length * 64 + 12}px` }}></div>
                 )}
                 
                 <button
@@ -839,9 +840,9 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                     const isPdf = a.attachment_file_extension.toLowerCase() === "pdf";
                     const isSelectedAtt = isSelected && selectedAttachmentIdx === idx;
                     
-                    // Connection line for each attachment
+                    // Curved connection line for each attachment
                     const attachmentConnector = (
-                      <div className="absolute -left-[24px] top-[14px] w-6 h-px bg-border/40" 
+                      <div className="absolute -left-[24px] top-[14px] w-6 h-px bg-border" 
                            style={{ top: `${idx * 64 + 14}px` }}></div>
                     );
                     
