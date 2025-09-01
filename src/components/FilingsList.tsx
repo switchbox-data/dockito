@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X, Eye, Users, Shapes, Calendar } from "lucide-react";
+import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link as LinkIcon, Check, X, Eye, Users, Shapes, Calendar,
+  Mail, FileBarChart, DollarSign, Heart, Gavel, ArrowRight, MessageSquare, 
+  Bell, Scale, FileCheck, Presentation, ClipboardList, Megaphone, 
+  FileType, Scale3D, FileSignature, Handshake, Paperclip, 
+  AlertCircle, BookOpen, Lightbulb, Shield, MapPin, Settings, Search, Lock, HelpCircle } from "lucide-react";
 import { Attachment, Filling } from "@/data/mock";
 import { format, addMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -91,6 +95,260 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
     let hash = 0;
     for (let i = 0; i < name.length; i++) { hash = (hash + name.charCodeAt(i)) % 1000; }
     return typePalette[hash % typePalette.length];
+  };
+
+  // Helper function to get appropriate icon for filing types
+  const getFilingTypeIcon = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'correspondence':
+        return Mail; // Email/mail for correspondence
+      case 'reports':
+        return FileBarChart; // Chart report for reports
+      case 'tariff':
+      case 'tariffs':
+        return DollarSign; // Rate changes
+      case 'petitions':
+        return Heart; // Prayer/thank you hands - someone asking for something
+      case 'orders':
+        return Gavel; // Legal orders
+      case 'motions':
+        return ArrowRight; // Moving forward/motions
+      case 'letters':
+        return Mail; // Letters are similar to correspondence
+      case 'comments':
+      case 'public comments':
+        return MessageSquare; // Public comments
+      case 'notices':
+        return Bell; // Notifications/notices
+      case 'rulings':
+        return Scale; // Justice/legal rulings
+      case 'plans and proposals':
+        return FileCheck; // Planning documents
+      case 'exhibits':
+        return Presentation; // Display/presentation materials
+      case 'contract':
+        return Lock; // Lock for contracts
+      case 'press releases':
+        return Megaphone; // Announcements
+      case 'transcripts':
+        return FileType; // Text documents
+      case 'testimony':
+        return Scale3D; // Speaking/testimony
+      case 'joint proposals and stipulations':
+        return Handshake; // Agreements/handshakes
+      case 'briefs':
+        return FileSignature; // Legal documents
+      case 'attachment':
+        return Paperclip; // Attachments
+      case 'complaints':
+        return AlertCircle; // Complaints/issues
+      case 'memorandum':
+      case 'memorandum and resolution':
+        return BookOpen; // Internal memos
+      case 'application':
+        return ClipboardList; // Applications
+      case 'protective order':
+        return Shield; // Protection/security
+      case 'consumer complaint determinations':
+        return Scale; // Decisions/determinations
+      case 'active party lists':
+        return Users; // Lists of people
+      case 'declaratory ruling':
+        return Gavel; // Official rulings
+      case 'session item':
+        return Settings; // Session/meeting items
+      case 'workpapers':
+        return FileSpreadsheet; // Work documents
+      case 'resource determination':
+        return Search; // Research/determination
+      case 'maps and figures':
+        return MapPin; // Maps and visuals
+      case '753 evidence':
+        return FileCheck; // Evidence
+      case 'affidavit of service':
+        return FileSignature; // Legal affidavits
+      case 'recommended decisions':
+        return Lightbulb; // Recommendations
+      case 'compliance':
+        return Shield; // Compliance
+      case 'discovery':
+        return Search; // Legal discovery
+      case 'permit':
+        return Lock; // Permits/authorization
+      case 'esco application':
+        return ClipboardList; // Applications
+      case 'municipal statement of local law compliance':
+        return FileCheck; // Compliance statements
+      case 'guidance documents/policy statements':
+        return BookOpen; // Guidance documents
+      case 'petition for party status':
+        return Heart; // Petition/request
+      case 'applicant statement of issues':
+        return MessageSquare; // Statements
+      case 'citation':
+        return FileText; // Citations
+      case 'migrated internal document':
+        return Settings; // Internal/system documents
+      default:
+        return HelpCircle; // Miscellaneous and others
+    }
+  };
+
+  // Helper function to get semantic colors for filing types
+  const getFilingTypeColor = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'correspondence':
+        return 'text-blue-600'; // Blue for communication
+      case 'reports':
+        return 'text-green-600'; // Green for reports/data
+      case 'tariff':
+      case 'tariffs':
+        return 'text-emerald-600'; // Emerald for rates/money
+      case 'petitions':
+        return 'text-purple-600'; // Purple for requests
+      case 'orders':
+        return 'text-indigo-600'; // Indigo for official orders
+      case 'motions':
+        return 'text-cyan-600'; // Cyan for movement/motions
+      case 'letters':
+        return 'text-blue-500'; // Light blue for letters
+      case 'comments':
+      case 'public comments':
+        return 'text-orange-600'; // Orange for public input
+      case 'notices':
+        return 'text-yellow-600'; // Yellow for notifications
+      case 'rulings':
+        return 'text-red-600'; // Red for legal decisions
+      case 'plans and proposals':
+        return 'text-teal-600'; // Teal for planning
+      case 'exhibits':
+        return 'text-pink-600'; // Pink for displays
+      case 'contract':
+        return 'text-purple-700'; // Dark purple for contracts
+      case 'press releases':
+        return 'text-amber-600'; // Amber for announcements
+      case 'transcripts':
+        return 'text-slate-600'; // Slate for transcripts
+      case 'testimony':
+        return 'text-rose-600'; // Rose for testimony
+      case 'joint proposals and stipulations':
+        return 'text-lime-600'; // Lime for agreements
+      case 'briefs':
+        return 'text-indigo-700'; // Dark indigo for legal briefs
+      case 'attachment':
+        return 'text-gray-600'; // Gray for attachments
+      case 'complaints':
+        return 'text-red-500'; // Red for complaints
+      case 'memorandum':
+      case 'memorandum and resolution':
+        return 'text-blue-700'; // Dark blue for memos
+      case 'application':
+        return 'text-green-700'; // Dark green for applications
+      case 'protective order':
+        return 'text-orange-700'; // Dark orange for protection
+      case 'consumer complaint determinations':
+        return 'text-red-700'; // Dark red for determinations
+      case 'active party lists':
+        return 'text-cyan-700'; // Dark cyan for lists
+      case 'declaratory ruling':
+        return 'text-purple-800'; // Dark purple for rulings
+      case 'session item':
+        return 'text-gray-700'; // Dark gray for sessions
+      case 'workpapers':
+        return 'text-amber-700'; // Dark amber for work docs
+      case 'resource determination':
+        return 'text-teal-700'; // Dark teal for research
+      case 'maps and figures':
+        return 'text-pink-700'; // Dark pink for visuals
+      case '753 evidence':
+        return 'text-green-800'; // Dark green for evidence
+      case 'affidavit of service':
+        return 'text-indigo-800'; // Dark indigo for affidavits
+      case 'recommended decisions':
+        return 'text-yellow-700'; // Dark yellow for recommendations
+      case 'compliance':
+        return 'text-emerald-700'; // Dark emerald for compliance
+      case 'discovery':
+        return 'text-orange-800'; // Dark orange for discovery
+      case 'permit':
+        return 'text-purple-900'; // Dark purple for permits
+      case 'esco application':
+        return 'text-green-900'; // Dark green for ESCO apps
+      case 'municipal statement of local law compliance':
+        return 'text-blue-800'; // Dark blue for municipal docs
+      case 'guidance documents/policy statements':
+        return 'text-slate-700'; // Dark slate for guidance
+      case 'petition for party status':
+        return 'text-purple-500'; // Medium purple for petitions
+      case 'applicant statement of issues':
+        return 'text-orange-500'; // Medium orange for statements
+      case 'citation':
+        return 'text-gray-800'; // Dark gray for citations
+      case 'migrated internal document':
+        return 'text-slate-500'; // Medium slate for internal docs
+      default:
+        return 'text-muted-foreground'; // Default muted color
+    }
+  };
+
+  // Helper function to get subtle background and border colors for filing type badges
+  const getFilingTypeBadgeColors = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'correspondence':
+        return 'bg-blue-50 border-blue-200 hover:bg-blue-100'; // Blue theme
+      case 'reports':
+        return 'bg-green-50 border-green-200 hover:bg-green-100'; // Green theme
+      case 'tariff':
+      case 'tariffs':
+        return 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'; // Emerald theme
+      case 'petitions':
+        return 'bg-purple-50 border-purple-200 hover:bg-purple-100'; // Purple theme
+      case 'orders':
+        return 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100'; // Indigo theme
+      case 'motions':
+        return 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100'; // Cyan theme
+      case 'letters':
+        return 'bg-blue-50 border-blue-300 hover:bg-blue-100'; // Light blue theme
+      case 'comments':
+      case 'public comments':
+        return 'bg-orange-50 border-orange-200 hover:bg-orange-100'; // Orange theme
+      case 'notices':
+        return 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100'; // Yellow theme
+      case 'rulings':
+        return 'bg-red-50 border-red-200 hover:bg-red-100'; // Red theme
+      case 'plans and proposals':
+        return 'bg-teal-50 border-teal-200 hover:bg-teal-100'; // Teal theme
+      case 'exhibits':
+        return 'bg-pink-50 border-pink-200 hover:bg-pink-100'; // Pink theme
+      case 'contract':
+        return 'bg-purple-50 border-purple-300 hover:bg-purple-100'; // Dark purple theme
+      case 'press releases':
+        return 'bg-amber-50 border-amber-200 hover:bg-amber-100'; // Amber theme
+      case 'transcripts':
+        return 'bg-slate-50 border-slate-200 hover:bg-slate-100'; // Slate theme
+      case 'testimony':
+        return 'bg-rose-50 border-rose-200 hover:bg-rose-100'; // Rose theme
+      case 'joint proposals and stipulations':
+        return 'bg-lime-50 border-lime-200 hover:bg-lime-100'; // Lime theme
+      case 'briefs':
+        return 'bg-indigo-50 border-indigo-300 hover:bg-indigo-100'; // Dark indigo theme
+      case 'attachment':
+        return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Gray theme
+      case 'complaints':
+        return 'bg-red-50 border-red-300 hover:bg-red-100'; // Red theme (different border)
+      case 'memorandum':
+      case 'memorandum and resolution':
+        return 'bg-blue-50 border-blue-300 hover:bg-blue-100'; // Dark blue theme
+      case 'application':
+        return 'bg-green-50 border-green-300 hover:bg-green-100'; // Dark green theme
+      case 'protective order':
+        return 'bg-orange-50 border-orange-300 hover:bg-orange-100'; // Dark orange theme
+      default:
+        return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Default theme
+    }
   };
 
   const filtered = useMemo(() => {
@@ -410,10 +668,15 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                             )
                           }
                         >
-                          <div className="flex items-center gap-2">
-                            <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                              <Badge variant="outline" className={cn("px-2 py-0.5", typeClass(t))}>{t}</Badge>
-                          </div>
+                           <div className="flex items-start gap-2">
+                             <Check size={14} className={cn("opacity-0 mt-0.5 shrink-0", selected && "opacity-100")} />
+                             {(() => {
+                               const TypeIcon = getFilingTypeIcon(t);
+                               const typeColor = getFilingTypeColor(t);
+                               return <TypeIcon size={14} className={`${typeColor} mt-0.5 shrink-0`} />;
+                             })()}
+                             <span className="leading-tight">{t}</span>
+                           </div>
                         </CommandItem>
                       );
                     })}
@@ -529,7 +792,16 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-medium leading-tight">{f.filling_name ?? f.filling_type ?? "Filing"}</h3>
-                    {f.filling_type && <Badge variant="outline" className={cn("px-2 py-0.5", typeClass(f.filling_type))}>{f.filling_type}</Badge>}
+                     {f.filling_type && (
+                       <Badge variant="outline" className={`inline-flex items-center gap-1.5 ${getFilingTypeBadgeColors(f.filling_type)}`}>
+                         {(() => {
+                           const TypeIcon = getFilingTypeIcon(f.filling_type);
+                           const typeColor = getFilingTypeColor(f.filling_type);
+                           return <TypeIcon size={12} className={typeColor} />;
+                         })()}
+                         {f.filling_type}
+                       </Badge>
+                     )}
                   </div>
                   <div className="text-sm text-muted-foreground mt-0.5 flex flex-wrap items-center gap-2">
                     <span>{format(new Date(f.filed_date), "PPP")}</span>
