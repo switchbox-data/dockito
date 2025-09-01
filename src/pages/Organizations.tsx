@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowUpDown, Building2, Users } from "lucide-react";
+import { Building2, Users } from "lucide-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +22,8 @@ const sanitize = (s: string) => s.replace(/[,%]/g, " ").trim();
 
 export default function OrganizationsPage() {
   const [search, setSearch] = useState("");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [sortBy, setSortBy] = useState<"name" | "dockets">("dockets");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   const searchRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -39,7 +40,7 @@ export default function OrganizationsPage() {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery<Organization[], Error>({
-    queryKey: ["organizations-list", { search: normalizedSearch, sortDir }],
+    queryKey: ["organizations-list", { search: normalizedSearch, sortBy, sortDir }],
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => (lastPage?.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined),
     queryFn: async ({ pageParam }) => {
@@ -48,7 +49,6 @@ export default function OrganizationsPage() {
       let query = supabase
         .from("organizations")
         .select("uuid, name")
-        .order("name", { ascending: sortDir === "asc" })
         .range(offset, offset + PAGE_SIZE - 1);
 
       if (normalizedSearch) {
@@ -79,6 +79,33 @@ export default function OrganizationsPage() {
           ...org,
           docket_count: counts.get(org.uuid) ?? 0
         }));
+
+        // Apply sorting after getting counts
+        if (sortBy === "dockets") {
+          organizations.sort((a, b) => {
+            const countDiff = (b.docket_count ?? 0) - (a.docket_count ?? 0);
+            if (sortDir === "asc") return -countDiff;
+            return countDiff;
+          });
+        } else {
+          organizations.sort((a, b) => {
+            const nameCompare = a.name.localeCompare(b.name);
+            return sortDir === "asc" ? nameCompare : -nameCompare;
+          });
+        }
+      } else {
+        organizations = organizations.map(org => ({
+          ...org,
+          docket_count: 0
+        }));
+
+        // Sort by name when no docket data
+        if (sortBy === "name") {
+          organizations.sort((a, b) => {
+            const nameCompare = a.name.localeCompare(b.name);
+            return sortDir === "asc" ? nameCompare : -nameCompare;
+          });
+        }
       }
 
       return organizations;
@@ -146,7 +173,22 @@ export default function OrganizationsPage() {
 
     // quick keys
     if (e.key === '/') { e.preventDefault(); searchRef.current?.focus(); return; }
-    if (e.key.toLowerCase() === 's') { e.preventDefault(); setSortDir((d) => (d === 'asc' ? 'desc' : 'asc')); return; }
+    if (e.key.toLowerCase() === 's') { 
+      e.preventDefault(); 
+      if (sortBy === "dockets") {
+        setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); 
+      } else {
+        setSortBy("dockets");
+        setSortDir("desc");
+      }
+      return; 
+    }
+    if (e.key.toLowerCase() === 'n') { 
+      e.preventDefault(); 
+      setSortBy("name");
+      setSortDir("asc");
+      return; 
+    }
 
     const cols = window.matchMedia('(min-width: 768px)').matches ? 2 : 1;
     if (e.key === 'ArrowLeft') { e.preventDefault(); setSelectedIdx((i) => { const ni = Math.max(0, i - 1); scrollSelectedIntoView(ni); return ni; }); return; }
@@ -179,10 +221,36 @@ export default function OrganizationsPage() {
             />
 
             {/* Sort */}
-            <div className="shrink-0">
-              <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}>
-                <ArrowUpDown size={16} className="mr-2" />
-                {sortDir === "asc" ? "A-Z" : "Z-A"}
+            <div className="shrink-0 flex gap-2">
+              <Button 
+                variant={sortBy === "dockets" ? "default" : "outline"} 
+                className="hover:border-primary/30" 
+                onClick={() => {
+                  if (sortBy === "dockets") {
+                    setSortDir((d) => (d === "desc" ? "asc" : "desc"));
+                  } else {
+                    setSortBy("dockets");
+                    setSortDir("desc");
+                  }
+                }}
+              >
+                <Users size={16} className="mr-2" />
+                Dockets {sortBy === "dockets" && (sortDir === "desc" ? "↓" : "↑")}
+              </Button>
+              <Button 
+                variant={sortBy === "name" ? "default" : "outline"} 
+                className="hover:border-primary/30" 
+                onClick={() => {
+                  if (sortBy === "name") {
+                    setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+                  } else {
+                    setSortBy("name");
+                    setSortDir("asc");
+                  }
+                }}
+              >
+                <Building2 size={16} className="mr-2" />
+                Name {sortBy === "name" && (sortDir === "asc" ? "↑" : "↓")}
               </Button>
             </div>
           </div>
