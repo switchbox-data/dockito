@@ -222,11 +222,15 @@ export default function DocketsPage() {
         return [];
       } else {
         // For main page: get all industries without counts
-        const { data, error } = await supabase.from("dockets").select("industry").not("industry", "is", null);
+        const { data, error } = await supabase
+          .from("dockets")
+          .select("industry")
+          .not("industry", "is", null)
+          .neq("industry", "");
         if (error) throw error;
         const set = new Set<string>();
         (data as { industry: string | null }[]).forEach((r) => {
-          if (r.industry) set.add(r.industry);
+          if (r.industry && r.industry.trim()) set.add(r.industry.trim());
         });
         return Array.from(set).sort().map(name => ({ name, count: 0 }));
       }
@@ -252,11 +256,12 @@ export default function DocketsPage() {
         const { data, error } = await supabase
           .from("dockets")
           .select("docket_type")
-          .not("docket_type", "is", null);
+          .not("docket_type", "is", null)
+          .neq("docket_type", "");
         if (error) throw error;
         const set = new Set<string>();
         (data as any[]).forEach((r) => {
-          if (r.docket_type) set.add(r.docket_type);
+          if (r.docket_type && r.docket_type.trim()) set.add(r.docket_type.trim());
         });
         return Array.from(set).sort().map(name => ({ name, count: 0 }));
       }
