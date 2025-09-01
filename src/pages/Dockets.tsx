@@ -265,7 +265,7 @@ function monthsBetween(min: Date, max: Date) {
 export default function DocketsPage() {
   const [search, setSearch] = useState("");
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
-  const [industryOpen, setIndustryOpen] = useState(false);
+  
   const [docketTypes, setDocketTypes] = useState<string[]>([]);
   const [docketSubtypes, setDocketSubtypes] = useState<string[]>([]);
   const [petitioners, setPetitioners] = useState<string[]>([]);
@@ -773,7 +773,7 @@ export default function DocketsPage() {
               />
 
               {/* Industry multi-select */}
-              <Popover open={industryOpen} onOpenChange={setIndustryOpen}>
+              <Popover open={industryMenuOpen} onOpenChange={setIndustryMenuOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     <span className="inline-flex items-center gap-2">
