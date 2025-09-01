@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown } from "lucide-react";
+import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, 
+  FileText, DollarSign, AlertTriangle, FileCheck, Shield, 
+  BarChart3, Gavel, MessageSquare, HelpCircle } from "lucide-react";
 import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay } from "date-fns";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -36,6 +38,31 @@ type Docket = {
 };
 
 const sanitize = (s: string) => s.replace(/[,%]/g, " ").trim();
+
+// Helper function to get appropriate icon for docket types
+const getDocketTypeIcon = (type: string) => {
+  const typeKey = type?.toLowerCase().trim();
+  switch (typeKey) {
+    case 'petition':
+      return FileText; // Someone asking for something
+    case 'tariff':
+      return DollarSign; // Rate changes
+    case 'complaint':
+      return AlertTriangle; // Complaints
+    case 'contract':
+      return FileCheck; // Contracts
+    case 'audit':
+      return BarChart3; // Audits
+    case 'incident':
+      return MessageSquare; // Incidents
+    case 'compliance':
+      return Shield; // Compliance
+    case 'commission instituted new case proceeding':
+      return Gavel; // Commission proceedings
+    default:
+      return HelpCircle; // Miscellaneous and others
+  }
+};
 
 function useDateBounds(lockedOrg?: string | null) {
   return useQuery({
@@ -562,13 +589,17 @@ export default function DocketsPage() {
                                   prev.includes(name) ? prev.filter((v) => v !== name) : [...prev, name]
                                 )
                               }
-                            >
-                              <div className="flex items-start gap-2">
-                                <Check size={14} className={cn("opacity-0 mt-0.5 shrink-0", selected && "opacity-100")} />
-                                <span className="leading-tight">{name?.trim()}</span>
-                                {lockedOrg && <span className="ml-1 text-muted-foreground text-xs">({count})</span>}
-                              </div>
-                            </CommandItem>
+                             >
+                               <div className="flex items-start gap-2">
+                                 <Check size={14} className={cn("opacity-0 mt-0.5 shrink-0", selected && "opacity-100")} />
+                                 {(() => {
+                                   const TypeIcon = getDocketTypeIcon(name);
+                                   return <TypeIcon size={14} className="text-muted-foreground mt-0.5 shrink-0" />;
+                                 })()}
+                                 <span className="leading-tight">{name?.trim()}</span>
+                                 {lockedOrg && <span className="ml-1 text-muted-foreground text-xs">({count})</span>}
+                               </div>
+                             </CommandItem>
                           );
                         })}
                       </CommandGroup>
@@ -684,7 +715,13 @@ export default function DocketsPage() {
           ))}
           {docketTypes.map((t) => (
             <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
-              <span className="mr-1">Type: {t}</span>
+              <div className="flex items-center gap-1.5 mr-1">
+                {(() => {
+                  const TypeIcon = getDocketTypeIcon(t);
+                  return <TypeIcon size={12} className="text-muted-foreground" />;
+                })()}
+                <span>Type: {t}</span>
+              </div>
               <button
                 type="button"
                 aria-label={`Remove type ${t}`}
