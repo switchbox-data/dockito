@@ -89,41 +89,41 @@ const getDocketTypeBadgeColors = (type: string) => {
   const typeKey = type?.toLowerCase().trim();
   switch (typeKey) {
     case 'petition':
-      return 'bg-blue-50 border-blue-200 hover:bg-blue-100'; // Blue theme
+      return 'bg-blue-50 border-blue-200'; // Blue theme
     case 'tariff':
-      return 'bg-green-50 border-green-200 hover:bg-green-100'; // Green theme
+      return 'bg-green-50 border-green-200'; // Green theme
     case 'complaint':
-      return 'bg-red-50 border-red-200 hover:bg-red-100'; // Red theme
+      return 'bg-red-50 border-red-200'; // Red theme
     case 'contract':
-      return 'bg-purple-50 border-purple-200 hover:bg-purple-100'; // Purple theme
+      return 'bg-purple-50 border-purple-200'; // Purple theme
     case 'audit':
-      return 'bg-orange-50 border-orange-200 hover:bg-orange-100'; // Orange theme
+      return 'bg-orange-50 border-orange-200'; // Orange theme
     case 'incident':
-      return 'bg-red-50 border-red-300 hover:bg-red-100'; // Red theme (slightly different border)
+      return 'bg-red-50 border-red-300'; // Red theme (slightly different border)
     case 'compliance':
-      return 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'; // Emerald theme
+      return 'bg-emerald-50 border-emerald-200'; // Emerald theme
     case 'commission instituted new case proceeding':
-      return 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100'; // Indigo theme
+      return 'bg-indigo-50 border-indigo-200'; // Indigo theme
     case 'rulemaking':
-      return 'bg-slate-50 border-slate-200 hover:bg-slate-100'; // Slate theme
+      return 'bg-slate-50 border-slate-200'; // Slate theme
     case 'exception from disclosure':
-      return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Gray theme
+      return 'bg-gray-50 border-gray-200'; // Gray theme
     case 'company workpapers':
-      return 'bg-amber-50 border-amber-200 hover:bg-amber-100'; // Amber theme
+      return 'bg-amber-50 border-amber-200'; // Amber theme
     case 'analysis':
-      return 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100'; // Cyan theme
+      return 'bg-cyan-50 border-cyan-200'; // Cyan theme
     case 'investigation':
-      return 'bg-pink-50 border-pink-200 hover:bg-pink-100'; // Pink theme
+      return 'bg-pink-50 border-pink-200'; // Pink theme
     case 'office policy and procedures':
-      return 'bg-teal-50 border-teal-200 hover:bg-teal-100'; // Teal theme
+      return 'bg-teal-50 border-teal-200'; // Teal theme
     case 'authorization':
-      return 'bg-lime-50 border-lime-200 hover:bg-lime-100'; // Lime theme
+      return 'bg-lime-50 border-lime-200'; // Lime theme
     case 'complaint and inquiry':
-      return 'bg-rose-50 border-rose-200 hover:bg-rose-100'; // Rose theme
+      return 'bg-rose-50 border-rose-200'; // Rose theme
     case 'policy initiative':
-      return 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100'; // Yellow theme
+      return 'bg-yellow-50 border-yellow-200'; // Yellow theme
     default:
-      return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Default theme
+      return 'bg-gray-50 border-gray-200'; // Default theme
   }
 };
 
