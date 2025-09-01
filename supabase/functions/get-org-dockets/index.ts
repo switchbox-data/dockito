@@ -9,6 +9,7 @@ interface GetOrgDocketsRequest {
     sortOrder?: 'asc' | 'desc'
     industries?: string[]
     docketTypes?: string[]
+    docketSubtypes?: string[]
     relationshipTypes?: string[] // 'petitioned', 'filed', or both
   }
   aggregateOnly?: boolean
@@ -198,7 +199,7 @@ Deno.serve(async (req) => {
       for (const chunk of chunks) {
         let chunkQuery = supabase
           .from('dockets')
-          .select('opened_date, industry, docket_type')
+          .select('opened_date, industry, docket_type, docket_subtype')
           .in('uuid', chunk)
 
         // Apply date filters
@@ -236,6 +237,7 @@ Deno.serve(async (req) => {
 
       const industryMap = new Map<string, number>()
       const typeMap = new Map<string, number>()
+      const subtypeMap = new Map<string, { docket_type: string; count: number }>()
 
       allDockets.forEach(d => {
         if (d.industry) {
@@ -244,6 +246,15 @@ Deno.serve(async (req) => {
         if (d.docket_type) {
           typeMap.set(d.docket_type, (typeMap.get(d.docket_type) || 0) + 1)
         }
+        if (d.docket_subtype && d.docket_type) {
+          const key = `${d.docket_type}::${d.docket_subtype}`
+          const existing = subtypeMap.get(key)
+          if (existing) {
+            existing.count++
+          } else {
+            subtypeMap.set(key, { docket_type: d.docket_type, count: 1 })
+          }
+        }
       })
 
       return new Response(
@@ -251,6 +262,11 @@ Deno.serve(async (req) => {
           dateBounds,
           industries: Array.from(industryMap.entries()).map(([industry, count]) => ({ industry, count })),
           docketTypes: Array.from(typeMap.entries()).map(([docket_type, count]) => ({ docket_type, count })),
+          subtypes: Array.from(subtypeMap.entries()).map(([key, data]) => ({
+            docket_subtype: key.split('::')[1],
+            docket_type: data.docket_type,
+            count: data.count
+          })),
           totalCount: docketUuids.length,
           petitionedCount: relationshipTypes.includes('petitioned') ? petitionedDocketCount : 0,
           filedCount: relationshipTypes.includes('filed') ? totalFilingCount : 0
@@ -303,6 +319,9 @@ Deno.serve(async (req) => {
       }
       if (filters?.docketTypes && filters.docketTypes.length > 0) {
         chunkQuery = chunkQuery.in('docket_type', filters.docketTypes)
+      }
+      if (filters?.docketSubtypes && filters.docketSubtypes.length > 0) {
+        chunkQuery = chunkQuery.in('docket_subtype', filters.docketSubtypes)
       }
 
       const { data: chunkDockets, error: chunkError } = await chunkQuery
