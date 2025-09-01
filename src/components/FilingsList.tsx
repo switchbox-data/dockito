@@ -747,7 +747,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           <div className="flex flex-wrap items-center gap-2">
             {selectedOrgs.map((o) => (
               <Badge key={`org-${o}`} variant="secondary" className="px-2 py-1">
-                <span className="mr-1">{o}</span>
+                <div className="flex items-center gap-1.5 mr-1">
+                  <Users size={12} className="text-muted-foreground" />
+                  <span>{o}</span>
+                </div>
                 <button
                   type="button"
                   onClick={() => setSelectedOrgs((prev) => prev.filter((v) => v !== o))}
@@ -760,7 +763,13 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             ))}
             {selectedTypes.map((t) => (
               <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
-                <span className="mr-1">{t}</span>
+                <div className="flex items-center gap-1.5 mr-1">
+                  {(() => {
+                    const TypeIcon = getFilingTypeIcon(t);
+                    return <TypeIcon size={12} className="text-muted-foreground" />;
+                  })()}
+                  <span>{t}</span>
+                </div>
                 <button
                   type="button"
                   onClick={() => setSelectedTypes((prev) => prev.filter((v) => v !== t))}

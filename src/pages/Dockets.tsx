@@ -875,7 +875,10 @@ export default function DocketsPage() {
         <div className="flex flex-wrap gap-2 text-sm px-1">
           {selectedIndustries.map((ind) => (
             <Badge key={`ind-${ind}`} variant="secondary" className="px-2 py-1">
-              <span className="mr-1">Industry: {ind}</span>
+              <div className="flex items-center gap-1.5 mr-1">
+                <Factory size={12} className="text-muted-foreground" />
+                <span>Industry: {ind}</span>
+              </div>
               <button
                 type="button"
                 aria-label={`Remove industry ${ind}`}
@@ -909,7 +912,10 @@ export default function DocketsPage() {
           {lockedOrg ? null : (
             petitioners.map((p) => (
               <Badge key={`pet-${p}`} variant="secondary" className="px-2 py-1">
-                <span className="mr-1">Petitioner: {p}</span>
+                <div className="flex items-center gap-1.5 mr-1">
+                  <Users size={12} className="text-muted-foreground" />
+                  <span>Petitioner: {p}</span>
+                </div>
                 <button
                   type="button"
                   aria-label={`Remove petitioner ${p}`}
@@ -936,7 +942,10 @@ export default function DocketsPage() {
           )}
           {normalizedSearch && (
             <Badge variant="secondary" className="px-2 py-1">
-              <span className="mr-1">Search: {normalizedSearch}</span>
+              <div className="flex items-center gap-1.5 mr-1">
+                <Search size={12} className="text-muted-foreground" />
+                <span>Search: {normalizedSearch}</span>
+              </div>
               <button
                 type="button"
                 aria-label="Clear search"

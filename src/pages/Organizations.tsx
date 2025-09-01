@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, Users } from "lucide-react";
+import { Building2, Users, Search } from "lucide-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -261,7 +261,10 @@ export default function OrganizationsPage() {
         <section aria-label="Filters" className="space-y-2">
           <div className="flex flex-wrap gap-2 text-sm px-1">
             <Badge variant="secondary" className="px-2 py-1">
-              <span className="mr-1">Search: {normalizedSearch}</span>
+              <div className="flex items-center gap-1.5 mr-1">
+                <Search size={12} className="text-muted-foreground" />
+                <span>Search: {normalizedSearch}</span>
+              </div>
               <button
                 type="button"
                 aria-label="Clear search"
