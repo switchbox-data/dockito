@@ -1,6 +1,6 @@
 import { CalendarDays, Building2, Layers, Tag, Clock, ExternalLink, Heart, DollarSign, Frown, FileCheck, Search, 
   BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
-  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, FileText } from "lucide-react";
+  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, FolderOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
 type Docket = {
@@ -180,7 +180,7 @@ export const DocketHeader = ({ docket }: Props) => {
               )}
             </div>
             <div className="flex items-center gap-3">
-              <FileText size={24} className="text-foreground/80" />
+              <FolderOpen size={24} className="text-foreground/80" />
               <div>
                 <p className="text-sm text-muted-foreground">Docket</p>
                 <h2 className="text-2xl font-bold">{docket.docket_govid}</h2>
