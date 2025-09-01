@@ -767,14 +767,17 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                     if (years.size <= 1) return null;
                     
                     const yearPositions: { year: number; position: number }[] = [];
-                    let currentYear = months[0].getFullYear();
-                    yearPositions.push({ year: currentYear, position: 0 });
                     
-                    for (let i = 1; i < months.length; i++) {
+                    // Find the first occurrence of each year in the months array
+                    const seenYears = new Set<number>();
+                    for (let i = 0; i < months.length; i++) {
                       const monthYear = months[i].getFullYear();
-                      if (monthYear !== currentYear) {
-                        yearPositions.push({ year: monthYear, position: (i / (months.length - 1)) * 100 });
-                        currentYear = monthYear;
+                      if (!seenYears.has(monthYear)) {
+                        seenYears.add(monthYear);
+                        yearPositions.push({ 
+                          year: monthYear, 
+                          position: (i / (months.length - 1)) * 100 
+                        });
                       }
                     }
                     
