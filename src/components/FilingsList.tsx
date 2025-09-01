@@ -351,6 +351,64 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
     }
   };
 
+  // Helper function to get darker border colors for filing type badge hover
+  const getFilingTypeHoverBorderColors = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'correspondence':
+        return 'group-hover:border-blue-600'; // Blue theme
+      case 'reports':
+        return 'group-hover:border-green-600'; // Green theme
+      case 'tariff':
+      case 'tariffs':
+        return 'group-hover:border-emerald-600'; // Emerald theme
+      case 'petitions':
+        return 'group-hover:border-purple-600'; // Purple theme
+      case 'orders':
+        return 'group-hover:border-red-600'; // Dark red theme
+      case 'motions':
+        return 'group-hover:border-cyan-600'; // Cyan theme
+      case 'letters':
+        return 'group-hover:border-blue-600'; // Light blue theme
+      case 'comments':
+      case 'public comments':
+        return 'group-hover:border-orange-600'; // Orange theme
+      case 'notices':
+        return 'group-hover:border-yellow-600'; // Yellow theme
+      case 'rulings':
+        return 'group-hover:border-red-600'; // Red theme
+      case 'plans and proposals':
+        return 'group-hover:border-purple-600'; // Purple theme
+      case 'exhibits':
+        return 'group-hover:border-pink-600'; // Pink theme
+      case 'contract':
+        return 'group-hover:border-purple-600'; // Dark purple theme
+      case 'press releases':
+        return 'group-hover:border-amber-600'; // Amber theme
+      case 'transcripts':
+        return 'group-hover:border-slate-600'; // Slate theme
+      case 'testimony':
+        return 'group-hover:border-rose-600'; // Rose theme
+      case 'joint proposals and stipulations':
+        return 'group-hover:border-lime-600'; // Lime theme
+      case 'briefs':
+        return 'group-hover:border-indigo-600'; // Dark indigo theme
+      case 'attachment':
+        return 'group-hover:border-gray-600'; // Gray theme
+      case 'complaints':
+        return 'group-hover:border-red-600'; // Red theme (different border)
+      case 'memorandum':
+      case 'memorandum and resolution':
+        return 'group-hover:border-blue-600'; // Dark blue theme
+      case 'application':
+        return 'group-hover:border-green-600'; // Dark green theme
+      case 'protective order':
+        return 'group-hover:border-orange-600'; // Dark orange theme
+      default:
+        return 'group-hover:border-gray-600'; // Default theme
+    }
+  };
+
   const filtered = useMemo(() => {
     let list = [...filings];
     if (selectedOrgs.length)
@@ -786,7 +844,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           const isOpen = openIds.has(f.uuid);
           const isSelected = selectedIndex === idx;
           return (
-            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className={cn("rounded-lg border p-3 transition-colors hover:border-primary/30", isSelected ? "bg-muted" : "bg-card")}>
+            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className={cn("rounded-lg border p-3 transition-colors hover:border-primary/30 group", isSelected ? "bg-muted" : "bg-card")}>
               <div className="relative">
                 <button
                 className={cn(
@@ -800,7 +858,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                     <div className="flex flex-wrap items-center gap-2 justify-between mb-3">
                       <div className="flex items-center gap-2">
                         {f.filling_type && (
-                          <Badge variant="outline" className={`inline-flex items-center gap-1.5 ${getFilingTypeBadgeColors(f.filling_type)}`}>
+                          <Badge variant="outline" className={`inline-flex items-center gap-1.5 transition-colors ${getFilingTypeBadgeColors(f.filling_type)} ${getFilingTypeHoverBorderColors(f.filling_type)}`}>
                             {(() => {
                               const TypeIcon = getFilingTypeIcon(f.filling_type);
                               const typeColor = getFilingTypeColor(f.filling_type);
