@@ -1101,34 +1101,14 @@ export default function DocketsPage() {
                         );
                       })()}
                       
-                      <div className="relative">
-                        {/* Range slider */}
-                        <input
-                          type="range"
+                      <div className="space-y-3">
+                        <Slider
+                          value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
                           min={0}
-                          max={months.length - 1}
-                          value={months.findIndex(m => isSameMonth(m, startDate || months[0]))}
-                          onChange={(e) => {
-                            const newIndex = parseInt(e.target.value);
-                            setRange(prev => prev ? [newIndex, prev[1]] : [newIndex, months.length - 1]);
-                          }}
-                          className="absolute inset-0 w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer z-10 range-slider"
-                          style={{
-                            background: `linear-gradient(to right, transparent 0%, transparent ${(months.findIndex(m => isSameMonth(m, startDate || months[0])) / (months.length - 1)) * 100}%, hsl(var(--primary)) ${(months.findIndex(m => isSameMonth(m, startDate || months[0])) / (months.length - 1)) * 100}%, hsl(var(--primary)) ${(months.findIndex(m => isSameMonth(m, endDate || months[months.length - 1])) / (months.length - 1)) * 100}%, transparent ${(months.findIndex(m => isSameMonth(m, endDate || months[months.length - 1])) / (months.length - 1)) * 100}%, transparent 100%)`
-                          }}
+                          max={Math.max(0, (months.length || 1) - 1)}
+                          step={1}
+                          onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
                         />
-                        <input
-                          type="range"
-                          min={0}
-                          max={months.length - 1}
-                          value={months.findIndex(m => isSameMonth(m, endDate || months[months.length - 1]))}
-                          onChange={(e) => {
-                            const newIndex = parseInt(e.target.value);
-                            setRange(prev => prev ? [prev[0], newIndex] : [0, newIndex]);
-                          }}
-                          className="absolute inset-0 w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer z-20 range-slider"
-                        />
-                        <div className="h-2 bg-muted rounded-lg"></div>
                       </div>
                       
                       <div className="flex justify-between text-sm text-muted-foreground">
