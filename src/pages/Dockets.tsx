@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, 
-  Handshake, DollarSign, AlertTriangle, FileCheck, Shield, 
-  BarChart3, Gavel, Zap, HelpCircle } from "lucide-react";
+  Heart, DollarSign, Frown, FileCheck, Search, 
+  BarChart3, Gavel, Flame, Lock, HelpCircle } from "lucide-react";
 import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay } from "date-fns";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -44,23 +44,48 @@ const getDocketTypeIcon = (type: string) => {
   const typeKey = type?.toLowerCase().trim();
   switch (typeKey) {
     case 'petition':
-      return Handshake; // Prayer hands - someone asking for something
+      return Heart; // Prayer/thank you hands - someone asking for something
     case 'tariff':
       return DollarSign; // Rate changes
     case 'complaint':
-      return AlertTriangle; // Complaints
+      return Frown; // Mad face for complaints
     case 'contract':
-      return FileCheck; // Contracts
+      return Lock; // Lock for contracts
     case 'audit':
-      return BarChart3; // Audits
+      return Search; // Magnifying glass for audits
     case 'incident':
-      return Zap; // Incidents (like electrical issues)
+      return Flame; // Creative - incidents (like fires, emergencies)
     case 'compliance':
-      return Shield; // Compliance
+      return FileCheck; // Compliance
     case 'commission instituted new case proceeding':
       return Gavel; // Commission proceedings
     default:
       return HelpCircle; // Miscellaneous and others
+  }
+};
+
+// Helper function to get semantic colors for docket types
+const getDocketTypeColor = (type: string) => {
+  const typeKey = type?.toLowerCase().trim();
+  switch (typeKey) {
+    case 'petition':
+      return 'text-blue-600'; // Blue for requests/prayers
+    case 'tariff':
+      return 'text-green-600'; // Green for money/rates
+    case 'complaint':
+      return 'text-red-600'; // Red for complaints/anger
+    case 'contract':
+      return 'text-purple-600'; // Purple for security/contracts
+    case 'audit':
+      return 'text-orange-600'; // Orange for investigation/search
+    case 'incident':
+      return 'text-red-500'; // Red for incidents/emergencies
+    case 'compliance':
+      return 'text-emerald-600'; // Emerald for approval/compliance
+    case 'commission instituted new case proceeding':
+      return 'text-indigo-600'; // Indigo for official proceedings
+    default:
+      return 'text-muted-foreground'; // Default muted color
   }
 };
 
@@ -592,10 +617,11 @@ export default function DocketsPage() {
                              >
                                <div className="flex items-start gap-2">
                                  <Check size={14} className={cn("opacity-0 mt-0.5 shrink-0", selected && "opacity-100")} />
-                                 {(() => {
-                                   const TypeIcon = getDocketTypeIcon(name);
-                                   return <TypeIcon size={14} className="text-muted-foreground mt-0.5 shrink-0" />;
-                                 })()}
+                                  {(() => {
+                                    const TypeIcon = getDocketTypeIcon(name);
+                                    const typeColor = getDocketTypeColor(name);
+                                    return <TypeIcon size={14} className={`${typeColor} mt-0.5 shrink-0`} />;
+                                  })()}
                                  <span className="leading-tight">{name?.trim()}</span>
                                  {lockedOrg && <span className="ml-1 text-muted-foreground text-xs">({count})</span>}
                                </div>
@@ -718,7 +744,8 @@ export default function DocketsPage() {
               <div className="flex items-center gap-1.5 mr-1">
                 {(() => {
                   const TypeIcon = getDocketTypeIcon(t);
-                  return <TypeIcon size={12} className="text-muted-foreground" />;
+                  const typeColor = getDocketTypeColor(t);
+                  return <TypeIcon size={12} className={typeColor} />;
                 })()}
                 <span>Type: {t}</span>
               </div>
