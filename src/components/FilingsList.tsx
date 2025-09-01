@@ -790,25 +790,29 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
               >
                 {isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-medium leading-tight">{f.filling_name ?? f.filling_type ?? "Filing"}</h3>
-                     {f.filling_type && (
-                       <Badge variant="outline" className={`inline-flex items-center gap-1.5 ${getFilingTypeBadgeColors(f.filling_type)}`}>
-                         {(() => {
-                           const TypeIcon = getFilingTypeIcon(f.filling_type);
-                           const typeColor = getFilingTypeColor(f.filling_type);
-                           return <TypeIcon size={12} className={typeColor} />;
-                         })()}
-                         {f.filling_type}
-                       </Badge>
-                     )}
+                  <div className="flex flex-wrap items-center gap-2 justify-between">
+                    <div className="flex items-center gap-2">
+                      {f.filling_type && (
+                        <Badge variant="outline" className={`inline-flex items-center gap-1.5 ${getFilingTypeBadgeColors(f.filling_type)}`}>
+                          {(() => {
+                            const TypeIcon = getFilingTypeIcon(f.filling_type);
+                            const typeColor = getFilingTypeColor(f.filling_type);
+                            return <TypeIcon size={12} className={typeColor} />;
+                          })()}
+                          {f.filling_type}
+                        </Badge>
+                      )}
+                    </div>
+                    <span className="text-sm text-muted-foreground">{format(new Date(f.filed_date), "PPP")}</span>
                   </div>
-                  <div className="text-sm text-muted-foreground mt-0.5 flex flex-wrap items-center gap-2">
-                    <span>{format(new Date(f.filed_date), "PPP")}</span>
-                    <span>•</span>
-                    <span className="truncate">
-                      Filed by: {f.organization_author_strings?.join(", ") || "—"}
-                    </span>
+                  <h3 className="font-medium leading-tight mt-1">{f.filling_name ?? f.filling_type ?? "Filing"}</h3>
+                  <div className="text-sm text-muted-foreground mt-1 flex flex-wrap items-center gap-2">
+                    <span>Filed by:</span>
+                    {f.organization_author_strings?.map((org, idx) => (
+                      <Badge key={idx} variant="secondary" className="bg-background border text-foreground">
+                        {org}
+                      </Badge>
+                    )) || <span>—</span>}
                   </div>
                 </div>
               </button>
