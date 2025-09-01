@@ -760,6 +760,38 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
               <div className="space-y-4">
                 <h4 className="font-medium text-sm">Select month range</h4>
                 <div className="space-y-3">
+                  {/* Year ticks when crossing year boundaries */}
+                  {(() => {
+                    if (!months.length || months.length <= 1) return null;
+                    const years = new Set(months.map(m => m.getFullYear()));
+                    if (years.size <= 1) return null;
+                    
+                    const yearPositions: { year: number; position: number }[] = [];
+                    let currentYear = months[0].getFullYear();
+                    yearPositions.push({ year: currentYear, position: 0 });
+                    
+                    for (let i = 1; i < months.length; i++) {
+                      const monthYear = months[i].getFullYear();
+                      if (monthYear !== currentYear) {
+                        yearPositions.push({ year: monthYear, position: (i / (months.length - 1)) * 100 });
+                        currentYear = monthYear;
+                      }
+                    }
+                    
+                    return (
+                      <div className="relative h-4 mb-2">
+                        {yearPositions.map(({ year, position }) => (
+                          <div
+                            key={year}
+                            className="absolute text-xs text-muted-foreground font-medium"
+                            style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+                          >
+                            {year}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                   <Slider
                     value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
                     min={0}
