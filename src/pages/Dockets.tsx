@@ -1034,8 +1034,8 @@ export default function DocketsPage() {
                 >
                   <Card className={cn("transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background group", isSelected ? "bg-muted" : "")}
                   >
-                     <CardContent className="p-4 space-y-1">
-                       <div className="flex items-start justify-between gap-3 mb-1">
+                       <CardContent className="p-4 space-y-1">
+                         <div className="flex items-start justify-between gap-3 mb-1 pb-2">
                          <div className="flex flex-wrap gap-1">
                              {d.docket_type && (
                                <Badge variant="outline" className={`inline-flex items-center gap-1.5 transition-colors ${getDocketTypeBadgeColors(d.docket_type)} ${getDocketTypeHoverBorderColors(d.docket_type)}`}>
@@ -1058,21 +1058,20 @@ export default function DocketsPage() {
                                })()}
                                {d.industry}
                              </Badge>
-                            )}
+                             )}
+                            </div>
                           </div>
-                         </div>
-                        
-                          <div className="border-t border-border/50 pt-3 mt-4">
-                          <div className="space-y-2">
+                         
+                          <div className="border-t border-border/50 pt-3">
+                           <div className="space-y-2 pb-2">
                            <div className="flex items-center justify-between">
                              <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
                              <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
                            </div>
-                           <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
-                         </div>
-                         </div>
-                         
-                         <div className="border-t border-border/50 pt-3 mt-4">
+                            <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
+                          </div>
+                          
+                          <div className="border-t border-border/50 pt-3">
                          <div className="flex flex-wrap gap-2">
                           {d.petitioner_strings?.slice(0, 2).map(p => (
                              <Badge
@@ -1089,8 +1088,9 @@ export default function DocketsPage() {
                           )}
                            {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
                          </div>
-                        </div>
-                    </CardContent>
+                          </div>
+                         </div>
+                     </CardContent>
                   </Card>
                 </Link>
               );
