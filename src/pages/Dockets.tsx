@@ -995,7 +995,7 @@ export default function DocketsPage() {
                        <div className="flex items-start justify-between gap-3 mb-1">
                          <div className="flex flex-wrap gap-1">
                              {d.docket_type && (
-                               <Badge variant="outline" className={`inline-flex items-center gap-1.5 transition-colors group-hover:bg-secondary ${getDocketTypeBadgeColors(d.docket_type)}`}>
+                               <Badge variant="outline" className={`inline-flex items-center gap-1.5 transition-colors group-hover:bg-opacity-80 ${getDocketTypeBadgeColors(d.docket_type)}`}>
                                  {(() => {
                                    const TypeIcon = getDocketTypeIcon(d.docket_type);
                                    const typeColor = getDocketTypeColor(d.docket_type);
@@ -1004,11 +1004,11 @@ export default function DocketsPage() {
                                  {d.docket_type}
                                </Badge>
                              )}
-                           {d.docket_subtype && <Badge variant="outline" className="transition-colors group-hover:bg-secondary">{d.docket_subtype}</Badge>}
+                           {d.docket_subtype && <Badge variant="outline" className="transition-colors group-hover:border-foreground/40">{d.docket_subtype}</Badge>}
                          </div>
                          <div className="flex flex-col items-end gap-1">
                            {d.industry && (
-                             <Badge variant="outline" className="inline-flex items-center gap-1.5 transition-colors group-hover:bg-secondary">
+                             <Badge variant="outline" className="inline-flex items-center gap-1.5 transition-colors group-hover:border-foreground/40">
                                {(() => {
                                  const IndustryIcon = getIndustryIcon(d.industry);
                                  return <IndustryIcon size={12} className={getIndustryColor(d.industry)} />;
