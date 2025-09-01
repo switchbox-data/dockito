@@ -298,56 +298,56 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
     const typeKey = type?.toLowerCase().trim();
     switch (typeKey) {
       case 'correspondence':
-        return 'bg-blue-50 border-blue-200 hover:bg-blue-100'; // Blue theme
+        return 'bg-blue-50 border-blue-200'; // Blue theme
       case 'reports':
-        return 'bg-green-50 border-green-200 hover:bg-green-100'; // Green theme
+        return 'bg-green-50 border-green-200'; // Green theme
       case 'tariff':
       case 'tariffs':
-        return 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'; // Emerald theme
+        return 'bg-emerald-50 border-emerald-200'; // Emerald theme
       case 'petitions':
-        return 'bg-purple-50 border-purple-200 hover:bg-purple-100'; // Purple theme
+        return 'bg-purple-50 border-purple-200'; // Purple theme
       case 'orders':
-        return 'bg-red-50 border-red-200 hover:bg-red-100'; // Dark red theme
+        return 'bg-red-50 border-red-200'; // Dark red theme
       case 'motions':
-        return 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100'; // Cyan theme
+        return 'bg-cyan-50 border-cyan-200'; // Cyan theme
       case 'letters':
-        return 'bg-blue-50 border-blue-300 hover:bg-blue-100'; // Light blue theme
+        return 'bg-blue-50 border-blue-300'; // Light blue theme
       case 'comments':
       case 'public comments':
-        return 'bg-orange-50 border-orange-200 hover:bg-orange-100'; // Orange theme
+        return 'bg-orange-50 border-orange-200'; // Orange theme
       case 'notices':
-        return 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100'; // Yellow theme
+        return 'bg-yellow-50 border-yellow-200'; // Yellow theme
       case 'rulings':
-        return 'bg-red-50 border-red-200 hover:bg-red-100'; // Red theme
+        return 'bg-red-50 border-red-200'; // Red theme
       case 'plans and proposals':
-        return 'bg-purple-50 border-purple-200 hover:bg-purple-100'; // Purple theme
+        return 'bg-purple-50 border-purple-200'; // Purple theme
       case 'exhibits':
-        return 'bg-pink-50 border-pink-200 hover:bg-pink-100'; // Pink theme
+        return 'bg-pink-50 border-pink-200'; // Pink theme
       case 'contract':
-        return 'bg-purple-50 border-purple-300 hover:bg-purple-100'; // Dark purple theme
+        return 'bg-purple-50 border-purple-300'; // Dark purple theme
       case 'press releases':
-        return 'bg-amber-50 border-amber-200 hover:bg-amber-100'; // Amber theme
+        return 'bg-amber-50 border-amber-200'; // Amber theme
       case 'transcripts':
-        return 'bg-slate-50 border-slate-200 hover:bg-slate-100'; // Slate theme
+        return 'bg-slate-50 border-slate-200'; // Slate theme
       case 'testimony':
-        return 'bg-rose-50 border-rose-200 hover:bg-rose-100'; // Rose theme
+        return 'bg-rose-50 border-rose-200'; // Rose theme
       case 'joint proposals and stipulations':
-        return 'bg-lime-50 border-lime-200 hover:bg-lime-100'; // Lime theme
+        return 'bg-lime-50 border-lime-200'; // Lime theme
       case 'briefs':
-        return 'bg-indigo-50 border-indigo-300 hover:bg-indigo-100'; // Dark indigo theme
+        return 'bg-indigo-50 border-indigo-300'; // Dark indigo theme
       case 'attachment':
-        return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Gray theme
+        return 'bg-gray-50 border-gray-200'; // Gray theme
       case 'complaints':
-        return 'bg-red-50 border-red-300 hover:bg-red-100'; // Red theme (different border)
+        return 'bg-red-50 border-red-300'; // Red theme (different border)
       case 'memorandum':
       case 'memorandum and resolution':
-        return 'bg-blue-50 border-blue-300 hover:bg-blue-100'; // Dark blue theme
+        return 'bg-blue-50 border-blue-300'; // Dark blue theme
       case 'application':
-        return 'bg-green-50 border-green-300 hover:bg-green-100'; // Dark green theme
+        return 'bg-green-50 border-green-300'; // Dark green theme
       case 'protective order':
-        return 'bg-orange-50 border-orange-300 hover:bg-orange-100'; // Dark orange theme
+        return 'bg-orange-50 border-orange-300'; // Dark orange theme
       default:
-        return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Default theme
+        return 'bg-gray-50 border-gray-200'; // Default theme
     }
   };
 
