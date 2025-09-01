@@ -766,9 +766,19 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
           {/* Date range (months) */}
           <Popover open={dateOpen} onOpenChange={setDateOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0 hover:border-primary/30" disabled={months.length <= 1}>
+              <Button 
+                variant="outline" 
+                size="lg"
+                className={cn(
+                  "min-w-[180px] justify-between shrink-0 h-12 px-4 rounded-xl backdrop-blur-sm border-2 transition-all duration-200",
+                  !isFullRange 
+                    ? "bg-primary/10 border-primary text-primary hover:bg-primary/20" 
+                    : "hover:border-primary/30"
+                )}
+                disabled={months.length <= 1}
+              >
                 <span className="inline-flex items-center gap-2">
-                  <Calendar size={16} className="text-muted-foreground" />
+                  <Calendar size={18} className={!isFullRange ? "text-primary" : "text-muted-foreground"} />
                   {months.length === 1 ? format(months[0], "MMM yyyy") : months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}
                 </span>
                 <ChevronDown size={14} />
