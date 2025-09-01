@@ -74,6 +74,7 @@ Deno.serve(async (req) => {
 
       const docketUuids = docketRelations?.map(rel => rel.docket_uuid) || []
       console.log(`Found ${docketUuids.length} docket UUIDs for org ${orgName}`)
+      console.log(`Total count being returned: ${docketUuids.length}`)
 
       if (docketUuids.length === 0) {
         return new Response(

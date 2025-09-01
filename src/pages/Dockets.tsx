@@ -150,6 +150,8 @@ export default function DocketsPage() {
         throw error;
       }
       
+      console.log('Received org aggregate data:', data);
+      console.log('Total count from edge function:', data?.totalCount);
       return data;
     },
     enabled: !!lockedOrg,
