@@ -83,6 +83,49 @@ const getDocketTypeIcon = (type: string) => {
   }
 };
 
+// Helper function to get subtle background and border colors for docket type badges
+const getDocketTypeBadgeColors = (type: string) => {
+  const typeKey = type?.toLowerCase().trim();
+  switch (typeKey) {
+    case 'petition':
+      return 'bg-blue-50 border-blue-200 hover:bg-blue-100'; // Blue theme
+    case 'tariff':
+      return 'bg-green-50 border-green-200 hover:bg-green-100'; // Green theme
+    case 'complaint':
+      return 'bg-red-50 border-red-200 hover:bg-red-100'; // Red theme
+    case 'contract':
+      return 'bg-purple-50 border-purple-200 hover:bg-purple-100'; // Purple theme
+    case 'audit':
+      return 'bg-orange-50 border-orange-200 hover:bg-orange-100'; // Orange theme
+    case 'incident':
+      return 'bg-red-50 border-red-300 hover:bg-red-100'; // Red theme (slightly different border)
+    case 'compliance':
+      return 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'; // Emerald theme
+    case 'commission instituted new case proceeding':
+      return 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100'; // Indigo theme
+    case 'rulemaking':
+      return 'bg-slate-50 border-slate-200 hover:bg-slate-100'; // Slate theme
+    case 'exception from disclosure':
+      return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Gray theme
+    case 'company workpapers':
+      return 'bg-amber-50 border-amber-200 hover:bg-amber-100'; // Amber theme
+    case 'analysis':
+      return 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100'; // Cyan theme
+    case 'investigation':
+      return 'bg-pink-50 border-pink-200 hover:bg-pink-100'; // Pink theme
+    case 'office policy and procedures':
+      return 'bg-teal-50 border-teal-200 hover:bg-teal-100'; // Teal theme
+    case 'authorization':
+      return 'bg-lime-50 border-lime-200 hover:bg-lime-100'; // Lime theme
+    case 'complaint and inquiry':
+      return 'bg-rose-50 border-rose-200 hover:bg-rose-100'; // Rose theme
+    case 'policy initiative':
+      return 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100'; // Yellow theme
+    default:
+      return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Default theme
+  }
+};
+
 // Helper function to get semantic colors for docket types
 const getDocketTypeColor = (type: string) => {
   const typeKey = type?.toLowerCase().trim();
@@ -874,16 +917,16 @@ export default function DocketsPage() {
                      <CardContent className="p-4 space-y-1">
                        <div className="flex items-start justify-between gap-3 mb-1">
                          <div className="flex flex-wrap gap-1">
-                            {d.docket_type && (
-                              <Badge variant="outline" className="inline-flex items-center gap-1.5">
-                                {(() => {
-                                  const TypeIcon = getDocketTypeIcon(d.docket_type);
-                                  const typeColor = getDocketTypeColor(d.docket_type);
-                                  return <TypeIcon size={12} className={typeColor} />;
-                                })()}
-                                {d.docket_type}
-                              </Badge>
-                            )}
+                             {d.docket_type && (
+                               <Badge variant="outline" className={`inline-flex items-center gap-1.5 ${getDocketTypeBadgeColors(d.docket_type)}`}>
+                                 {(() => {
+                                   const TypeIcon = getDocketTypeIcon(d.docket_type);
+                                   const typeColor = getDocketTypeColor(d.docket_type);
+                                   return <TypeIcon size={12} className={typeColor} />;
+                                 })()}
+                                 {d.docket_type}
+                               </Badge>
+                             )}
                            {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
                          </div>
                          <div className="flex flex-col items-end gap-1">
