@@ -1,4 +1,5 @@
 import { Building2, Calendar, FileText, FilePlus } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Props = { 
   orgName: string;
@@ -6,9 +7,10 @@ type Props = {
   petitionedCount?: number;
   filedCount?: number;
   dateBounds?: { min: string | null; max: string | null };
+  isLoading?: boolean;
 };
 
-export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, filedCount, dateBounds }: Props) => {
+export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, filedCount, dateBounds, isLoading }: Props) => {
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return "—";
     try {
@@ -33,26 +35,30 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
         </div>
         
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {petitionedCount !== undefined && (
+          {(petitionedCount !== undefined || isLoading) && (
             <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
                 <FileText size={16} />
               </div>
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Dockets</div>
-                <div className="text-sm font-medium">{petitionedCount.toLocaleString()}</div>
+                <div className="text-sm font-medium">
+                  {isLoading ? <Skeleton className="h-4 w-12" /> : petitionedCount?.toLocaleString()}
+                </div>
               </div>
             </div>
           )}
           
-          {filedCount !== undefined && (
+          {(filedCount !== undefined || isLoading) && (
             <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
                 <FilePlus size={16} />
               </div>
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Filings</div>
-                <div className="text-sm font-medium">{filedCount.toLocaleString()}</div>
+                <div className="text-sm font-medium">
+                  {isLoading ? <Skeleton className="h-4 w-12" /> : filedCount?.toLocaleString()}
+                </div>
               </div>
             </div>
           )}
@@ -64,22 +70,26 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
               </div>
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Total Dockets</div>
-                <div className="text-sm font-medium">{docketCount.toLocaleString()}</div>
+                <div className="text-sm font-medium">
+                  {isLoading ? <Skeleton className="h-4 w-12" /> : docketCount?.toLocaleString()}
+                </div>
               </div>
             </div>
           )}
           
-          {dateBounds && (dateBounds.min || dateBounds.max) && (
+          {(dateBounds && (dateBounds.min || dateBounds.max)) || isLoading ? (
             <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
                 <Calendar size={16} />
               </div>
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Activity Period</div>
-                <div className="text-sm">{formatDate(dateBounds.min)} — {formatDate(dateBounds.max)}</div>
+                <div className="text-sm">
+                  {isLoading ? <Skeleton className="h-4 w-32" /> : `${formatDate(dateBounds?.min)} — ${formatDate(dateBounds?.max)}`}
+                </div>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </header>

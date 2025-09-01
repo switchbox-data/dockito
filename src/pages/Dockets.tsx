@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
 import { OrganizationHeader } from "@/components/OrganizationHeader";
+import { DocketCardSkeleton } from "@/components/DocketCardSkeleton";
 
 import { X } from "lucide-react";
 
@@ -267,7 +268,7 @@ export default function DocketsPage() {
   const normalizedSearch = useMemo(() => sanitize(search), [search]);
 
   // Get aggregate data (including total count) for org pages
-  const { data: orgAggregateData } = useQuery({
+  const { data: orgAggregateData, isLoading: isAggregateLoading } = useQuery({
     queryKey: ["org-aggregate-data", { org: lockedOrg ?? null, relationshipTypes: relationshipTypes.join(",") }],
     queryFn: async () => {
       if (!lockedOrg) return null;
@@ -626,6 +627,7 @@ export default function DocketsPage() {
           petitionedCount={orgAggregateData?.petitionedCount}
           filedCount={orgAggregateData?.filedCount}
           dateBounds={orgAggregateData?.dateBounds}
+          isLoading={isAggregateLoading}
         />
       ) : (
         <header className="space-y-2">
@@ -957,7 +959,11 @@ export default function DocketsPage() {
 
       <section aria-label="Results" className="space-y-4">
         {isLoading && items.length === 0 ? (
-          <div className="text-muted-foreground">Loading dockets…</div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <DocketCardSkeleton key={i} />
+            ))}
+          </div>
         ) : items.length === 0 ? (
           <div className="text-muted-foreground">No dockets found.</div>
         ) : (
