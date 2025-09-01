@@ -110,38 +110,42 @@ export const CommandK = () => {
             <span>View Organizations</span>
           </CommandItem>
         </CommandGroup>
-        <CommandGroup heading={`Dockets${docketResults.length ? ` (${docketResults.length})` : ""}`}>
-          {docketResults.map((d) => (
-            <CommandItem
-              key={d.docket_govid}
-              value={`${d.docket_govid} ${d.docket_title ?? ""}`}
-              onSelect={() => {
-                navigate(`/docket/${d.docket_govid}`);
-                setOpen(false);
-              }}
-              className="flex flex-col items-start gap-1"
-            >
-              <span className="font-medium">{d.docket_govid}</span>
-              <span className="text-muted-foreground text-sm line-clamp-1">{d.docket_title}</span>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-        <CommandGroup heading={`Organizations${orgResults.length ? ` (${orgResults.length})` : ""}`}>
-          {orgResults.map((org) => (
-            <CommandItem
-              key={org.name}
-              value={`${org.name} ${org.description ?? ""}`}
-              onSelect={() => {
-                navigate(`/org/${encodeURIComponent(org.name)}`);
-                setOpen(false);
-              }}
-              className="flex flex-col items-start gap-1"
-            >
-              <span className="font-medium">{org.name}</span>
-              <span className="text-muted-foreground text-sm line-clamp-1">{org.description}</span>
-            </CommandItem>
-          ))}
-        </CommandGroup>
+        {docketResults.length > 0 && (
+          <CommandGroup heading={`Dockets (${docketResults.length})`}>
+            {docketResults.map((d) => (
+              <CommandItem
+                key={d.docket_govid}
+                value={`${d.docket_govid} ${d.docket_title ?? ""}`}
+                onSelect={() => {
+                  navigate(`/docket/${d.docket_govid}`);
+                  setOpen(false);
+                }}
+                className="flex flex-col items-start gap-1"
+              >
+                <span className="font-medium">{d.docket_govid}</span>
+                <span className="text-muted-foreground text-sm line-clamp-1">{d.docket_title}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+        {orgResults.length > 0 && (
+          <CommandGroup heading={`Organizations (${orgResults.length})`}>
+            {orgResults.map((org) => (
+              <CommandItem
+                key={org.name}
+                value={`${org.name} ${org.description ?? ""}`}
+                onSelect={() => {
+                  navigate(`/org/${encodeURIComponent(org.name)}`);
+                  setOpen(false);
+                }}
+                className="flex flex-col items-start gap-1"
+              >
+                <span className="font-medium">{org.name}</span>
+                <span className="text-muted-foreground text-sm line-clamp-1">{org.description}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
       </CommandList>
     </CommandDialog>
   );
