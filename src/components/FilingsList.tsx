@@ -222,7 +222,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
       case 'rulings':
         return 'text-red-600'; // Red for legal decisions
       case 'plans and proposals':
-        return 'text-teal-600'; // Teal for planning
+        return 'text-purple-600'; // Purple for planning
       case 'exhibits':
         return 'text-pink-600'; // Pink for displays
       case 'contract':
@@ -320,7 +320,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
       case 'rulings':
         return 'bg-red-50 border-red-200 hover:bg-red-100'; // Red theme
       case 'plans and proposals':
-        return 'bg-teal-50 border-teal-200 hover:bg-teal-100'; // Teal theme
+        return 'bg-purple-50 border-purple-200 hover:bg-purple-100'; // Purple theme
       case 'exhibits':
         return 'bg-pink-50 border-pink-200 hover:bg-pink-100'; // Pink theme
       case 'contract':
