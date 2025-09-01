@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight, FileArchive, FileSpreadsheet, FileText, Link
   Mail, FileBarChart, DollarSign, Heart, Gavel, ArrowRight, MessageSquare, 
   Bell, Scale, FileCheck, Presentation, ClipboardList, Megaphone, 
   FileType, Scale3D, FileSignature, Handshake, Paperclip, 
-  AlertCircle, BookOpen, Lightbulb, Shield, MapPin, Settings, Search, Lock, HelpCircle } from "lucide-react";
+  AlertCircle, BookOpen, Lightbulb, Shield, MapPin, Settings, Search, Lock, HelpCircle, Mic } from "lucide-react";
 import { Attachment, Filling } from "@/data/mock";
 import { format, addMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -135,7 +135,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
       case 'transcripts':
         return FileType; // Text documents
       case 'testimony':
-        return Scale3D; // Speaking/testimony
+        return Mic; // Microphone for oral testimony
       case 'joint proposals and stipulations':
         return Handshake; // Agreements/handshakes
       case 'briefs':
