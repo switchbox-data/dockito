@@ -925,7 +925,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                             <div className="text-sm font-normal leading-snug text-foreground break-words">{a.attachment_title}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none shrink-0 ml-3", isSelectedAtt ? "bg-muted text-foreground border-muted-foreground/20" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none shrink-0 ml-3", "group-hover:border-primary/50", isSelectedAtt ? "bg-muted text-foreground border-muted-foreground/20" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
                         </button>
                       );
                     }
