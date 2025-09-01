@@ -1132,8 +1132,8 @@ export default function DocketsPage() {
                       </div>
                       
                       <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>{format(months[0], "MMM yyyy")}</span>
-                        <span>{format(months[months.length - 1], "MMM yyyy")}</span>
+                        <span>{months.length ? format(months[0], "MMM yyyy") : "—"}</span>
+                        <span>{months.length ? format(months[months.length - 1], "MMM yyyy") : "—"}</span>
                       </div>
                     </div>
                   </div>
