@@ -658,24 +658,15 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
 
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
             <PopoverTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className={cn(
-                  "shrink-0 justify-between h-12 px-4 rounded-xl backdrop-blur-sm border-2 transition-all duration-200",
-                  selectedOrgs.length > 0 
-                    ? "bg-primary/10 border-primary text-primary hover:bg-primary/20" 
-                    : "hover:border-primary/30"
-                )}
-              >
+              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                 <span className="inline-flex items-center gap-2">
-                  <Users size={18} className={selectedOrgs.length > 0 ? "text-primary" : "text-muted-foreground"} />
+                  <Users size={16} className="text-muted-foreground" />
                   {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
                 </span>
-                <ChevronDown size={16} />
+                <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[400px] p-0 z-50 bg-background/95 backdrop-blur-sm border-2 shadow-xl">
+            <PopoverContent className="p-0 z-50 bg-popover border">
               <Command>
                 <CommandInput placeholder="Search organizations..." />
                 <CommandList>
@@ -709,76 +700,58 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
 
           <Popover open={typeOpen} onOpenChange={setTypeOpen}>
             <PopoverTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className={cn(
-                  "shrink-0 justify-between h-12 px-4 rounded-xl backdrop-blur-sm border-2 transition-all duration-200",
-                  selectedTypes.length > 0 
-                    ? "bg-primary/10 border-primary text-primary hover:bg-primary/20" 
-                    : "hover:border-primary/30"
-                )}
-              >
+              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                 <span className="inline-flex items-center gap-2">
-                  <Shapes size={18} className={selectedTypes.length > 0 ? "text-primary" : "text-muted-foreground"} />
+                  <Shapes size={16} className="text-muted-foreground" />
                   {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
                 </span>
-                <ChevronDown size={16} />
+                <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[400px] p-0 z-50 bg-background/95 backdrop-blur-sm border-2 shadow-xl">
-              <Command>
-                <CommandInput placeholder="Search types..." />
-                <CommandList>
-                  <CommandEmpty>No results.</CommandEmpty>
-                  <CommandGroup heading="Types">
-                    <CommandItem onSelect={() => setSelectedTypes([])}>Clear</CommandItem>
-                    <CommandItem onSelect={() => setSelectedTypes(types)}>Select all</CommandItem>
-                    {types.map((t) => {
-                      const selected = selectedTypes.includes(t);
-                      return (
-                        <CommandItem
-                          key={t}
-                          onSelect={() =>
-                            setSelectedTypes((prev) =>
-                              prev.includes(t) ? prev.filter((v) => v !== t) : [...prev, t]
-                            )
-                          }
-                        >
-                           <div className="flex items-start gap-2">
-                             <Check size={14} className={cn("opacity-0 mt-0.5 shrink-0", selected && "opacity-100")} />
-                             {(() => {
-                               const TypeIcon = getFilingTypeIcon(t);
-                               const typeColor = getFilingTypeColor(t);
-                               return <TypeIcon size={14} className={`${typeColor} mt-0.5 shrink-0`} />;
-                             })()}
-                             <span className="leading-tight">{t}</span>
-                           </div>
-                        </CommandItem>
-                      );
-                    })}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
+            <PopoverContent className="w-[700px] p-0 z-50 bg-popover border max-h-[600px] overflow-y-auto" align="start">
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold">Filing Types</h3>
+                  <div className="flex items-center gap-2">
+                    {selectedTypes.length > 0 && (
+                      <Button variant="outline" size="sm" onClick={() => setSelectedTypes([])}>Clear</Button>
+                    )}
+                    <Button size="sm" onClick={() => setTypeOpen(false)}>Done</Button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                  {types.map((t) => {
+                    const isSelected = selectedTypes.includes(t);
+                    const Icon = getFilingTypeIcon(t);
+                    return (
+                      <button
+                        key={t}
+                        onClick={() => {
+                          setSelectedTypes((prev) => prev.includes(t) ? prev.filter((v) => v !== t) : [...prev, t]);
+                        }}
+                        className={cn(
+                          "flex items-center gap-2 p-3 rounded-md border transition-colors text-left",
+                          isSelected ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted/50 border-border"
+                        )}
+                      >
+                        <Icon className={cn("h-4 w-4 flex-shrink-0", getFilingTypeColor(t))} />
+                        <div className="min-w-0 flex-1">
+                          <div className="font-medium text-sm truncate">{t}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </PopoverContent>
           </Popover>
 
           {/* Date range (months) */}
           <Popover open={dateOpen} onOpenChange={setDateOpen}>
             <PopoverTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className={cn(
-                  "min-w-[180px] justify-between shrink-0 h-12 px-4 rounded-xl backdrop-blur-sm border-2 transition-all duration-200",
-                  !isFullRange 
-                    ? "bg-primary/10 border-primary text-primary hover:bg-primary/20" 
-                    : "hover:border-primary/30"
-                )}
-                disabled={months.length <= 1}
-              >
+              <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0 hover:border-primary/30" disabled={months.length <= 1}>
                 <span className="inline-flex items-center gap-2">
-                  <Calendar size={18} className={!isFullRange ? "text-primary" : "text-muted-foreground"} />
+                  <Calendar size={16} className="text-muted-foreground" />
                   {months.length === 1 ? format(months[0], "MMM yyyy") : months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}
                 </span>
                 <ChevronDown size={14} />
