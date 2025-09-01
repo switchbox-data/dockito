@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { FolderOpen } from "lucide-react";
+import { FolderOpen, Building2 } from "lucide-react";
 
 const SEARCH_DELAY = 300;
 const sanitizeQuery = (s: string) => s.replace(/[,%]/g, " ").trim();
@@ -69,6 +69,15 @@ export const CommandK = () => {
           >
             <FolderOpen className="mr-2 h-4 w-4" />
             <span>View Dockets</span>
+          </CommandItem>
+          <CommandItem
+            onSelect={() => {
+              navigate('/organizations');
+              setOpen(false);
+            }}
+          >
+            <Building2 className="mr-2 h-4 w-4" />
+            <span>View Organizations</span>
           </CommandItem>
         </CommandGroup>
         <CommandGroup heading={`Dockets${results.length ? ` (${results.length})` : ""}`}>
