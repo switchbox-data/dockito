@@ -1058,13 +1058,15 @@ export default function DocketsPage() {
                                })()}
                                {d.industry}
                              </Badge>
-                           )}
-                           <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
-                         </div>
-                       </div>
+                            )}
+                          </div>
+                        </div>
                        
-                        <div className="space-y-2">
-                          <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
+                         <div className="space-y-2">
+                           <div className="flex items-center justify-between">
+                             <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
+                             <span className="text-xs text-muted-foreground">Opened: {format(new Date(d.opened_date), "MMM d, yyyy")}</span>
+                           </div>
                           <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
                         </div>
                         
