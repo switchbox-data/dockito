@@ -196,7 +196,7 @@ export const DocketHeader = ({ docket }: Props) => {
               )}
             </div>
             <div className="flex items-start gap-3">
-              <FolderOpen size={28} className="text-foreground/70 mt-0.5 shrink-0" />
+              <FolderOpen size={28} className="text-foreground/50 mt-0.5 shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground leading-tight">Docket</p>
                 <h2 className="text-lg md:text-xl font-semibold leading-tight">{docket.docket_govid}</h2>

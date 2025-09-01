@@ -17,7 +17,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
       <div className="relative z-10 grid gap-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
-            <Building2 size={28} className="text-primary shrink-0 mt-0.5" />
+            <Building2 size={28} className="text-foreground/50 shrink-0 mt-0.5" />
             <div>
               <p className="text-xs text-muted-foreground leading-tight">Organization</p>
               <h1 className="text-lg md:text-xl font-semibold tracking-tight leading-tight">{orgName}</h1>
