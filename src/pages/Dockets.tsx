@@ -269,7 +269,7 @@ export default function DocketsPage() {
   const [docketTypes, setDocketTypes] = useState<string[]>([]);
   const [docketSubtypes, setDocketSubtypes] = useState<string[]>([]);
   const [petitioners, setPetitioners] = useState<string[]>([]);
-  const [filterBoardOpen, setFilterBoardOpen] = useState(false);
+  const [typeMenuOpen, setTypeMenuOpen] = useState(false);
   const [subtypeSearch, setSubtypeSearch] = useState("");
   const [petOpen, setPetOpen] = useState(false);
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
@@ -727,7 +727,7 @@ export default function DocketsPage() {
     if (e.key === '/') { e.preventDefault(); searchRef.current?.focus(); return; }
     if (e.key.toLowerCase() === 'p') { if (lockedOrg) return; e.preventDefault(); setPetOpen(true); return; }
     if (e.key.toLowerCase() === 'i') { e.preventDefault(); setIndustryOpen(true); return; }
-    if (e.key.toLowerCase() === 't') { e.preventDefault(); setFilterBoardOpen(true); return; }
+    if (e.key.toLowerCase() === 't') { e.preventDefault(); setTypeMenuOpen(true); return; }
     if (e.key.toLowerCase() === 's') { e.preventDefault(); setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); return; }
     if (e.key.toLowerCase() === 'd') { e.preventDefault(); setDateOpen(true); return; }
 
@@ -737,13 +737,6 @@ export default function DocketsPage() {
     if (e.key === 'ArrowUp') { e.preventDefault(); setSelectedIdx((i) => { const ni = Math.max(0, i - cols); scrollSelectedIntoView(ni); return ni; }); return; }
     if (e.key === 'ArrowDown') { e.preventDefault(); setSelectedIdx((i) => { const ni = Math.min(items.length - 1, i + cols); scrollSelectedIntoView(ni); return ni; }); return; }
     if (e.key === 'Enter') { e.preventDefault(); const d = items[selectedIdx]; if (d) navigate(`/docket/${d.docket_govid}`); return; }
-  };
-
-  const openTypesBoard = () => {
-    setFilterBoardOpen(true);
-    requestAnimationFrame(() => {
-      document.getElementById('types-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
   };
 
   return (
@@ -994,13 +987,154 @@ export default function DocketsPage() {
                 </PopoverContent>
               </Popover>
 
-              {/* Types */}
-              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30" onClick={openTypesBoard}>
-                <span className="inline-flex items-center gap-2">
-                  <Shapes size={16} className="text-muted-foreground" />
-                  {docketTypes.length || docketSubtypes.length ? `Types (${docketTypes.length + docketSubtypes.length})` : "Types"}
-                </span>
-              </Button>
+              {/* Types Menu */}
+              <Popover open={typeMenuOpen} onOpenChange={setTypeMenuOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                    <span className="inline-flex items-center gap-2">
+                      <Shapes size={16} className="text-muted-foreground" />
+                      {docketTypes.length || docketSubtypes.length ? `Types (${docketTypes.length + docketSubtypes.length})` : "Types"}
+                    </span>
+                    <ChevronDown size={14} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[800px] p-0 z-50 bg-popover border max-h-[600px] overflow-y-auto" align="start">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-sm font-semibold">Types & Subtypes</h3>
+                      <div className="flex items-center gap-2">
+                        {(docketTypes.length > 0 || docketSubtypes.length > 0) && (
+                          <Button variant="outline" size="sm" onClick={() => { setDocketTypes([]); setDocketSubtypes([]); setSubtypeSearch(""); }}>Clear types</Button>
+                        )}
+                        <Button size="sm" onClick={() => setTypeMenuOpen(false)}>Done</Button>
+                      </div>
+                    </div>
+                    
+                    {/* Types Grid */}
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="text-xs font-medium text-muted-foreground mb-2">DOCKET TYPES</h4>
+                        <div className="grid grid-cols-4 gap-2">
+                          {docketTypeOptions.map((type) => {
+                            const isSelected = docketTypes.includes(type.name);
+                            const Icon = getDocketTypeIcon(type.name);
+                            return (
+                              <button
+                                key={type.name}
+                                className={cn(
+                                  "flex items-center gap-2 p-3 rounded-md border transition-colors text-left",
+                                  isSelected 
+                                    ? "bg-primary text-primary-foreground border-primary" 
+                                    : "hover:bg-muted/50 border-border"
+                                )}
+                                onClick={() => {
+                                  const allowed = ['tariff','petition','contract','complaint'];
+                                  const hasSubtypes = allowed.includes(type.name.toLowerCase());
+                                  const typeSubtypes = hasSubtypes ? (subtypesByType[type.name] || []) : [];
+                                  
+                                  if (isSelected) {
+                                    setDocketTypes(prev => prev.filter(t => t !== type.name));
+                                    // clear its subtypes when unselected
+                                    if (hasSubtypes) {
+                                      setDocketSubtypes(prev => prev.filter(s => !typeSubtypes.some(ts => ts.name === s)));
+                                    }
+                                  } else {
+                                    setDocketTypes(prev => [...prev, type.name]);
+                                  }
+                                }}
+                              >
+                                <Icon className={cn("h-4 w-4 flex-shrink-0", getDocketTypeColor(type.name))} />
+                                <div className="min-w-0 flex-1">
+                                  <div className="font-medium text-sm truncate">{type.name}</div>
+                                  {lockedOrg && type.count > 0 && (
+                                    <div className="text-xs opacity-70">{type.count}</div>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Subtypes Section - only show if any selected types have subtypes */}
+                      {(() => {
+                        const allowed = ['tariff','petition','contract','complaint'];
+                        const selectedTypesWithSubtypes = docketTypes.filter(type => 
+                          allowed.includes(type.toLowerCase()) && (subtypesByType[type] || []).length > 0
+                        );
+                        
+                        if (selectedTypesWithSubtypes.length === 0) return null;
+                        
+                        return (
+                          <div>
+                            <h4 className="text-xs font-medium text-muted-foreground mb-2">SUBTYPES</h4>
+                            <div className="space-y-3">
+                              {selectedTypesWithSubtypes.map(typeName => {
+                                const typeSubtypes = subtypesByType[typeName] || [];
+                                const isPetition = typeName.toLowerCase() === 'petition';
+                                const filteredSubtypes = isPetition && subtypeSearch
+                                  ? typeSubtypes.filter(st => st.name.toLowerCase().includes(subtypeSearch.toLowerCase()))
+                                  : typeSubtypes;
+                                
+                                return (
+                                  <div key={typeName} className="border rounded-md p-3">
+                                    <div className="flex items-center gap-2 mb-3">
+                                      {(() => {
+                                        const Icon = getDocketTypeIcon(typeName);
+                                        return <Icon className={cn("h-4 w-4", getDocketTypeColor(typeName))} />;
+                                      })()}
+                                      <span className="font-medium text-sm">{typeName}</span>
+                                      {isPetition && typeSubtypes.length > 10 && (
+                                        <Input
+                                          placeholder="Search subtypes..."
+                                          value={subtypeSearch}
+                                          onChange={(e) => setSubtypeSearch(e.target.value)}
+                                          className="h-7 text-xs ml-auto w-48"
+                                        />
+                                      )}
+                                    </div>
+                                    <div className={cn(
+                                      "grid gap-1",
+                                      isPetition ? "grid-cols-2 max-h-32 overflow-y-auto" : "grid-cols-3"
+                                    )}>
+                                      {filteredSubtypes.map(st => {
+                                        const selected = docketSubtypes.includes(st.name);
+                                        return (
+                                          <button
+                                            key={st.name}
+                                            onClick={() => {
+                                              if (selected) {
+                                                setDocketSubtypes(prev => prev.filter(s => s !== st.name));
+                                              } else {
+                                                setDocketSubtypes(prev => [...prev, st.name]);
+                                              }
+                                            }}
+                                            className={cn(
+                                              "flex items-center gap-2 p-2 rounded text-xs transition-colors text-left",
+                                              selected 
+                                                ? "bg-secondary text-secondary-foreground" 
+                                                : "hover:bg-muted/50"
+                                            )}
+                                          >
+                                            <span className="truncate">{st.name}</span>
+                                            {lockedOrg && st.count > 0 && (
+                                              <span className="ml-auto text-xs opacity-70">{st.count}</span>
+                                            )}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
 
               {/* Sort */}
               <div className="shrink-0">
@@ -1011,143 +1145,6 @@ export default function DocketsPage() {
             </div>
           </div>
         </div>
-      {filterBoardOpen && (
-        <div className="mt-4 rounded-lg border bg-card p-4" id="types-section">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold">Types & Subtypes</h3>
-            <div className="flex items-center gap-2">
-              {(docketTypes.length > 0 || docketSubtypes.length > 0) && (
-                <Button variant="outline" size="sm" onClick={() => { setDocketTypes([]); setDocketSubtypes([]); setSubtypeSearch(""); }}>Clear types</Button>
-              )}
-              <Button size="sm" onClick={() => setFilterBoardOpen(false)}>Close</Button>
-            </div>
-          </div>
-          
-          {/* Types Grid */}
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-xs font-medium text-muted-foreground mb-2">DOCKET TYPES</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
-                {docketTypeOptions.map((type) => {
-                  const isSelected = docketTypes.includes(type.name);
-                  const Icon = getDocketTypeIcon(type.name);
-                  return (
-                    <button
-                      key={type.name}
-                      className={cn(
-                        "flex items-center gap-2 p-3 rounded-md border transition-colors text-left",
-                        isSelected 
-                          ? "bg-primary text-primary-foreground border-primary" 
-                          : "hover:bg-muted/50 border-border"
-                      )}
-                      onClick={() => {
-                        const allowed = ['tariff','petition','contract','complaint'];
-                        const hasSubtypes = allowed.includes(type.name.toLowerCase());
-                        const typeSubtypes = hasSubtypes ? (subtypesByType[type.name] || []) : [];
-                        
-                        if (isSelected) {
-                          setDocketTypes(prev => prev.filter(t => t !== type.name));
-                          // clear its subtypes when unselected
-                          if (hasSubtypes) {
-                            setDocketSubtypes(prev => prev.filter(s => !typeSubtypes.some(ts => ts.name === s)));
-                          }
-                        } else {
-                          setDocketTypes(prev => [...prev, type.name]);
-                        }
-                      }}
-                    >
-                      <Icon className={cn("h-4 w-4 flex-shrink-0", getDocketTypeColor(type.name))} />
-                      <div className="min-w-0 flex-1">
-                        <div className="font-medium text-sm truncate">{type.name}</div>
-                        {lockedOrg && type.count > 0 && (
-                          <div className="text-xs opacity-70">{type.count}</div>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Subtypes Section - only show if any selected types have subtypes */}
-            {(() => {
-              const allowed = ['tariff','petition','contract','complaint'];
-              const selectedTypesWithSubtypes = docketTypes.filter(type => 
-                allowed.includes(type.toLowerCase()) && (subtypesByType[type] || []).length > 0
-              );
-              
-              if (selectedTypesWithSubtypes.length === 0) return null;
-              
-              return (
-                <div>
-                  <h4 className="text-xs font-medium text-muted-foreground mb-2">SUBTYPES</h4>
-                  <div className="space-y-3">
-                    {selectedTypesWithSubtypes.map(typeName => {
-                      const typeSubtypes = subtypesByType[typeName] || [];
-                      const isPetition = typeName.toLowerCase() === 'petition';
-                      const filteredSubtypes = isPetition && subtypeSearch
-                        ? typeSubtypes.filter(st => st.name.toLowerCase().includes(subtypeSearch.toLowerCase()))
-                        : typeSubtypes;
-                      
-                      return (
-                        <div key={typeName} className="border rounded-md p-3">
-                          <div className="flex items-center gap-2 mb-3">
-                            {(() => {
-                              const Icon = getDocketTypeIcon(typeName);
-                              return <Icon className={cn("h-4 w-4", getDocketTypeColor(typeName))} />;
-                            })()}
-                            <span className="font-medium text-sm">{typeName}</span>
-                            {isPetition && typeSubtypes.length > 10 && (
-                              <Input
-                                placeholder="Search subtypes..."
-                                value={subtypeSearch}
-                                onChange={(e) => setSubtypeSearch(e.target.value)}
-                                className="h-7 text-xs ml-auto w-48"
-                              />
-                            )}
-                          </div>
-                          <div className={cn(
-                            "grid gap-1",
-                            isPetition ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-h-32 overflow-y-auto" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-                          )}>
-                            {filteredSubtypes.map(st => {
-                              const selected = docketSubtypes.includes(st.name);
-                              return (
-                                <button
-                                  key={st.name}
-                                  onClick={() => {
-                                    if (selected) {
-                                      setDocketSubtypes(prev => prev.filter(s => s !== st.name));
-                                    } else {
-                                      setDocketSubtypes(prev => [...prev, st.name]);
-                                    }
-                                  }}
-                                  className={cn(
-                                    "flex items-center gap-2 p-2 rounded text-xs transition-colors text-left",
-                                    selected 
-                                      ? "bg-secondary text-secondary-foreground" 
-                                      : "hover:bg-muted/50"
-                                  )}
-                                >
-                                  <span className="truncate">{st.name}</span>
-                                  {lockedOrg && st.count > 0 && (
-                                    <span className="ml-auto text-xs opacity-70">{st.count}</span>
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-        </div>
-      )}
-
       <section aria-label="Filters" className="space-y-2">
         {/* Active filter chips */}
         <div className="flex flex-wrap gap-2 text-sm px-1">
