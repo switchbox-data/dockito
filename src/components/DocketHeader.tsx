@@ -218,7 +218,7 @@ export const DocketHeader = ({ docket }: Props) => {
         </div>
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="flex-[0.9]">
-            <h1 className="text-base md:text-lg font-semibold tracking-tight mb-1">{docket.docket_title}</h1>
+            <h1 className="text-sm md:text-base font-normal tracking-tight mb-1 text-muted-foreground/90">{docket.docket_title}</h1>
           </div>
         </div>
       </div>
