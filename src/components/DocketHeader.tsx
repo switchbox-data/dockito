@@ -160,7 +160,7 @@ export const DocketHeader = ({ docket }: Props) => {
       <div className="absolute inset-0 pointer-events-none opacity-70" style={{ background: "var(--gradient-primary)" }} />
       <div className="relative z-10 grid gap-4">
         <div className="flex items-start justify-between">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {docket.docket_type && (
                 <Badge variant="outline" className={`px-3 py-1.5 text-sm inline-flex items-center gap-1.5 ${getDocketTypeBadgeColors(docket.docket_type)}`}>
@@ -202,7 +202,7 @@ export const DocketHeader = ({ docket }: Props) => {
         </div>
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="flex-[0.9]">
-            <h1 className="text-lg md:text-xl font-semibold tracking-tight mb-1">{docket.docket_title}</h1>
+            <h1 className="text-base md:text-lg font-semibold tracking-tight mb-1">{docket.docket_title}</h1>
           </div>
         </div>
       </div>
