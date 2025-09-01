@@ -127,7 +127,7 @@ const getDocketTypeBadgeColors = (type: string) => {
   }
 };
 
-// Helper function to get darker border colors for docket type badge hover
+// Helper function to get darker border colors for docket type badge hover (on card hover)
 const getDocketTypeHoverBorderColors = (type: string) => {
   const typeKey = type?.toLowerCase().trim();
   switch (typeKey) {
