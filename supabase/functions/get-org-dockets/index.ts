@@ -57,19 +57,41 @@ Deno.serve(async (req) => {
     if (aggregateOnly) {
       console.log('Getting aggregate data for org:', orgName)
       
-      // Get all docket UUIDs for this organization first (remove default limit)
-      const { data: docketRelations, error: relationsError } = await supabase
-        .from('docket_petitioned_by_org')
-        .select('docket_uuid')
-        .eq('petitioner_uuid', orgId)
-        .limit(10000) // Set a high limit to get all results
+      // Get all docket UUIDs for this organization first
+      let allDocketRelations: any[] = []
+      let from = 0
+      const batchSize = 1000
+      
+      // Fetch all relations in batches to avoid limits
+      while (true) {
+        const { data: batchRelations, error: batchError } = await supabase
+          .from('docket_petitioned_by_org')
+          .select('docket_uuid')
+          .eq('petitioner_uuid', orgId)
+          .range(from, from + batchSize - 1)
+        
+        if (batchError) {
+          console.error('Error getting docket relations batch:', batchError)
+          break
+        }
+        
+        if (!batchRelations || batchRelations.length === 0) {
+          break
+        }
+        
+        allDocketRelations = allDocketRelations.concat(batchRelations)
+        
+        if (batchRelations.length < batchSize) {
+          break // Last batch
+        }
+        
+        from += batchSize
+      }
+      
+      const docketRelations = allDocketRelations
 
-      if (relationsError) {
-        console.error('Error getting docket relations:', relationsError)
-        return new Response(
-          JSON.stringify({ error: 'Failed to get docket relations', details: relationsError.message }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+      if (allDocketRelations.length === 0) {
+        console.log('No docket relations found for org:', orgName)
       }
 
       const docketUuids = docketRelations?.map(rel => rel.docket_uuid) || []
