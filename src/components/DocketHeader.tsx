@@ -195,11 +195,11 @@ export const DocketHeader = ({ docket }: Props) => {
                 </Badge>
               )}
             </div>
-            <div className="flex items-center gap-3">
-              <FolderOpen size={24} className="text-foreground/80" />
+            <div className="flex items-center gap-4">
+              <FolderOpen size={32} className="text-foreground/70" />
               <div>
                 <p className="text-sm text-muted-foreground">Docket</p>
-                <h2 className="text-2xl font-bold">{docket.docket_govid}</h2>
+                <h2 className="text-xl font-semibold">{docket.docket_govid}</h2>
               </div>
             </div>
           </div>
