@@ -641,22 +641,22 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
 
   return (
     <section ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="mt-6 outline-none">
-      <div className="sticky top-0 z-40 bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur border-b mb-3 space-y-2 py-2">
-        {/* Row 1: controls */}
-        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto">
+      <div className="sticky top-0 z-40">
+        <div className="relative border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md mb-3">
+          <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
+          <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-x-auto">
           <Input
             ref={searchRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search filings..."
-            className="w-36 md:w-48 transition-[width] duration-200 focus:w-72 md:focus:w-[36rem] hover:border-primary/30"
+            className="w-[10rem] md:w-[16rem] focus:w-[24rem] md:focus:w-[36rem] transition-[width] duration-300 hover:border-primary/30"
             onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
           />
 
-          <span className="ml-auto text-sm text-muted-foreground">Filter:</span>
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[160px] justify-between hover:border-primary/30">
+              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                 <span className="inline-flex items-center gap-2">
                   <Users size={16} className="text-muted-foreground" />
                   {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
@@ -696,10 +696,9 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             </PopoverContent>
           </Popover>
 
-          {/* Filing type filter (searchable) */}
           <Popover open={typeOpen} onOpenChange={setTypeOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-[160px] justify-between hover:border-primary/30">
+              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                 <span className="inline-flex items-center gap-2">
                   <Shapes size={16} className="text-muted-foreground" />
                   {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
@@ -799,6 +798,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             </Button>
           </div>
         </div>
+      </div>
 
         {/* Row 2: selected chips */}
         {(selectedOrgs.length > 0 || selectedTypes.length > 0) && (
