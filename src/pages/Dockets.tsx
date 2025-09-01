@@ -958,7 +958,7 @@ export default function DocketsPage() {
       </section>
 
       <section aria-label="Results" className="space-y-4">
-        {isLoading && items.length === 0 ? (
+        {(isLoading || isAggregateLoading) && items.length === 0 ? (
           <div className="grid gap-4 md:grid-cols-2">
             {Array.from({ length: 6 }).map((_, i) => (
               <DocketCardSkeleton key={i} />
