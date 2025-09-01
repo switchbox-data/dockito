@@ -1022,78 +1022,128 @@ export default function DocketsPage() {
               <Button size="sm" onClick={() => setFilterBoardOpen(false)}>Close</Button>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {docketTypeOptions.map((type) => {
-              const isSelected = docketTypes.includes(type.name);
-              const Icon = getDocketTypeIcon(type.name);
-              const allowed = ['tariff','petition','contract','complaint'];
-              const hasSubtypes = allowed.includes(type.name.toLowerCase());
-              const typeSubtypes = hasSubtypes ? (subtypesByType[type.name] || []) : [];
-              const filteredSubtypes = type.name.toLowerCase() === 'petition' && subtypeSearch
-                ? typeSubtypes.filter(st => st.name.toLowerCase().includes(subtypeSearch.toLowerCase()))
-                : typeSubtypes;
-              return (
-                <div key={type.name} className={cn("rounded-md border p-3", isSelected ? "ring-2 ring-primary" : "hover:bg-muted/50") }>
-                  <button
-                    className="w-full flex items-center gap-2"
-                    onClick={() => {
-                      if (isSelected) {
-                        setDocketTypes(prev => prev.filter(t => t !== type.name));
-                        // clear its subtypes when unselected
-                        if (hasSubtypes) {
-                          setDocketSubtypes(prev => prev.filter(s => !typeSubtypes.some(ts => ts.name === s)));
-                        }
-                      } else {
-                        setDocketTypes(prev => [...prev, type.name]);
-                      }
-                    }}
-                  >
-                    <Icon className={cn("h-4 w-4", getDocketTypeColor(type.name))} />
-                    <span className="font-medium text-sm truncate">{type.name}</span>
-                    {lockedOrg && type.count > 0 && (
-                      <span className="ml-auto text-xs text-muted-foreground">{type.count}</span>
-                    )}
-                  </button>
-                  {hasSubtypes && isSelected && typeSubtypes.length > 0 && (
-                    <div className="mt-2">
-                      {type.name.toLowerCase() === 'petition' && typeSubtypes.length > 10 && (
-                        <Input
-                          placeholder="Search subtypes..."
-                          value={subtypeSearch}
-                          onChange={(e) => setSubtypeSearch(e.target.value)}
-                          className="h-8 text-xs mb-2"
-                        />
+          
+          {/* Types Grid */}
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-xs font-medium text-muted-foreground mb-2">DOCKET TYPES</h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
+                {docketTypeOptions.map((type) => {
+                  const isSelected = docketTypes.includes(type.name);
+                  const Icon = getDocketTypeIcon(type.name);
+                  return (
+                    <button
+                      key={type.name}
+                      className={cn(
+                        "flex items-center gap-2 p-3 rounded-md border transition-colors text-left",
+                        isSelected 
+                          ? "bg-primary text-primary-foreground border-primary" 
+                          : "hover:bg-muted/50 border-border"
                       )}
-                      <div className={cn("grid gap-1", type.name.toLowerCase() === 'petition' ? "max-h-32 overflow-y-auto grid-cols-1" : "grid-cols-1") }>
-                        {filteredSubtypes.map(st => {
-                          const selected = docketSubtypes.includes(st.name);
-                          return (
-                            <button
-                              key={st.name}
-                              onClick={() => {
-                                if (selected) {
-                                  setDocketSubtypes(prev => prev.filter(s => s !== st.name));
-                                } else {
-                                  setDocketSubtypes(prev => [...prev, st.name]);
-                                }
-                              }}
-                              className={cn("flex items-center gap-2 p-1.5 rounded text-xs transition-colors text-left w-full",
-                                selected ? "bg-secondary text-secondary-foreground" : "hover:bg-muted/50"
-                              )}
-                            >
-                              <span className="truncate">{st.name}</span>
-                              {lockedOrg && st.count > 0 && (
-                                <span className="ml-auto text-xs opacity-70">{st.count}</span>
-                              )}
-                            </button>
-                          );
-                        })}
+                      onClick={() => {
+                        const allowed = ['tariff','petition','contract','complaint'];
+                        const hasSubtypes = allowed.includes(type.name.toLowerCase());
+                        const typeSubtypes = hasSubtypes ? (subtypesByType[type.name] || []) : [];
+                        
+                        if (isSelected) {
+                          setDocketTypes(prev => prev.filter(t => t !== type.name));
+                          // clear its subtypes when unselected
+                          if (hasSubtypes) {
+                            setDocketSubtypes(prev => prev.filter(s => !typeSubtypes.some(ts => ts.name === s)));
+                          }
+                        } else {
+                          setDocketTypes(prev => [...prev, type.name]);
+                        }
+                      }}
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium text-sm truncate">{type.name}</div>
+                        {lockedOrg && type.count > 0 && (
+                          <div className="text-xs opacity-70">{type.count}</div>
+                        )}
                       </div>
-                    </div>
-                  )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Subtypes Section - only show if any selected types have subtypes */}
+            {(() => {
+              const allowed = ['tariff','petition','contract','complaint'];
+              const selectedTypesWithSubtypes = docketTypes.filter(type => 
+                allowed.includes(type.toLowerCase()) && (subtypesByType[type] || []).length > 0
+              );
+              
+              if (selectedTypesWithSubtypes.length === 0) return null;
+              
+              return (
+                <div>
+                  <h4 className="text-xs font-medium text-muted-foreground mb-2">SUBTYPES</h4>
+                  <div className="space-y-3">
+                    {selectedTypesWithSubtypes.map(typeName => {
+                      const typeSubtypes = subtypesByType[typeName] || [];
+                      const isPetition = typeName.toLowerCase() === 'petition';
+                      const filteredSubtypes = isPetition && subtypeSearch
+                        ? typeSubtypes.filter(st => st.name.toLowerCase().includes(subtypeSearch.toLowerCase()))
+                        : typeSubtypes;
+                      
+                      return (
+                        <div key={typeName} className="border rounded-md p-3">
+                          <div className="flex items-center gap-2 mb-3">
+                            {(() => {
+                              const Icon = getDocketTypeIcon(typeName);
+                              return <Icon className={cn("h-4 w-4", getDocketTypeColor(typeName))} />;
+                            })()}
+                            <span className="font-medium text-sm">{typeName}</span>
+                            {isPetition && typeSubtypes.length > 10 && (
+                              <Input
+                                placeholder="Search subtypes..."
+                                value={subtypeSearch}
+                                onChange={(e) => setSubtypeSearch(e.target.value)}
+                                className="h-7 text-xs ml-auto w-48"
+                              />
+                            )}
+                          </div>
+                          <div className={cn(
+                            "grid gap-1",
+                            isPetition ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-h-32 overflow-y-auto" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                          )}>
+                            {filteredSubtypes.map(st => {
+                              const selected = docketSubtypes.includes(st.name);
+                              return (
+                                <button
+                                  key={st.name}
+                                  onClick={() => {
+                                    if (selected) {
+                                      setDocketSubtypes(prev => prev.filter(s => s !== st.name));
+                                    } else {
+                                      setDocketSubtypes(prev => [...prev, st.name]);
+                                    }
+                                  }}
+                                  className={cn(
+                                    "flex items-center gap-2 p-2 rounded text-xs transition-colors text-left",
+                                    selected 
+                                      ? "bg-secondary text-secondary-foreground" 
+                                      : "hover:bg-muted/50"
+                                  )}
+                                >
+                                  <span className="truncate">{st.name}</span>
+                                  {lockedOrg && st.count > 0 && (
+                                    <span className="ml-auto text-xs opacity-70">{st.count}</span>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               );
-            })}
+            })()}
           </div>
         </div>
       )}
