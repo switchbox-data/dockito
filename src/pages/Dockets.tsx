@@ -844,10 +844,10 @@ export default function DocketsPage() {
                       <ChevronDown size={14} />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[500px] p-0 z-50 bg-popover border max-h-[400px]" align="start">
+                  <PopoverContent className="w-[500px] p-0 z-50 bg-popover border max-h-[500px]" align="start">
                     <Command className="h-full">
                       <CommandInput placeholder="Search petitioners..." className="text-sm" />
-                      <CommandList className="max-h-[320px]">
+                      <CommandList className="max-h-[420px]">
                         <CommandEmpty>No results.</CommandEmpty>
                         <CommandGroup heading="Petitioners">
                           <CommandItem onSelect={() => setPetitioners([])} className="py-2">
