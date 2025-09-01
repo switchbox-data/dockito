@@ -763,13 +763,10 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
             ))}
             {selectedTypes.map((t) => (
               <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
-                <div className="flex items-center gap-1.5 mr-1">
-                  {(() => {
-                    const TypeIcon = getFilingTypeIcon(t);
-                    return <TypeIcon size={12} className="text-muted-foreground" />;
-                  })()}
-                  <span>{t}</span>
-                </div>
+              <div className="flex items-center gap-1.5 mr-1">
+                <Shapes size={12} className="text-muted-foreground" />
+                <span>{t}</span>
+              </div>
                 <button
                   type="button"
                   onClick={() => setSelectedTypes((prev) => prev.filter((v) => v !== t))}

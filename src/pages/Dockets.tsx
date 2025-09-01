@@ -892,11 +892,7 @@ export default function DocketsPage() {
           {docketTypes.map((t) => (
             <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
               <div className="flex items-center gap-1.5 mr-1">
-                {(() => {
-                  const TypeIcon = getDocketTypeIcon(t);
-                  const typeColor = getDocketTypeColor(t);
-                  return <TypeIcon size={12} className={typeColor} />;
-                })()}
+                <Shapes size={12} className="text-muted-foreground" />
                 <span>Type: {t}</span>
               </div>
               <button
