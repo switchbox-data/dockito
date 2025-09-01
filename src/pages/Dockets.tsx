@@ -874,7 +874,16 @@ export default function DocketsPage() {
                      <CardContent className="p-4 space-y-1">
                        <div className="flex items-start justify-between gap-3 mb-1">
                          <div className="flex flex-wrap gap-1">
-                           {d.docket_type && <Badge variant="outline">{d.docket_type}</Badge>}
+                            {d.docket_type && (
+                              <Badge variant="outline" className="inline-flex items-center gap-1.5">
+                                {(() => {
+                                  const TypeIcon = getDocketTypeIcon(d.docket_type);
+                                  const typeColor = getDocketTypeColor(d.docket_type);
+                                  return <TypeIcon size={12} className={typeColor} />;
+                                })()}
+                                {d.docket_type}
+                              </Badge>
+                            )}
                            {d.docket_subtype && <Badge variant="outline">{d.docket_subtype}</Badge>}
                          </div>
                          <div className="flex flex-col items-end gap-1">
