@@ -57,11 +57,12 @@ Deno.serve(async (req) => {
     if (aggregateOnly) {
       console.log('Getting aggregate data for org:', orgName)
       
-      // Get all docket UUIDs for this organization first
+      // Get all docket UUIDs for this organization first (remove default limit)
       const { data: docketRelations, error: relationsError } = await supabase
         .from('docket_petitioned_by_org')
         .select('docket_uuid')
         .eq('petitioner_uuid', orgId)
+        .limit(10000) // Set a high limit to get all results
 
       if (relationsError) {
         console.error('Error getting docket relations:', relationsError)
@@ -168,6 +169,7 @@ Deno.serve(async (req) => {
       .from('docket_petitioned_by_org')
       .select('docket_uuid')
       .eq('petitioner_uuid', orgId)
+      .limit(10000) // Set a high limit to get all results
 
     if (relationsError) {
       console.error('Error getting docket relations:', relationsError)
