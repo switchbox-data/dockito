@@ -292,6 +292,18 @@ export default function DocketsPage() {
   }, [bounds]);
   const [range, setRange] = useState<[number, number] | null>(null);
 
+  // Reset filters when navigating between different organization contexts
+  useEffect(() => {
+    // Reset all filter states when the organization context changes
+    setSelectedIndustries([]);
+    setDocketTypes([]);
+    setPetitioners([]);
+    setSearch("");
+    setDateRange(undefined);
+    setRange(null);
+    // Note: relationshipTypes intentionally kept as it's org-specific setting
+  }, [lockedOrg]);
+
   // Initialize/reset range when context changes
   useEffect(() => {
     if (months.length) {
