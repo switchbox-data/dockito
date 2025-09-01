@@ -163,7 +163,7 @@ export const DocketHeader = ({ docket }: Props) => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {docket.docket_type && (
-                <Badge variant="outline" className={`px-3 py-1.5 text-sm inline-flex items-center gap-1.5 ${getDocketTypeBadgeColors(docket.docket_type)}`}>
+                <Badge variant="outline" className={`text-xs inline-flex items-center gap-1.5 ${getDocketTypeBadgeColors(docket.docket_type)}`}>
                   {(() => {
                     const TypeIcon = getDocketTypeIcon(docket.docket_type);
                     const typeColor = getDocketTypeColor(docket.docket_type);
@@ -173,7 +173,7 @@ export const DocketHeader = ({ docket }: Props) => {
                 </Badge>
               )}
               {docket.docket_subtype && (
-                <Badge variant="outline" className="px-3 py-1.5 text-sm bg-slate-50 border-slate-200 hover:bg-slate-100 inline-flex items-center gap-1.5">
+                <Badge variant="outline" className="text-xs bg-slate-50 border-slate-200 hover:bg-slate-100 inline-flex items-center gap-1.5">
                   <Layers size={12} className="text-slate-600" />
                   {docket.docket_subtype}
                 </Badge>
