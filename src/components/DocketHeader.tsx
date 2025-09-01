@@ -216,12 +216,14 @@ export const DocketHeader = ({ docket }: Props) => {
                 </Badge>
               )}
             </div>
+            <div className="border-t border-border/50 pt-4">
             <div className="flex items-start gap-3">
               <FolderOpen size={28} className="text-foreground/50 mt-0.5 shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground leading-tight">Docket</p>
                 <h2 className="text-lg md:text-xl font-semibold leading-tight">{docket.docket_govid}</h2>
               </div>
+            </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
