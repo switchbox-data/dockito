@@ -63,7 +63,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
             </div>
           )}
           
-          {(docketCount !== undefined && petitionedCount === undefined && filedCount === undefined) && (
+          {(docketCount !== undefined && petitionedCount === undefined && filedCount === undefined && !isLoading) && (
             <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
                 <FileText size={16} />
@@ -71,7 +71,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Total Dockets</div>
                 <div className="text-sm font-medium">
-                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30" /> : docketCount?.toLocaleString()}
+                  {docketCount?.toLocaleString()}
                 </div>
               </div>
             </div>
