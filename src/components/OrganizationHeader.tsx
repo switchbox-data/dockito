@@ -1,4 +1,4 @@
-import { Building2, Calendar, FileText, FilePlus } from "lucide-react";
+import { Building2, Calendar, FileText, FilePlus, BarChart3 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type Props = { 
@@ -34,7 +34,12 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
           </div>
         </div>
         
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="pt-4 border-t border-border/50">
+          <div className="flex items-center gap-2 mb-3">
+            <BarChart3 size={16} className="text-foreground/80" />
+            <span className="text-sm font-medium text-foreground">Stats</span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {(petitionedCount !== undefined || isLoading) && (
             <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
@@ -87,6 +92,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
                 {isLoading ? <Skeleton className="h-4 w-32 bg-muted-foreground/30" /> : (dateBounds && (dateBounds.min || dateBounds.max)) ? `${formatDate(dateBounds?.min)} — ${formatDate(dateBounds?.max)}` : "—"}
               </div>
             </div>
+          </div>
           </div>
         </div>
       </div>
