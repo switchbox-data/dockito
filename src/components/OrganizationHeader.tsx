@@ -43,7 +43,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Dockets</div>
                 <div className="text-sm font-medium">
-                  {isLoading ? <Skeleton className="h-4 w-12" /> : petitionedCount?.toLocaleString()}
+                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30" /> : petitionedCount?.toLocaleString()}
                 </div>
               </div>
             </div>
@@ -57,7 +57,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Filings</div>
                 <div className="text-sm font-medium">
-                  {isLoading ? <Skeleton className="h-4 w-12" /> : filedCount?.toLocaleString()}
+                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30" /> : filedCount?.toLocaleString()}
                 </div>
               </div>
             </div>
@@ -71,25 +71,23 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Total Dockets</div>
                 <div className="text-sm font-medium">
-                  {isLoading ? <Skeleton className="h-4 w-12" /> : docketCount?.toLocaleString()}
+                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30" /> : docketCount?.toLocaleString()}
                 </div>
               </div>
             </div>
           )}
           
-          {(dateBounds && (dateBounds.min || dateBounds.max)) || isLoading ? (
-            <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
-              <div className="shrink-0 text-foreground/80">
-                <Calendar size={16} />
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs text-muted-foreground">Activity Period</div>
-                <div className="text-sm">
-                  {isLoading ? <Skeleton className="h-4 w-32" /> : `${formatDate(dateBounds?.min)} — ${formatDate(dateBounds?.max)}`}
-                </div>
+          <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
+            <div className="shrink-0 text-foreground/80">
+              <Calendar size={16} />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs text-muted-foreground">Activity Period</div>
+              <div className="text-sm">
+                {isLoading ? <Skeleton className="h-4 w-32 bg-muted-foreground/30" /> : (dateBounds && (dateBounds.min || dateBounds.max)) ? `${formatDate(dateBounds?.min)} — ${formatDate(dateBounds?.max)}` : "—"}
               </div>
             </div>
-          ) : null}
+          </div>
         </div>
       </div>
     </header>
