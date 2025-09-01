@@ -31,13 +31,13 @@ export const DocketHeader = ({ docket }: Props) => {
         <div className="flex items-start justify-between">
           <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs border inline-flex items-center gap-1.5">
+            <Badge variant="outline" className="bg-background border-gray-300 hover:border-gray-400 transition-colors inline-flex items-center gap-1.5">
               {(() => {
                 const IndustryIcon = getIndustryIcon(docket.industry || "other");
                 return <IndustryIcon size={12} className={getIndustryColor(docket.industry || "other")} />;
               })()}
               {docket.industry ?? "other"}
-            </span>
+            </Badge>
             {docket.current_status && (
               <span className="px-3 py-1 rounded-full bg-accent/10 text-foreground text-xs border">{docket.current_status}</span>
             )}
