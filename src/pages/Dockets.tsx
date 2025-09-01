@@ -413,6 +413,7 @@ export default function DocketsPage() {
   const {
     data,
     isLoading,
+    isFetching,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -958,14 +959,16 @@ export default function DocketsPage() {
       </section>
 
       <section aria-label="Results" className="space-y-4">
-        {(isLoading || isAggregateLoading) && items.length === 0 ? (
-          <div className="grid gap-4 md:grid-cols-2">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <DocketCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : items.length === 0 ? (
-          <div className="text-muted-foreground">No dockets found.</div>
+        {items.length === 0 ? (
+          (isLoading || isFetching) ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <DocketCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-muted-foreground">No dockets found.</div>
+          )
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {items.map((d, idx) => {
