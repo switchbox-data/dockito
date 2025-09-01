@@ -103,6 +103,7 @@ Deno.serve(async (req) => {
         // Get filings by this organization
         let from = 0
         const batchSize = 1000
+        const fillingUuidsSet = new Set<string>()
         
         while (true) {
           const { data: batchRelations, error: batchError } = await supabase
@@ -120,30 +121,35 @@ Deno.serve(async (req) => {
             break
           }
           
-          // Get docket UUIDs from filings in chunks and count each filing
-          const fillingUuids = batchRelations.map(r => r.filling_uuid)
-          const chunkSize = 50
-          
-          for (let i = 0; i < fillingUuids.length; i += chunkSize) {
-            const chunk = fillingUuids.slice(i, i + chunkSize)
-            const { data: fillings, error: fillingsError } = await supabase
-              .from('fillings')
-              .select('docket_uuid')
-              .in('uuid', chunk)
-            
-            if (!fillingsError && fillings) {
-              fillings.forEach(f => {
-                allDocketUuids.add(f.docket_uuid)
-                totalFilingCount++ // Count each filing
-              })
-            }
-          }
+          // Collect unique filling UUIDs
+          batchRelations.forEach(r => fillingUuidsSet.add(r.filling_uuid))
           
           if (batchRelations.length < batchSize) {
             break
           }
           
           from += batchSize
+        }
+
+        // Set total filing count as number of unique filings
+        totalFilingCount = fillingUuidsSet.size
+
+        // Resolve dockets for these filings in chunks
+        const fillingUuids = Array.from(fillingUuidsSet)
+        const chunkSize = 50
+        
+        for (let i = 0; i < fillingUuids.length; i += chunkSize) {
+          const chunk = fillingUuids.slice(i, i + chunkSize)
+          const { data: fillings, error: fillingsError } = await supabase
+            .from('fillings')
+            .select('docket_uuid')
+            .in('uuid', chunk)
+          
+          if (!fillingsError && fillings) {
+            fillings.forEach(f => {
+              allDocketUuids.add(f.docket_uuid)
+            })
+          }
         }
       }
       
