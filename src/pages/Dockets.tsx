@@ -775,27 +775,46 @@ export default function DocketsPage() {
               {/* Industry Filter */}
               <Popover open={industryMenuOpen} onOpenChange={setIndustryMenuOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                    <span className="inline-flex items-center gap-2">
-                      <Factory size={16} className="text-muted-foreground" />
-                      {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Industries"}
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className={cn(
+                      "shrink-0 justify-between h-12 px-4 font-medium transition-all",
+                      "bg-background/60 backdrop-blur border-2",
+                      selectedIndustries.length > 0 
+                        ? "border-primary bg-primary/5 text-primary hover:bg-primary/10" 
+                        : "border-border hover:border-primary/50 hover:bg-accent/50"
+                    )}
+                  >
+                    <span className="inline-flex items-center gap-3">
+                      <Factory size={18} className={selectedIndustries.length > 0 ? "text-primary" : "text-muted-foreground"} />
+                      <span className="font-semibold">
+                        {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "All Industries"}
+                      </span>
                     </span>
-                    <ChevronDown size={14} />
+                    <ChevronDown size={16} className="ml-2" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[600px] p-0 z-50 bg-popover border max-h-[500px] overflow-y-auto" align="start">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-sm font-semibold">Industries</h3>
-                      <div className="flex items-center gap-2">
+                <PopoverContent className="w-[650px] p-0 z-50 bg-background/95 backdrop-blur border-2 border-border shadow-xl rounded-xl" align="start">
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-5">
+                      <div>
+                        <h3 className="text-lg font-semibold text-foreground">Filter by Industry</h3>
+                        <p className="text-sm text-muted-foreground mt-1">Select one or more industries to filter dockets</p>
+                      </div>
+                      <div className="flex items-center gap-3">
                         {selectedIndustries.length > 0 && (
-                          <Button variant="outline" size="sm" onClick={() => setSelectedIndustries([])}>Clear all</Button>
+                          <Button variant="ghost" size="sm" onClick={() => setSelectedIndustries([])} className="text-muted-foreground hover:text-foreground">
+                            Clear all
+                          </Button>
                         )}
-                        <Button size="sm" onClick={() => setIndustryMenuOpen(false)}>Done</Button>
+                        <Button size="sm" onClick={() => setIndustryMenuOpen(false)} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                          Done
+                        </Button>
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-3">
                       {industries.map((industry) => {
                         const isSelected = selectedIndustries.includes(industry.name);
                         const Icon = getIndustryIcon(industry.name);
@@ -810,19 +829,24 @@ export default function DocketsPage() {
                               }
                             }}
                             className={cn(
-                              "flex items-center gap-2 p-3 rounded-md border transition-colors text-left",
+                              "flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left hover:shadow-md",
                               isSelected 
-                                ? "bg-primary text-primary-foreground border-primary" 
-                                : "hover:bg-muted/50 border-border"
+                                ? "bg-primary text-primary-foreground border-primary shadow-lg transform scale-[1.02]" 
+                                : "bg-background hover:bg-accent/50 border-border hover:border-primary/30"
                             )}
                           >
-                            <Icon className={cn("h-4 w-4 flex-shrink-0", getIndustryColor(industry.name))} />
+                            <Icon className={cn("h-5 w-5 flex-shrink-0", 
+                              isSelected ? "text-primary-foreground" : getIndustryColor(industry.name)
+                            )} />
                             <div className="min-w-0 flex-1">
-                              <div className="font-medium text-sm truncate">{industry.name}</div>
+                              <div className="font-semibold text-sm truncate">{industry.name}</div>
                               {lockedOrg && industry.count > 0 && (
-                                <div className="text-xs opacity-70">{industry.count}</div>
+                                <div className="text-xs opacity-75 mt-1">{industry.count} dockets</div>
                               )}
                             </div>
+                            {isSelected && (
+                              <Check size={16} className="text-primary-foreground" />
+                            )}
                           </button>
                         );
                       })}
@@ -835,15 +859,27 @@ export default function DocketsPage() {
               {/* Petitioners multi-select (ranked by frequency within current filters) */}
               {!lockedOrg && (
                 <Popover open={petOpen} onOpenChange={setPetOpen}>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                      <span className="inline-flex items-center gap-2">
-                        <Users size={16} className="text-muted-foreground" />
-                        {petitioners.length ? `Petitioners (${petitioners.length})` : "Petitioners"}
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className={cn(
+                      "shrink-0 justify-between h-12 px-4 font-medium transition-all",
+                      "bg-background/60 backdrop-blur border-2",
+                      petitioners.length > 0 
+                        ? "border-primary bg-primary/5 text-primary hover:bg-primary/10" 
+                        : "border-border hover:border-primary/50 hover:bg-accent/50"
+                    )}
+                  >
+                    <span className="inline-flex items-center gap-3">
+                      <Users size={18} className={petitioners.length > 0 ? "text-primary" : "text-muted-foreground"} />
+                      <span className="font-semibold">
+                        {petitioners.length ? `Organizations (${petitioners.length})` : "All Organizations"}
                       </span>
-                      <ChevronDown size={14} />
-                    </Button>
-                  </PopoverTrigger>
+                    </span>
+                    <ChevronDown size={16} className="ml-2" />
+                  </Button>
+                </PopoverTrigger>
                   <PopoverContent className="w-[500px] p-0 z-50 bg-popover border max-h-[500px]" align="start">
                     <Command className="h-full">
                       <CommandInput placeholder="Search petitioners..." className="text-sm" />
@@ -893,23 +929,42 @@ export default function DocketsPage() {
               {/* Types Menu */}
               <Popover open={typeMenuOpen} onOpenChange={setTypeMenuOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                    <span className="inline-flex items-center gap-2">
-                      <Shapes size={16} className="text-muted-foreground" />
-                      {docketTypes.length || docketSubtypes.length ? `Types (${docketTypes.length + docketSubtypes.length})` : "Types"}
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className={cn(
+                      "shrink-0 justify-between h-12 px-4 font-medium transition-all",
+                      "bg-background/60 backdrop-blur border-2",
+                      (docketTypes.length > 0 || docketSubtypes.length > 0)
+                        ? "border-primary bg-primary/5 text-primary hover:bg-primary/10" 
+                        : "border-border hover:border-primary/50 hover:bg-accent/50"
+                    )}
+                  >
+                    <span className="inline-flex items-center gap-3">
+                      <Shapes size={18} className={(docketTypes.length > 0 || docketSubtypes.length > 0) ? "text-primary" : "text-muted-foreground"} />
+                      <span className="font-semibold">
+                        {docketTypes.length || docketSubtypes.length ? `Types (${docketTypes.length + docketSubtypes.length})` : "All Types"}
+                      </span>
                     </span>
-                    <ChevronDown size={14} />
+                    <ChevronDown size={16} className="ml-2" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[800px] p-0 z-50 bg-popover border max-h-[600px] overflow-y-auto" align="start">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-sm font-semibold">Docket Types</h3>
-                      <div className="flex items-center gap-2">
+                <PopoverContent className="w-[850px] p-0 z-50 bg-background/95 backdrop-blur border-2 border-border shadow-xl rounded-xl" align="start">
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-5">
+                      <div>
+                        <h3 className="text-lg font-semibold text-foreground">Filter by Type</h3>
+                        <p className="text-sm text-muted-foreground mt-1">Select docket types and subtypes to filter results</p>
+                      </div>
+                      <div className="flex items-center gap-3">
                         {(docketTypes.length > 0 || docketSubtypes.length > 0) && (
-                          <Button variant="outline" size="sm" onClick={() => { setDocketTypes([]); setDocketSubtypes([]); setSubtypeSearch(""); }}>Clear types</Button>
+                          <Button variant="ghost" size="sm" onClick={() => { setDocketTypes([]); setDocketSubtypes([]); setSubtypeSearch(""); }} className="text-muted-foreground hover:text-foreground">
+                            Clear all
+                          </Button>
                         )}
-                        <Button size="sm" onClick={() => setTypeMenuOpen(false)}>Done</Button>
+                        <Button size="sm" onClick={() => setTypeMenuOpen(false)} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                          Done
+                        </Button>
                       </div>
                     </div>
                     
