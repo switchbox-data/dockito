@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, 
+import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, Link2,
   Heart, DollarSign, Frown, FileCheck, Search, 
   BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
   FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb } from "lucide-react";
@@ -229,6 +229,8 @@ export default function DocketsPage() {
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
   const [dateOpen, setDateOpen] = useState(false);
+  const [relationshipTypes, setRelationshipTypes] = useState<string[]>(["petitioned", "filed"]);
+  const [relationshipOpen, setRelationshipOpen] = useState(false);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -266,13 +268,16 @@ export default function DocketsPage() {
 
   // Get aggregate data (including total count) for org pages
   const { data: orgAggregateData } = useQuery({
-    queryKey: ["org-aggregate-data", { org: lockedOrg ?? null }],
+    queryKey: ["org-aggregate-data", { org: lockedOrg ?? null, relationshipTypes: relationshipTypes.join(",") }],
     queryFn: async () => {
       if (!lockedOrg) return null;
       
       const { data, error } = await supabase.functions.invoke('get-org-dockets', {
         body: {
           orgName: lockedOrg,
+          filters: {
+            relationshipTypes
+          },
           aggregateOnly: true
         }
       });
@@ -414,7 +419,7 @@ export default function DocketsPage() {
   } = useInfiniteQuery<any[], Error>({
     queryKey: [
       "dockets-list",
-      { org: lockedOrg ?? null, search: normalizedSearch, industries: selectedIndustries.join(","), docketTypes: docketTypes.join(","), petitioners: petitioners.join(","), sortDir, start: startDate?.toISOString(), end: endDate?.toISOString() },
+      { org: lockedOrg ?? null, search: normalizedSearch, industries: selectedIndustries.join(","), docketTypes: docketTypes.join(","), petitioners: petitioners.join(","), sortDir, start: startDate?.toISOString(), end: endDate?.toISOString(), relationshipTypes: relationshipTypes.join(",") },
     ],
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => (lastPage?.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined),
@@ -434,7 +439,8 @@ export default function DocketsPage() {
               sortBy: 'opened_date',
               sortOrder: sortDir,
               industries: selectedIndustries.length ? selectedIndustries : undefined,
-              docketTypes: docketTypes.length ? docketTypes : undefined
+              docketTypes: docketTypes.length ? docketTypes : undefined,
+              relationshipTypes
             },
             pagination: {
               page,
@@ -737,6 +743,42 @@ export default function DocketsPage() {
                 </PopoverContent>
               </Popover>
 
+              {/* Relationship Type filter (only for org pages) */}
+              {lockedOrg && (
+                <Popover open={relationshipOpen} onOpenChange={setRelationshipOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                      <span className="inline-flex items-center gap-2">
+                        <Link2 size={16} className="text-muted-foreground" />
+                        {relationshipTypes.length === 2 ? "Both" : relationshipTypes.length === 1 ? (relationshipTypes[0] === "petitioned" ? "Petitioned" : "Filed") : "None"}
+                      </span>
+                      <ChevronDown size={14} />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0 z-50 bg-popover border">
+                    <Command>
+                      <CommandList>
+                        <CommandGroup heading="Relationship Type">
+                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned", "filed"])}>Both</CommandItem>
+                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned"])}>
+                            <div className="flex items-center gap-2">
+                              <Check size={14} className={relationshipTypes.includes("petitioned") && !relationshipTypes.includes("filed") ? "opacity-100" : "opacity-0"} />
+                              <span>Petitioned Only</span>
+                            </div>
+                          </CommandItem>
+                          <CommandItem onSelect={() => setRelationshipTypes(["filed"])}>
+                            <div className="flex items-center gap-2">
+                              <Check size={14} className={relationshipTypes.includes("filed") && !relationshipTypes.includes("petitioned") ? "opacity-100" : "opacity-0"} />
+                              <span>Filed Only</span>
+                            </div>
+                          </CommandItem>
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              )}
+
               {/* Petitioners multi-select (ranked by frequency within current filters) */}
               {!lockedOrg && (
                 <Popover open={petOpen} onOpenChange={setPetOpen}>
@@ -876,6 +918,19 @@ export default function DocketsPage() {
                 </button>
               </Badge>
             ))
+          )}
+          {lockedOrg && relationshipTypes.length < 2 && (
+            <Badge variant="secondary" className="px-2 py-1">
+              <span className="mr-1">Showing: {relationshipTypes[0] === "petitioned" ? "Petitioned dockets" : "Filed dockets"}</span>
+              <button
+                type="button"
+                aria-label="Show both relationship types"
+                onClick={() => setRelationshipTypes(["petitioned", "filed"])}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
           )}
           {normalizedSearch && (
             <Badge variant="secondary" className="px-2 py-1">

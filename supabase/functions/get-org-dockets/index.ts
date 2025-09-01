@@ -1,25 +1,26 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.54.0'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
 interface GetOrgDocketsRequest {
   orgName: string
   filters?: {
     startDate?: string
     endDate?: string
-    sortBy?: 'opened_date' | 'docket_count'
+    sortBy?: string
     sortOrder?: 'asc' | 'desc'
     industries?: string[]
     docketTypes?: string[]
+    relationshipTypes?: string[] // 'petitioned', 'filed', or both
   }
   aggregateOnly?: boolean
   pagination?: {
-    page?: number
-    limit?: number
+    page: number
+    limit: number
   }
+}
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
 Deno.serve(async (req) => {
@@ -54,49 +55,96 @@ Deno.serve(async (req) => {
 
     const orgId = org.uuid
 
+    // Helper function to get docket UUIDs from both relationship types
+    const getDocketUuids = async () => {
+      const relationshipTypes = filters?.relationshipTypes || ['petitioned', 'filed']
+      let allDocketUuids = new Set<string>()
+      
+      // Get petitioned dockets if requested
+      if (relationshipTypes.includes('petitioned')) {
+        let from = 0
+        const batchSize = 1000
+        
+        while (true) {
+          const { data: batchRelations, error: batchError } = await supabase
+            .from('docket_petitioned_by_org')
+            .select('docket_uuid')
+            .eq('petitioner_uuid', orgId)
+            .range(from, from + batchSize - 1)
+          
+          if (batchError) {
+            console.error('Error getting petitioned docket relations batch:', batchError)
+            break
+          }
+          
+          if (!batchRelations || batchRelations.length === 0) {
+            break
+          }
+          
+          batchRelations.forEach(r => allDocketUuids.add(r.docket_uuid))
+          
+          if (batchRelations.length < batchSize) {
+            break
+          }
+          
+          from += batchSize
+        }
+      }
+      
+      // Get filed dockets if requested
+      if (relationshipTypes.includes('filed')) {
+        // Get filings by this organization
+        let from = 0
+        const batchSize = 1000
+        
+        while (true) {
+          const { data: batchRelations, error: batchError } = await supabase
+            .from('fillings_on_behalf_of_org_relation')
+            .select('filling_uuid')
+            .eq('author_organization_uuid', orgId)
+            .range(from, from + batchSize - 1)
+          
+          if (batchError) {
+            console.error('Error getting filing relations batch:', batchError)
+            break
+          }
+          
+          if (!batchRelations || batchRelations.length === 0) {
+            break
+          }
+          
+          // Get docket UUIDs from filings in chunks
+          const fillingUuids = batchRelations.map(r => r.filling_uuid)
+          const chunkSize = 50
+          
+          for (let i = 0; i < fillingUuids.length; i += chunkSize) {
+            const chunk = fillingUuids.slice(i, i + chunkSize)
+            const { data: fillings, error: fillingsError } = await supabase
+              .from('fillings')
+              .select('docket_uuid')
+              .in('uuid', chunk)
+            
+            if (!fillingsError && fillings) {
+              fillings.forEach(f => allDocketUuids.add(f.docket_uuid))
+            }
+          }
+          
+          if (batchRelations.length < batchSize) {
+            break
+          }
+          
+          from += batchSize
+        }
+      }
+      
+      return Array.from(allDocketUuids)
+    }
+
     if (aggregateOnly) {
       console.log('Getting aggregate data for org:', orgName)
       
-      // Get all docket UUIDs for this organization first
-      let allDocketRelations: any[] = []
-      let from = 0
-      const batchSize = 1000
-      
-      // Fetch all relations in batches to avoid limits
-      while (true) {
-        const { data: batchRelations, error: batchError } = await supabase
-          .from('docket_petitioned_by_org')
-          .select('docket_uuid')
-          .eq('petitioner_uuid', orgId)
-          .range(from, from + batchSize - 1)
-        
-        if (batchError) {
-          console.error('Error getting docket relations batch:', batchError)
-          break
-        }
-        
-        if (!batchRelations || batchRelations.length === 0) {
-          break
-        }
-        
-        allDocketRelations = allDocketRelations.concat(batchRelations)
-        
-        if (batchRelations.length < batchSize) {
-          break // Last batch
-        }
-        
-        from += batchSize
-      }
-      
-      const docketRelations = allDocketRelations
-
-      if (allDocketRelations.length === 0) {
-        console.log('No docket relations found for org:', orgName)
-      }
-
-      const docketUuids = docketRelations?.map(rel => rel.docket_uuid) || []
+      const docketUuids = await getDocketUuids()
       console.log(`Found ${docketUuids.length} docket UUIDs for org ${orgName}`)
-      console.log(`Total count being returned: ${docketUuids.length}`)
 
       if (docketUuids.length === 0) {
         return new Response(
@@ -187,27 +235,13 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Main docket query - go back to chunking approach for now
-    const { data: docketRelations, error: relationsError } = await supabase
-      .from('docket_petitioned_by_org')
-      .select('docket_uuid')
-      .eq('petitioner_uuid', orgId)
-      .limit(10000) // Set a high limit to get all results
-
-    if (relationsError) {
-      console.error('Error getting docket relations:', relationsError)
-      return new Response(
-        JSON.stringify({ error: 'Failed to get docket relations', details: relationsError.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    const docketUuids = docketRelations?.map(rel => rel.docket_uuid) || []
+    // Main docket query
+    const docketUuids = await getDocketUuids()
     console.log(`Found ${docketUuids.length} docket UUIDs for org ${orgName}`)
 
     if (docketUuids.length === 0) {
       return new Response(
-        JSON.stringify({ dockets: [], pagination: { page: 1, limit: 50, totalCount: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false } }),
+        JSON.stringify({ dockets: [], totalCount: 0 }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
