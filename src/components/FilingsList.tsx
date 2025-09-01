@@ -763,27 +763,22 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                   {/* Year ticks when crossing year boundaries */}
                   {(() => {
                     if (!months.length || months.length <= 1) return null;
-                    const years = new Set(months.map(m => m.getFullYear()));
-                    if (years.size <= 1) return null;
-                    
-                    const yearPositions: { year: number; position: number }[] = [];
-                    
-                    // Find the first occurrence of each year in the months array
-                    const seenYears = new Set<number>();
+                    // Show labels only at January boundaries fully within the available months
+                    const januaryPositions: { year: number; position: number }[] = [];
                     for (let i = 0; i < months.length; i++) {
-                      const monthYear = months[i].getFullYear();
-                      if (!seenYears.has(monthYear)) {
-                        seenYears.add(monthYear);
-                        yearPositions.push({ 
-                          year: monthYear, 
-                          position: (i / (months.length - 1)) * 100 
+                      const d = months[i];
+                      if (d.getMonth() === 0) {
+                        januaryPositions.push({
+                          year: d.getFullYear(),
+                          position: (i / (months.length - 1)) * 100,
                         });
                       }
                     }
-                    
+                    if (!januaryPositions.length) return null;
+
                     return (
                       <div className="relative h-4 mb-2">
-                        {yearPositions.map(({ year, position }) => (
+                        {januaryPositions.map(({ year, position }) => (
                           <div
                             key={year}
                             className="absolute text-xs text-muted-foreground font-medium"
