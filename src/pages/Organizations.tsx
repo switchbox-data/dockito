@@ -158,9 +158,9 @@ export default function OrganizationsPage() {
   }, [isFetchingNextPage, hasNextPage, fetchNextPage]);
 
   useEffect(() => {
-    document.title = "NY PSC Organizations | Dockito";
+    document.title = "NY PSC Orgs | Dockito";
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "Browse organizations that petition the New York PSC.");
+    if (meta) meta.setAttribute("content", "Browse orgs that petition the New York PSC.");
   }, []);
 
   const pages = (data?.pages ?? []) as Organization[][];
@@ -213,8 +213,8 @@ export default function OrganizationsPage() {
   return (
     <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-6 space-y-6">
       <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Organizations</h1>
-        <p className="text-muted-foreground">Organizations that petition the New York PSC</p>
+        <h1 className="text-3xl font-semibold tracking-tight">Orgs</h1>
+        <p className="text-muted-foreground">Orgs that petition the New York PSC</p>
       </header>
 
       <div className="sticky top-0 z-50">
