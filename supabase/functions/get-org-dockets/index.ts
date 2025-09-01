@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
           dateBounds,
           industries: Array.from(industryMap.entries()).map(([industry, count]) => ({ industry, count })),
           docketTypes: Array.from(typeMap.entries()).map(([docket_type, count]) => ({ docket_type, count })),
-          totalCount: allDockets.length
+          totalCount: docketUuids.length // Use the original count of all dockets, not filtered ones
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
