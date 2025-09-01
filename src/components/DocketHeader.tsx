@@ -235,7 +235,7 @@ export const DocketHeader = ({ docket }: Props) => {
               {docket.industry ?? "other"}
             </Badge>
             {docket.current_status && (
-              <span className="px-3 py-1 rounded-full bg-accent/10 text-foreground text-xs border">{docket.current_status}</span>
+              <span className="px-3 py-1 rounded-full bg-accent/10 text-foreground text-xs border border-gray-300">{docket.current_status}</span>
             )}
           </div>
         </div>
@@ -267,7 +267,7 @@ export const DocketHeader = ({ docket }: Props) => {
           <div className="flex flex-wrap gap-2">
             {docket.petitioner_strings.map((p) => (
               <Link key={p} to={`/org/${encodeURIComponent(p)}`} className="inline-block">
-                <Badge variant="outline" className="px-3 py-1.5 text-sm bg-background border-gray-300 hover:border-gray-400 transition-colors cursor-pointer">{p}</Badge>
+                <Badge variant="outline" className="px-3 py-1.5 text-sm bg-background border-gray-300 cursor-pointer">{p}</Badge>
               </Link>
             ))}
           </div>

@@ -1323,11 +1323,11 @@ export default function DocketsPage() {
                                  {d.docket_type}
                                </Badge>
                              )}
-                           {d.docket_subtype && <Badge variant="outline" className="transition-colors group-hover:border-foreground/40">{d.docket_subtype}</Badge>}
+                           {d.docket_subtype && <Badge variant="outline" className="border-gray-300">{d.docket_subtype}</Badge>}
                          </div>
                          <div className="flex flex-col items-end gap-1">
                            {d.industry && (
-                             <Badge variant="outline" className="inline-flex items-center gap-1.5 transition-colors group-hover:border-foreground/40">
+                             <Badge variant="outline" className="inline-flex items-center gap-1.5 border-gray-300">
                                {(() => {
                                  const IndustryIcon = getIndustryIcon(d.industry);
                                  return <IndustryIcon size={12} className={getIndustryColor(d.industry)} />;
