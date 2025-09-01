@@ -625,9 +625,9 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                             )
                           }
                         >
-                          <div className="flex items-center gap-2">
-                            <Check size={14} className={selected ? "opacity-100" : "opacity-0"} />
-                            <span>{o}</span>
+                          <div className="flex items-start gap-2">
+                            <Check size={14} className={cn("opacity-0 mt-0.5 shrink-0", selected && "opacity-100")} />
+                            <span className="leading-tight">{o}</span>
                           </div>
                         </CommandItem>
                       );
