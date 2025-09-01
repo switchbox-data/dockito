@@ -1063,12 +1063,13 @@ export default function DocketsPage() {
                          </div>
                        </div>
                        
-                       <div className="space-y-2">
-                         <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
-                         <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
-                       </div>
-                       
-                        <div className="flex flex-wrap gap-2">
+                        <div className="space-y-2">
+                          <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
+                          <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
+                        </div>
+                        
+                        <div className="border-t border-border/50 pt-3">
+                         <div className="flex flex-wrap gap-2">
                           {d.petitioner_strings?.slice(0, 2).map(p => (
                              <Badge
                                key={p}
@@ -1082,7 +1083,8 @@ export default function DocketsPage() {
                           {d.petitioner_strings && d.petitioner_strings.length > 2 && (
                             <Badge variant="secondary" className="text-xs">+{d.petitioner_strings.length - 2} more</Badge>
                           )}
-                          {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
+                           {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
+                         </div>
                         </div>
                     </CardContent>
                   </Card>
