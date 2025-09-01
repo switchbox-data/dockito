@@ -26,30 +26,60 @@ const useModK = () => {
 export const CommandK = () => {
   const { open, setOpen } = useModK();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Array<{ docket_govid: string; docket_title: string | null }>>([]);
+  const [docketResults, setDocketResults] = useState<Array<{ docket_govid: string; docket_title: string | null }>>([]);
+  const [orgResults, setOrgResults] = useState<Array<{ name: string; description: string | null }>>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const q = sanitizeQuery(query);
-    if (!open || q.length < 2) { setResults([]); return; }
+    if (!open || q.length < 2) { 
+      setDocketResults([]);
+      setOrgResults([]);
+      return; 
+    }
 
     let cancelled = false;
-    const timer = setTimeout(() => {
-      supabase
-        .from("dockets")
-        .select("docket_govid,docket_title")
-        .or(`docket_govid.ilike.%${q}%,docket_title.ilike.%${q}%`)
-        .limit(20)
-        .then(({ data, error }) => {
-          if (cancelled) return;
-          if (error) {
-            console.error("CommandK search error", error);
-            toast({ title: "Search failed", description: "Unable to search right now. Please try again." });
-            setResults([]);
-            return;
-          }
-          setResults(data || []);
-        });
+    const timer = setTimeout(async () => {
+      try {
+        // Search dockets
+        const { data: docketData, error: docketError } = await supabase
+          .from("dockets")
+          .select("docket_govid,docket_title")
+          .or(`docket_govid.ilike.%${q}%,docket_title.ilike.%${q}%`)
+          .limit(10);
+
+        // Search organizations
+        const { data: orgData, error: orgError } = await supabase
+          .from("organizations")
+          .select("name,description")
+          .or(`name.ilike.%${q}%,description.ilike.%${q}%`)
+          .limit(10);
+
+        if (cancelled) return;
+
+        if (docketError) {
+          console.error("CommandK docket search error", docketError);
+          toast({ title: "Search failed", description: "Unable to search dockets. Please try again." });
+          setDocketResults([]);
+        } else {
+          setDocketResults(docketData || []);
+        }
+
+        if (orgError) {
+          console.error("CommandK org search error", orgError);
+          toast({ title: "Search failed", description: "Unable to search organizations. Please try again." });
+          setOrgResults([]);
+        } else {
+          setOrgResults(orgData || []);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error("CommandK search error", error);
+          toast({ title: "Search failed", description: "Unable to search right now. Please try again." });
+          setDocketResults([]);
+          setOrgResults([]);
+        }
+      }
     }, SEARCH_DELAY);
 
     return () => { cancelled = true; clearTimeout(timer); };
@@ -57,7 +87,7 @@ export const CommandK = () => {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Type a docket number or title… (Cmd/Ctrl + K)" value={query} onValueChange={setQuery} />
+      <CommandInput placeholder="Type a docket number, title, or organization… (Cmd/Ctrl + K)" value={query} onValueChange={setQuery} />
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
         <CommandGroup heading="Commands">
@@ -80,8 +110,8 @@ export const CommandK = () => {
             <span>View Organizations</span>
           </CommandItem>
         </CommandGroup>
-        <CommandGroup heading={`Dockets${results.length ? ` (${results.length})` : ""}`}>
-          {results.map((d) => (
+        <CommandGroup heading={`Dockets${docketResults.length ? ` (${docketResults.length})` : ""}`}>
+          {docketResults.map((d) => (
             <CommandItem
               key={d.docket_govid}
               value={`${d.docket_govid} ${d.docket_title ?? ""}`}
@@ -93,6 +123,22 @@ export const CommandK = () => {
             >
               <span className="font-medium">{d.docket_govid}</span>
               <span className="text-muted-foreground text-sm line-clamp-1">{d.docket_title}</span>
+            </CommandItem>
+          ))}
+        </CommandGroup>
+        <CommandGroup heading={`Organizations${orgResults.length ? ` (${orgResults.length})` : ""}`}>
+          {orgResults.map((org) => (
+            <CommandItem
+              key={org.name}
+              value={`${org.name} ${org.description ?? ""}`}
+              onSelect={() => {
+                navigate(`/org/${encodeURIComponent(org.name)}`);
+                setOpen(false);
+              }}
+              className="flex flex-col items-start gap-1"
+            >
+              <span className="font-medium">{org.name}</span>
+              <span className="text-muted-foreground text-sm line-clamp-1">{org.description}</span>
             </CommandItem>
           ))}
         </CommandGroup>
