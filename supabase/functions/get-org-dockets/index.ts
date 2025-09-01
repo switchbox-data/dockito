@@ -55,12 +55,12 @@ Deno.serve(async (req) => {
 
     const orgId = org.uuid
 
-    // Helper function to get docket UUIDs from both relationship types
+    // Helper function to get docket UUIDs and filing counts
     const getDocketUuids = async () => {
       const relationshipTypes = filters?.relationshipTypes || ['petitioned', 'filed']
       let allDocketUuids = new Set<string>()
-      let petitionedCount = 0
-      let filedCount = 0
+      let petitionedDocketCount = 0
+      let totalFilingCount = 0
       
       // Get petitioned dockets if requested
       if (relationshipTypes.includes('petitioned')) {
@@ -84,8 +84,10 @@ Deno.serve(async (req) => {
           }
           
           batchRelations.forEach(r => {
-            allDocketUuids.add(r.docket_uuid)
-            petitionedCount++
+            if (!allDocketUuids.has(r.docket_uuid)) {
+              allDocketUuids.add(r.docket_uuid)
+              petitionedDocketCount++
+            }
           })
           
           if (batchRelations.length < batchSize) {
@@ -96,7 +98,7 @@ Deno.serve(async (req) => {
         }
       }
       
-      // Get filed dockets if requested
+      // Get filed dockets if requested (count filings, not dockets)
       if (relationshipTypes.includes('filed')) {
         // Get filings by this organization
         let from = 0
@@ -118,7 +120,7 @@ Deno.serve(async (req) => {
             break
           }
           
-          // Get docket UUIDs from filings in chunks
+          // Get docket UUIDs from filings in chunks and count each filing
           const fillingUuids = batchRelations.map(r => r.filling_uuid)
           const chunkSize = 50
           
@@ -132,7 +134,7 @@ Deno.serve(async (req) => {
             if (!fillingsError && fillings) {
               fillings.forEach(f => {
                 allDocketUuids.add(f.docket_uuid)
-                filedCount++
+                totalFilingCount++ // Count each filing
               })
             }
           }
@@ -145,16 +147,20 @@ Deno.serve(async (req) => {
         }
       }
       
-      return { docketUuids: Array.from(allDocketUuids), petitionedCount, filedCount }
+      return { 
+        docketUuids: Array.from(allDocketUuids), 
+        petitionedDocketCount, 
+        totalFilingCount 
+      }
     }
 
     if (aggregateOnly) {
       console.log('Getting aggregate data for org:', orgName)
       
       const relationshipTypes = filters?.relationshipTypes || ['petitioned', 'filed']
-      const { docketUuids, petitionedCount, filedCount } = await getDocketUuids()
+      const { docketUuids, petitionedDocketCount, totalFilingCount } = await getDocketUuids()
       console.log(`Found ${docketUuids.length} docket UUIDs for org ${orgName}`)
-      console.log(`Petitioned: ${petitionedCount}, Filed: ${filedCount}`)
+      console.log(`Petitioned: ${petitionedDocketCount}, Filed: ${totalFilingCount}`)
 
       if (docketUuids.length === 0) {
         return new Response(
@@ -240,8 +246,8 @@ Deno.serve(async (req) => {
           industries: Array.from(industryMap.entries()).map(([industry, count]) => ({ industry, count })),
           docketTypes: Array.from(typeMap.entries()).map(([docket_type, count]) => ({ docket_type, count })),
           totalCount: docketUuids.length,
-          petitionedCount: relationshipTypes.includes('petitioned') ? petitionedCount : 0,
-          filedCount: relationshipTypes.includes('filed') ? filedCount : 0
+          petitionedCount: relationshipTypes.includes('petitioned') ? petitionedDocketCount : 0,
+          filedCount: relationshipTypes.includes('filed') ? totalFilingCount : 0
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )

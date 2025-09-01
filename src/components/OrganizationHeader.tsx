@@ -32,7 +32,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
                 <FileText size={16} />
               </div>
               <div className="min-w-0">
-                <div className="text-xs text-muted-foreground">Dockets Petitioned</div>
+                <div className="text-xs text-muted-foreground">Dockets</div>
                 <div className="text-sm font-medium">{petitionedCount.toLocaleString()}</div>
               </div>
             </div>
@@ -44,7 +44,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
                 <FilePlus size={16} />
               </div>
               <div className="min-w-0">
-                <div className="text-xs text-muted-foreground">Dockets Filed</div>
+                <div className="text-xs text-muted-foreground">Filings</div>
                 <div className="text-sm font-medium">{filedCount.toLocaleString()}</div>
               </div>
             </div>
