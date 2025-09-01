@@ -849,18 +849,18 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           onClick={() => setViewer({ filingId: f.uuid, index: idx })}
                           data-selected={isSelectedAtt}
                           className={cn(
-                              "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
+                              "group flex items-start justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
                               isSelectedAtt ? "border-primary" : undefined
                           )}
                         >
-                          <div className="flex items-center gap-3 min-w-0">
+                          <div className="flex items-start gap-3 min-w-0 flex-1">
                             <FileIcon ext={a.attachment_file_extension} />
-                            <div className="min-w-0">
-                              <div className="text-sm font-medium truncate">{a.attachment_title}</div>
-                              <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
+                            <div className="min-w-0 flex-1">
+                              <div className="text-sm font-medium break-words">{a.attachment_title}</div>
+                              <div className="text-xs text-muted-foreground break-words">{a.attachment_file_name}</div>
                             </div>
                           </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 leading-none shrink-0 ml-3", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}> <Eye size={16} aria-hidden="true" /><span>Open</span></span>
                         </button>
                       );
                     }
@@ -876,18 +876,18 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           rel="noopener noreferrer"
                             data-selected={isSelectedAtt}
                             className={cn(
-                              "group flex items-center justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
+                              "group flex items-start justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
                               isSelectedAtt ? "border-primary" : undefined
                             )}
                       >
-                        <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex items-start gap-3 min-w-0 flex-1">
                           <FileIcon ext={a.attachment_file_extension} />
-                          <div className="min-w-0">
-                            <div className="text-sm font-medium truncate">{a.attachment_title}</div>
-                            <div className="text-xs text-muted-foreground truncate">{a.attachment_file_name}</div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium break-words">{a.attachment_title}</div>
+                            <div className="text-xs text-muted-foreground break-words">{a.attachment_file_name}</div>
                           </div>
                         </div>
-                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}>
+                          <span className={[buttonVariants({ size: "sm", variant: "outline" }), "pointer-events-none flex items-center gap-2 shrink-0 ml-3", "group-hover:border-primary/30", isSelectedAtt ? "bg-primary text-primary-foreground border-primary" : ""].join(" ")}>
                           <LinkIcon size={16} /> Download
                         </span>
                       </a>
