@@ -243,10 +243,17 @@ export const DocketHeader = ({ docket }: Props) => {
           </div>
         </div>
       </div>
-      <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-3">
-        <Info icon={<Files size={16} />} label="Filings" value={filingCount.toLocaleString()} />
-        <Info icon={<Building2 size={16} />} label="Organizations" value={uniqueOrgsCount.toLocaleString()} />
-        <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
+      
+      <div className="relative z-10 mt-6 pt-4 border-t border-border/50">
+        <div className="flex items-center gap-2 mb-3">
+          <BarChart3 size={16} className="text-foreground/80" />
+          <span className="text-sm font-medium text-foreground">Stats</span>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Info icon={<Files size={16} />} label="Filings" value={filingCount.toLocaleString()} />
+          <Info icon={<Building2 size={16} />} label="Organizations" value={uniqueOrgsCount.toLocaleString()} />
+          <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
+        </div>
       </div>
       
       {docket.petitioner_strings?.length && (
