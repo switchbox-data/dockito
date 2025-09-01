@@ -658,24 +658,12 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
 
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
             <PopoverTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className={cn(
-                  "shrink-0 justify-between h-12 px-4 font-medium transition-all",
-                  "bg-background/60 backdrop-blur border-2",
-                  selectedOrgs.length > 0 
-                    ? "border-primary bg-primary/5 text-primary hover:bg-primary/10" 
-                    : "border-border hover:border-primary/50 hover:bg-accent/50"
-                )}
-              >
-                <span className="inline-flex items-center gap-3">
-                  <Users size={18} className={selectedOrgs.length > 0 ? "text-primary" : "text-muted-foreground"} />
-                  <span className="font-semibold">
-                    {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "All Organizations"}
-                  </span>
+              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                <span className="inline-flex items-center gap-2">
+                  <Users size={16} className="text-muted-foreground" />
+                  {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
                 </span>
-                <ChevronDown size={16} className="ml-2" />
+                <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 z-50 bg-popover border">
@@ -712,24 +700,12 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
 
           <Popover open={typeOpen} onOpenChange={setTypeOpen}>
             <PopoverTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className={cn(
-                  "shrink-0 justify-between h-12 px-4 font-medium transition-all",
-                  "bg-background/60 backdrop-blur border-2",
-                  selectedTypes.length > 0 
-                    ? "border-primary bg-primary/5 text-primary hover:bg-primary/10" 
-                    : "border-border hover:border-primary/50 hover:bg-accent/50"
-                )}
-              >
-                <span className="inline-flex items-center gap-3">
-                  <Shapes size={18} className={selectedTypes.length > 0 ? "text-primary" : "text-muted-foreground"} />
-                  <span className="font-semibold">
-                    {selectedTypes.length ? `Types (${selectedTypes.length})` : "All Types"}
-                  </span>
+              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                <span className="inline-flex items-center gap-2">
+                  <Shapes size={16} className="text-muted-foreground" />
+                  {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
                 </span>
-                <ChevronDown size={16} className="ml-2" />
+                <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 z-50 bg-popover border">
