@@ -809,7 +809,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                   <div className="text-sm text-muted-foreground mt-1 flex flex-wrap items-center gap-2">
                     <span>Filed by:</span>
                     {f.organization_author_strings?.map((org, idx) => (
-                      <Badge key={idx} variant="secondary" className="bg-background border text-foreground">
+                      <Badge key={idx} variant="outline" className="bg-background border-gray-300 hover:border-gray-400 transition-colors">
                         {org}
                       </Badge>
                     )) || <span>—</span>}
