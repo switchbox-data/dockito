@@ -1,4 +1,6 @@
-import { CalendarDays, Building2, Layers, Tag, Clock, ExternalLink } from "lucide-react";
+import { CalendarDays, Building2, Layers, Tag, Clock, ExternalLink, Heart, DollarSign, Frown, FileCheck, Search, 
+  BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
+  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
 type Docket = {
@@ -21,6 +23,135 @@ import { format } from "date-fns";
 
 type Props = { docket: Docket };
 
+// Helper function to get appropriate icon for docket types
+const getDocketTypeIcon = (type: string) => {
+  const typeKey = type?.toLowerCase().trim();
+  switch (typeKey) {
+    case 'petition':
+      return Heart; // Prayer/thank you hands - someone asking for something
+    case 'tariff':
+      return DollarSign; // Rate changes
+    case 'complaint':
+      return Frown; // Mad face for complaints
+    case 'contract':
+      return Lock; // Lock for contracts
+    case 'audit':
+      return Search; // Magnifying glass for audits
+    case 'incident':
+      return Flame; // Creative - incidents (like fires, emergencies)
+    case 'compliance':
+      return FileCheck; // Compliance
+    case 'commission instituted new case proceeding':
+      return Gavel; // Commission proceedings
+    case 'rulemaking':
+      return Book; // Making rules/laws
+    case 'exception from disclosure':
+      return EyeOff; // Hiding information/confidential
+    case 'company workpapers':
+      return FileSpreadsheet; // Internal documents/calculations
+    case 'analysis':
+      return TrendingUp; // Analyzing data/trends
+    case 'investigation':
+      return Microscope; // Investigating/examining closely
+    case 'office policy and procedures':
+      return Clipboard; // Internal policies/procedures
+    case 'authorization':
+      return CheckCircle; // Authorization/permission granted
+    case 'complaint and inquiry':
+      return MessageCircle; // Questions/inquiries combined with complaints
+    case 'policy initiative':
+      return Lightbulb; // New initiatives/bright ideas
+    default:
+      return HelpCircle; // Miscellaneous and others
+  }
+};
+
+// Helper function to get semantic colors for docket types
+const getDocketTypeColor = (type: string) => {
+  const typeKey = type?.toLowerCase().trim();
+  switch (typeKey) {
+    case 'petition':
+      return 'text-blue-600'; // Blue for requests/prayers
+    case 'tariff':
+      return 'text-green-600'; // Green for money/rates
+    case 'complaint':
+      return 'text-red-600'; // Red for complaints/anger
+    case 'contract':
+      return 'text-purple-600'; // Purple for security/contracts
+    case 'audit':
+      return 'text-orange-600'; // Orange for investigation/search
+    case 'incident':
+      return 'text-red-500'; // Red for incidents/emergencies
+    case 'compliance':
+      return 'text-emerald-600'; // Emerald for approval/compliance
+    case 'commission instituted new case proceeding':
+      return 'text-indigo-600'; // Indigo for official proceedings
+    case 'rulemaking':
+      return 'text-slate-600'; // Slate for legal/regulatory
+    case 'exception from disclosure':
+      return 'text-gray-600'; // Gray for confidential/hidden
+    case 'company workpapers':
+      return 'text-amber-600'; // Amber for internal documents
+    case 'analysis':
+      return 'text-cyan-600'; // Cyan for data analysis
+    case 'investigation':
+      return 'text-pink-600'; // Pink for investigation/examination
+    case 'office policy and procedures':
+      return 'text-teal-600'; // Teal for organizational policies
+    case 'authorization':
+      return 'text-lime-600'; // Lime for approval/authorization
+    case 'complaint and inquiry':
+      return 'text-rose-600'; // Rose for mixed complaints/questions
+    case 'policy initiative':
+      return 'text-yellow-600'; // Yellow for bright ideas/initiatives
+    default:
+      return 'text-muted-foreground'; // Default muted color
+  }
+};
+
+// Helper function to get subtle background and border colors for docket type badges
+const getDocketTypeBadgeColors = (type: string) => {
+  const typeKey = type?.toLowerCase().trim();
+  switch (typeKey) {
+    case 'petition':
+      return 'bg-blue-50 border-blue-200 hover:bg-blue-100'; // Blue theme
+    case 'tariff':
+      return 'bg-green-50 border-green-200 hover:bg-green-100'; // Green theme
+    case 'complaint':
+      return 'bg-red-50 border-red-200 hover:bg-red-100'; // Red theme
+    case 'contract':
+      return 'bg-purple-50 border-purple-200 hover:bg-purple-100'; // Purple theme
+    case 'audit':
+      return 'bg-orange-50 border-orange-200 hover:bg-orange-100'; // Orange theme
+    case 'incident':
+      return 'bg-red-50 border-red-300 hover:bg-red-100'; // Red theme (slightly different border)
+    case 'compliance':
+      return 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'; // Emerald theme
+    case 'commission instituted new case proceeding':
+      return 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100'; // Indigo theme
+    case 'rulemaking':
+      return 'bg-slate-50 border-slate-200 hover:bg-slate-100'; // Slate theme
+    case 'exception from disclosure':
+      return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Gray theme
+    case 'company workpapers':
+      return 'bg-amber-50 border-amber-200 hover:bg-amber-100'; // Amber theme
+    case 'analysis':
+      return 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100'; // Cyan theme
+    case 'investigation':
+      return 'bg-pink-50 border-pink-200 hover:bg-pink-100'; // Pink theme
+    case 'office policy and procedures':
+      return 'bg-teal-50 border-teal-200 hover:bg-teal-100'; // Teal theme
+    case 'authorization':
+      return 'bg-lime-50 border-lime-200 hover:bg-lime-100'; // Lime theme
+    case 'complaint and inquiry':
+      return 'bg-rose-50 border-rose-200 hover:bg-rose-100'; // Rose theme
+    case 'policy initiative':
+      return 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100'; // Yellow theme
+    default:
+      return 'bg-gray-50 border-gray-200 hover:bg-gray-100'; // Default theme
+  }
+};
+
 export const DocketHeader = ({ docket }: Props) => {
   const fmt = (d?: string | null) => (d ? format(new Date(d), "PPP") : "—");
 
@@ -29,7 +160,27 @@ export const DocketHeader = ({ docket }: Props) => {
       <div className="absolute inset-0 pointer-events-none opacity-70" style={{ background: "var(--gradient-primary)" }} />
       <div className="relative z-10 grid gap-4">
         <div className="flex items-start justify-between">
-          <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
+          <div className="flex flex-col gap-2">
+            <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              {docket.docket_type && (
+                <Badge variant="outline" className={`inline-flex items-center gap-1.5 ${getDocketTypeBadgeColors(docket.docket_type)}`}>
+                  {(() => {
+                    const TypeIcon = getDocketTypeIcon(docket.docket_type);
+                    const typeColor = getDocketTypeColor(docket.docket_type);
+                    return <TypeIcon size={12} className={typeColor} />;
+                  })()}
+                  {docket.docket_type}
+                </Badge>
+              )}
+              {docket.docket_subtype && (
+                <Badge variant="outline" className="bg-slate-50 border-slate-200 hover:bg-slate-100 inline-flex items-center gap-1.5">
+                  <Layers size={12} className="text-slate-600" />
+                  {docket.docket_subtype}
+                </Badge>
+              )}
+            </div>
+          </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="bg-background border-gray-300 hover:border-gray-400 transition-colors inline-flex items-center gap-1.5">
               {(() => {
@@ -49,10 +200,8 @@ export const DocketHeader = ({ docket }: Props) => {
           </div>
         </div>
       </div>
-      <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-1">
         <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
-        <Info icon={<Tag size={16} />} label="Type" value={docket.docket_type} />
-        <Info icon={<Layers size={16} />} label="Subtype" value={docket.docket_subtype} />
       </div>
       
       {docket.petitioner_strings?.length && (
