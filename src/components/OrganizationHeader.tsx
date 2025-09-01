@@ -48,7 +48,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Dockets</div>
                 <div className="text-sm font-medium">
-                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30" /> : petitionedCount?.toLocaleString()}
+                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30 mt-0.5" /> : petitionedCount?.toLocaleString()}
                 </div>
               </div>
             </div>
@@ -62,7 +62,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Filings</div>
                 <div className="text-sm font-medium">
-                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30" /> : filedCount?.toLocaleString()}
+                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30 mt-0.5" /> : filedCount?.toLocaleString()}
                 </div>
               </div>
             </div>
@@ -89,7 +89,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
             <div className="min-w-0">
               <div className="text-xs text-muted-foreground">Activity Period</div>
               <div className="text-sm">
-                {isLoading ? <Skeleton className="h-4 w-32 bg-muted-foreground/30" /> : (dateBounds && (dateBounds.min || dateBounds.max)) ? `${formatDate(dateBounds?.min)} — ${formatDate(dateBounds?.max)}` : "—"}
+                {isLoading ? <Skeleton className="h-4 w-32 bg-muted-foreground/30 mt-0.5" /> : (dateBounds && (dateBounds.min || dateBounds.max)) ? `${formatDate(dateBounds?.min)} — ${formatDate(dateBounds?.max)}` : "—"}
               </div>
             </div>
           </div>
