@@ -209,7 +209,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
       case 'petitions':
         return 'text-purple-600'; // Purple for requests
       case 'orders':
-        return 'text-indigo-600'; // Indigo for official orders
+        return 'text-red-700'; // Dark red for official orders
       case 'motions':
         return 'text-cyan-600'; // Cyan for movement/motions
       case 'letters':
@@ -307,7 +307,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
       case 'petitions':
         return 'bg-purple-50 border-purple-200 hover:bg-purple-100'; // Purple theme
       case 'orders':
-        return 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100'; // Indigo theme
+        return 'bg-red-50 border-red-200 hover:bg-red-100'; // Dark red theme
       case 'motions':
         return 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100'; // Cyan theme
       case 'letters':
