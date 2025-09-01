@@ -900,22 +900,42 @@ export default function DocketsPage() {
                       {/* Year ticks when crossing year boundaries */}
                       {(() => {
                         if (!months.length || months.length <= 1) return null;
-                        // Show labels only at January boundaries fully within the available months
-                        const januaryPositions: { year: number; position: number }[] = [];
+                        
+                        // Calculate year span to determine label frequency
+                        const years = months.map(m => m.getFullYear());
+                        const minYear = Math.min(...years);
+                        const maxYear = Math.max(...years);
+                        const yearSpan = maxYear - minYear;
+                        
+                        // Determine interval based on span to avoid overcrowding
+                        let interval: number;
+                        if (yearSpan <= 2) return null; // Too small, no labels needed
+                        else if (yearSpan <= 5) interval = 1; // Show every year
+                        else if (yearSpan <= 15) interval = 2; // Show every 2 years
+                        else if (yearSpan <= 30) interval = 5; // Show every 5 years
+                        else interval = 10; // Show every 10 years for very large ranges
+                        
+                        // Find January positions for years that should be labeled
+                        const labelPositions: { year: number; position: number }[] = [];
                         for (let i = 0; i < months.length; i++) {
                           const d = months[i];
-                          if (d.getMonth() === 0) {
-                            januaryPositions.push({
-                              year: d.getFullYear(),
-                              position: (i / (months.length - 1)) * 100,
-                            });
+                          if (d.getMonth() === 0) { // January
+                            const year = d.getFullYear();
+                            // Only show if year is on our interval
+                            if ((year - minYear) % interval === 0) {
+                              labelPositions.push({
+                                year,
+                                position: (i / (months.length - 1)) * 100,
+                              });
+                            }
                           }
                         }
-                        if (!januaryPositions.length) return null;
+                        
+                        if (!labelPositions.length) return null;
 
                         return (
                           <div className="relative h-4 mb-2">
-                            {januaryPositions.map(({ year, position }) => (
+                            {labelPositions.map(({ year, position }) => (
                               <div
                                 key={year}
                                 className="absolute text-xs text-muted-foreground font-medium"
