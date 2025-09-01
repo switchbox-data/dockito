@@ -739,6 +739,13 @@ export default function DocketsPage() {
     if (e.key === 'Enter') { e.preventDefault(); const d = items[selectedIdx]; if (d) navigate(`/docket/${d.docket_govid}`); return; }
   };
 
+  const openTypesBoard = () => {
+    setFilterBoardOpen(true);
+    requestAnimationFrame(() => {
+      document.getElementById('types-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   return (
     <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-6 space-y-6">
       {lockedOrg ? (
@@ -987,6 +994,14 @@ export default function DocketsPage() {
                 </PopoverContent>
               </Popover>
 
+              {/* Types */}
+              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30" onClick={openTypesBoard}>
+                <span className="inline-flex items-center gap-2">
+                  <Shapes size={16} className="text-muted-foreground" />
+                  {docketTypes.length || docketSubtypes.length ? `Types (${docketTypes.length + docketSubtypes.length})` : "Types"}
+                </span>
+              </Button>
+
               {/* Sort */}
               <div className="shrink-0">
                 <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
@@ -996,6 +1011,93 @@ export default function DocketsPage() {
             </div>
           </div>
         </div>
+      {filterBoardOpen && (
+        <div className="mt-4 rounded-lg border bg-card p-4" id="types-section">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold">Types & Subtypes</h3>
+            <div className="flex items-center gap-2">
+              {(docketTypes.length > 0 || docketSubtypes.length > 0) && (
+                <Button variant="outline" size="sm" onClick={() => { setDocketTypes([]); setDocketSubtypes([]); setSubtypeSearch(""); }}>Clear types</Button>
+              )}
+              <Button size="sm" onClick={() => setFilterBoardOpen(false)}>Close</Button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {docketTypeOptions.map((type) => {
+              const isSelected = docketTypes.includes(type.name);
+              const Icon = getDocketTypeIcon(type.name);
+              const allowed = ['tariff','petition','contract','complaint'];
+              const hasSubtypes = allowed.includes(type.name.toLowerCase());
+              const typeSubtypes = hasSubtypes ? (subtypesByType[type.name] || []) : [];
+              const filteredSubtypes = type.name.toLowerCase() === 'petition' && subtypeSearch
+                ? typeSubtypes.filter(st => st.name.toLowerCase().includes(subtypeSearch.toLowerCase()))
+                : typeSubtypes;
+              return (
+                <div key={type.name} className={cn("rounded-md border p-3", isSelected ? "ring-2 ring-primary" : "hover:bg-muted/50") }>
+                  <button
+                    className="w-full flex items-center gap-2"
+                    onClick={() => {
+                      if (isSelected) {
+                        setDocketTypes(prev => prev.filter(t => t !== type.name));
+                        // clear its subtypes when unselected
+                        if (hasSubtypes) {
+                          setDocketSubtypes(prev => prev.filter(s => !typeSubtypes.some(ts => ts.name === s)));
+                        }
+                      } else {
+                        setDocketTypes(prev => [...prev, type.name]);
+                      }
+                    }}
+                  >
+                    <Icon className={cn("h-4 w-4", getDocketTypeColor(type.name))} />
+                    <span className="font-medium text-sm truncate">{type.name}</span>
+                    {lockedOrg && type.count > 0 && (
+                      <span className="ml-auto text-xs text-muted-foreground">{type.count}</span>
+                    )}
+                  </button>
+                  {hasSubtypes && isSelected && typeSubtypes.length > 0 && (
+                    <div className="mt-2">
+                      {type.name.toLowerCase() === 'petition' && typeSubtypes.length > 10 && (
+                        <Input
+                          placeholder="Search subtypes..."
+                          value={subtypeSearch}
+                          onChange={(e) => setSubtypeSearch(e.target.value)}
+                          className="h-8 text-xs mb-2"
+                        />
+                      )}
+                      <div className={cn("grid gap-1", type.name.toLowerCase() === 'petition' ? "max-h-32 overflow-y-auto grid-cols-1" : "grid-cols-1") }>
+                        {filteredSubtypes.map(st => {
+                          const selected = docketSubtypes.includes(st.name);
+                          return (
+                            <button
+                              key={st.name}
+                              onClick={() => {
+                                if (selected) {
+                                  setDocketSubtypes(prev => prev.filter(s => s !== st.name));
+                                } else {
+                                  setDocketSubtypes(prev => [...prev, st.name]);
+                                }
+                              }}
+                              className={cn("flex items-center gap-2 p-1.5 rounded text-xs transition-colors text-left w-full",
+                                selected ? "bg-secondary text-secondary-foreground" : "hover:bg-muted/50"
+                              )}
+                            >
+                              <span className="truncate">{st.name}</span>
+                              {lockedOrg && st.count > 0 && (
+                                <span className="ml-auto text-xs opacity-70">{st.count}</span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <section aria-label="Filters" className="space-y-2">
         {/* Active filter chips */}
         <div className="flex flex-wrap gap-2 text-sm px-1">
