@@ -161,10 +161,9 @@ export const DocketHeader = ({ docket }: Props) => {
       <div className="relative z-10 grid gap-4">
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-2">
-            <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
             <div className="flex flex-wrap items-center gap-2">
               {docket.docket_type && (
-                <Badge variant="outline" className={`inline-flex items-center gap-1.5 ${getDocketTypeBadgeColors(docket.docket_type)}`}>
+                <Badge variant="outline" className={`px-3 py-1.5 text-sm inline-flex items-center gap-1.5 ${getDocketTypeBadgeColors(docket.docket_type)}`}>
                   {(() => {
                     const TypeIcon = getDocketTypeIcon(docket.docket_type);
                     const typeColor = getDocketTypeColor(docket.docket_type);
@@ -174,12 +173,13 @@ export const DocketHeader = ({ docket }: Props) => {
                 </Badge>
               )}
               {docket.docket_subtype && (
-                <Badge variant="outline" className="bg-slate-50 border-slate-200 hover:bg-slate-100 inline-flex items-center gap-1.5">
+                <Badge variant="outline" className="px-3 py-1.5 text-sm bg-slate-50 border-slate-200 hover:bg-slate-100 inline-flex items-center gap-1.5">
                   <Layers size={12} className="text-slate-600" />
                   {docket.docket_subtype}
                 </Badge>
               )}
             </div>
+            <p className="text-sm text-muted-foreground">Docket {docket.docket_govid}</p>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="bg-background border-gray-300 hover:border-gray-400 transition-colors inline-flex items-center gap-1.5">
