@@ -210,7 +210,7 @@ export const DocketHeader = ({ docket }: Props) => {
                 </Badge>
               )}
               {docket.docket_subtype && (
-                <Badge variant="outline" className="text-xs bg-slate-50 border-slate-200 hover:bg-slate-100 inline-flex items-center gap-1.5">
+                <Badge variant="outline" className="text-xs bg-slate-50 border-slate-200 inline-flex items-center gap-1.5">
                   <Layers size={12} className="text-slate-600" />
                   {docket.docket_subtype}
                 </Badge>
@@ -227,7 +227,7 @@ export const DocketHeader = ({ docket }: Props) => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-background border-gray-300 hover:border-gray-400 transition-colors inline-flex items-center gap-1.5">
+            <Badge variant="outline" className="bg-background border-gray-300 inline-flex items-center gap-1.5">
               {(() => {
                 const IndustryIcon = getIndustryIcon(docket.industry || "other");
                 return <IndustryIcon size={12} className={getIndustryColor(docket.industry || "other")} />;
