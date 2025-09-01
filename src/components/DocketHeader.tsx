@@ -1,6 +1,6 @@
 import { CalendarDays, Building2, Layers, Tag, Clock, ExternalLink, Heart, DollarSign, Frown, FileCheck, Search, 
   BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
-  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, FolderOpen } from "lucide-react";
+  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, FolderOpen, Files } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
 type Docket = {
@@ -20,6 +20,8 @@ type Docket = {
 };
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 type Props = { docket: Docket };
 
@@ -155,6 +157,20 @@ const getDocketTypeBadgeColors = (type: string) => {
 export const DocketHeader = ({ docket }: Props) => {
   const fmt = (d?: string | null) => (d ? format(new Date(d), "PPP") : "—");
 
+  // Query to get filing count for this docket
+  const { data: filingCount = 0 } = useQuery({
+    queryKey: ["docket-filing-count", docket.docket_govid],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("fillings")
+        .select("*", { count: "exact", head: true })
+        .eq("docket_govid", docket.docket_govid);
+      if (error) throw error;
+      return count ?? 0;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   return (
     <header className="relative overflow-hidden rounded-xl border bg-card p-6 shadow-[var(--shadow-elegant)]">
       <div className="absolute inset-0 pointer-events-none opacity-70" style={{ background: "var(--gradient-primary)" }} />
@@ -206,8 +222,9 @@ export const DocketHeader = ({ docket }: Props) => {
           </div>
         </div>
       </div>
-      <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-1">
+      <div className="relative z-10 mt-5 grid gap-4 sm:grid-cols-2">
         <Info icon={<CalendarDays size={16} />} label="Opened" value={fmt(docket.opened_date)} />
+        <Info icon={<Files size={16} />} label="Filings" value={filingCount.toLocaleString()} />
       </div>
       
       {docket.petitioner_strings?.length && (
