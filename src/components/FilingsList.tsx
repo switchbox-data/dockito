@@ -849,7 +849,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           onClick={() => setViewer({ filingId: f.uuid, index: idx })}
                           data-selected={isSelectedAtt}
                           className={cn(
-                              "group flex items-start justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
+                              "group flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
                               isSelectedAtt ? "border-primary" : undefined
                           )}
                         >
@@ -876,7 +876,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                           rel="noopener noreferrer"
                             data-selected={isSelectedAtt}
                             className={cn(
-                              "group flex items-start justify-between w-full rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
+                              "group flex items-start justify-between w-full text-left rounded-md border bg-background px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background hover:border-primary/30",
                               isSelectedAtt ? "border-primary" : undefined
                             )}
                       >
