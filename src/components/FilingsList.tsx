@@ -60,6 +60,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
   const containerRef = useRef<HTMLDivElement>(null);
   const filingRefs = useRef<(HTMLDivElement | null)[]>([]);
   const attachmentRefs = useRef<Record<string, (HTMLButtonElement | HTMLAnchorElement | null)[]>>({});
+  const didInitRef = useRef(false);
 
   const organizations = useMemo(() => {
     const set = new Set<string>();
@@ -460,7 +461,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
   }, [filtered, viewer]);
 
   // Focus and clamp selection
-  useEffect(() => { containerRef.current?.focus(); }, []);
+  // Removed automatic focus on mount to avoid scroll snapping when filings load
   useEffect(() => {
     if (!filtered.length) { setSelectedIndex(0); setSelectedAttachmentIdx(null); return; }
     if (selectedIndex > filtered.length - 1) setSelectedIndex(filtered.length - 1);
@@ -469,8 +470,9 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
     if (selectedAttachmentIdx !== null && selectedAttachmentIdx >= attCount) setSelectedAttachmentIdx(attCount ? attCount - 1 : null);
   }, [filtered, selectedIndex, selectedAttachmentIdx]);
 
-  // Refocus the keyboard container after the PDF modal closes
+  // Refocus the keyboard container after the PDF modal closes (but not on initial mount)
   useEffect(() => {
+    if (!didInitRef.current) { didInitRef.current = true; return; }
     if (!viewer) containerRef.current?.focus();
   }, [viewer]);
 
