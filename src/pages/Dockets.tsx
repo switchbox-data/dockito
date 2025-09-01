@@ -221,18 +221,28 @@ export default function DocketsPage() {
         }
         return [];
       } else {
-        // For main page: get all industries without counts
-        const { data, error } = await supabase
-          .from("dockets")
-          .select("industry")
-          .not("industry", "is", null)
-          .neq("industry", "");
-        if (error) throw error;
+        // For main page: get all industries without counts (fetch in batches to avoid default 1000 limit)
+        const batchSize = 1000;
+        let from = 0;
         const set = new Set<string>();
-        (data as { industry: string | null }[]).forEach((r) => {
-          if (r.industry && r.industry.trim()) set.add(r.industry.trim());
-        });
-        return Array.from(set).sort().map(name => ({ name, count: 0 }));
+        // Loop through pages until we've fetched all rows
+        // Note: react-query will cache the result; staleTime controls refetching
+        while (true) {
+          const { data, error } = await supabase
+            .from("dockets")
+            .select("industry")
+            .not("industry", "is", null)
+            .neq("industry", "")
+            .range(from, from + batchSize - 1);
+          if (error) throw error;
+          if (!data || data.length === 0) break;
+          (data as { industry: string | null }[]).forEach((r) => {
+            if (r.industry && r.industry.trim()) set.add(r.industry.trim());
+          });
+          if (data.length < batchSize) break;
+          from += batchSize;
+        }
+        return Array.from(set).sort().map((name) => ({ name, count: 0 }));
       }
     },
     enabled: !lockedOrg || !!orgAggregateData,
@@ -252,17 +262,25 @@ export default function DocketsPage() {
         }
         return [];
       } else {
-        // For main page: get all types without counts
-        const { data, error } = await supabase
-          .from("dockets")
-          .select("docket_type")
-          .not("docket_type", "is", null)
-          .neq("docket_type", "");
-        if (error) throw error;
+        // For main page: get all types without counts (fetch in batches to avoid default 1000 limit)
+        const batchSize = 1000;
+        let from = 0;
         const set = new Set<string>();
-        (data as any[]).forEach((r) => {
-          if (r.docket_type && r.docket_type.trim()) set.add(r.docket_type.trim());
-        });
+        while (true) {
+          const { data, error } = await supabase
+            .from("dockets")
+            .select("docket_type")
+            .not("docket_type", "is", null)
+            .neq("docket_type", "")
+            .range(from, from + batchSize - 1);
+          if (error) throw error;
+          if (!data || data.length === 0) break;
+          (data as any[]).forEach((r) => {
+            if (r.docket_type && r.docket_type.trim()) set.add(r.docket_type.trim());
+          });
+          if (data.length < batchSize) break;
+          from += batchSize;
+        }
         return Array.from(set).sort().map(name => ({ name, count: 0 }));
       }
     },
