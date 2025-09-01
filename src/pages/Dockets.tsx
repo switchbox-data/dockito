@@ -882,39 +882,70 @@ export default function DocketsPage() {
                 </Popover>
               )}
 
-              {/* Date range (month) in a modal dialog) */}
-              <Dialog open={dateOpen} onOpenChange={setDateOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="shrink-0 hover:border-primary/30">
+              {/* Date range (months) */}
+              <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     <span className="inline-flex items-center gap-2">
                       <CalendarIcon size={16} className="text-muted-foreground" />
                       {startDate ? format(startDate, "MMM yyyy") : "–"} – {endDate ? format(endDate, "MMM yyyy") : "–"}
                     </span>
+                    <ChevronDown size={14} />
                   </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[620px]">
-                  <DialogHeader>
-                    <DialogTitle>Select date range</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-3">
-                    <Slider
-                      value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
-                      min={0}
-                      max={Math.max(0, (months.length || 1) - 1)}
-                      step={1}
-                      onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
-                    />
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{startDate ? format(startDate, "MMM yyyy") : "–"}</span>
-                      <span>{endDate ? format(endDate, "MMM yyyy") : "–"}</span>
+                </PopoverTrigger>
+                <PopoverContent className="w-[500px] p-4 z-50 bg-popover border" align="end">
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-sm">Select date range</h4>
+                    <div className="space-y-3">
+                      {/* Year ticks when crossing year boundaries */}
+                      {(() => {
+                        if (!months.length || months.length <= 1) return null;
+                        // Show labels only at January boundaries fully within the available months
+                        const januaryPositions: { year: number; position: number }[] = [];
+                        for (let i = 0; i < months.length; i++) {
+                          const d = months[i];
+                          if (d.getMonth() === 0) {
+                            januaryPositions.push({
+                              year: d.getFullYear(),
+                              position: (i / (months.length - 1)) * 100,
+                            });
+                          }
+                        }
+                        if (!januaryPositions.length) return null;
+
+                        return (
+                          <div className="relative h-4 mb-2">
+                            {januaryPositions.map(({ year, position }) => (
+                              <div
+                                key={year}
+                                className="absolute text-xs text-muted-foreground font-medium"
+                                style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+                              >
+                                {year}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
+                      <Slider
+                        value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
+                        min={0}
+                        max={Math.max(0, (months.length || 1) - 1)}
+                        step={1}
+                        onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
+                      />
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <span>{startDate ? format(startDate, "MMM yyyy") : "–"}</span>
+                        <span>{endDate ? format(endDate, "MMM yyyy") : "–"}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                      <Button variant="secondary" size="sm" onClick={() => setRange([0, Math.max(0, (months.length || 1) - 1)] as [number, number])}>Reset</Button>
+                      <Button size="sm" onClick={() => setDateOpen(false)}>Done</Button>
                     </div>
                   </div>
-                  <DialogFooter>
-                    <Button variant="secondary" onClick={() => setRange([0, Math.max(0, (months.length || 1) - 1)] as [number, number])}>Reset</Button>
-                    <Button onClick={() => setDateOpen(false)}>Done</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                </PopoverContent>
+              </Popover>
 
               {/* Sort */}
               <div className="shrink-0">
