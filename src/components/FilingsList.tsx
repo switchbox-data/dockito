@@ -658,15 +658,24 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
 
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className={cn(
+                  "shrink-0 justify-between h-12 px-4 rounded-xl backdrop-blur-sm border-2 transition-all duration-200",
+                  selectedOrgs.length > 0 
+                    ? "bg-primary/10 border-primary text-primary hover:bg-primary/20" 
+                    : "hover:border-primary/30"
+                )}
+              >
                 <span className="inline-flex items-center gap-2">
-                  <Users size={16} className="text-muted-foreground" />
+                  <Users size={18} className={selectedOrgs.length > 0 ? "text-primary" : "text-muted-foreground"} />
                   {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
                 </span>
-                <ChevronDown size={14} />
+                <ChevronDown size={16} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-0 z-50 bg-popover border">
+            <PopoverContent className="w-[400px] p-0 z-50 bg-background/95 backdrop-blur-sm border-2 shadow-xl">
               <Command>
                 <CommandInput placeholder="Search organizations..." />
                 <CommandList>
@@ -700,15 +709,24 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
 
           <Popover open={typeOpen} onOpenChange={setTypeOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className={cn(
+                  "shrink-0 justify-between h-12 px-4 rounded-xl backdrop-blur-sm border-2 transition-all duration-200",
+                  selectedTypes.length > 0 
+                    ? "bg-primary/10 border-primary text-primary hover:bg-primary/20" 
+                    : "hover:border-primary/30"
+                )}
+              >
                 <span className="inline-flex items-center gap-2">
-                  <Shapes size={16} className="text-muted-foreground" />
+                  <Shapes size={18} className={selectedTypes.length > 0 ? "text-primary" : "text-muted-foreground"} />
                   {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
                 </span>
-                <ChevronDown size={14} />
+                <ChevronDown size={16} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-0 z-50 bg-popover border">
+            <PopoverContent className="w-[400px] p-0 z-50 bg-background/95 backdrop-blur-sm border-2 shadow-xl">
               <Command>
                 <CommandInput placeholder="Search types..." />
                 <CommandList>
