@@ -666,14 +666,24 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                 <ChevronDown size={14} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-0 z-50 bg-popover border">
-              <Command>
-                <CommandInput placeholder="Search organizations..." />
-                <CommandList>
+            <PopoverContent className="w-[500px] p-0 z-50 bg-popover border max-h-[500px]" align="start">
+              <Command className="h-full">
+                <CommandInput placeholder="Search organizations..." className="text-sm" />
+                <CommandList className="max-h-[420px]">
                   <CommandEmpty>No results.</CommandEmpty>
                   <CommandGroup heading="Organizations">
-                    <CommandItem onSelect={() => setSelectedOrgs([])}>Clear</CommandItem>
-                    <CommandItem onSelect={() => setSelectedOrgs(organizations)}>Select all</CommandItem>
+                    <CommandItem onSelect={() => setSelectedOrgs([])} className="py-2">
+                      <div className="flex items-center gap-2">
+                        <X size={14} className="text-muted-foreground" />
+                        <span className="font-medium">Clear all</span>
+                      </div>
+                    </CommandItem>
+                    <CommandItem onSelect={() => setSelectedOrgs(organizations)} className="py-2">
+                      <div className="flex items-center gap-2">
+                        <Check size={14} className="text-muted-foreground" />
+                        <span className="font-medium">Select all</span>
+                      </div>
+                    </CommandItem>
                     {organizations.map((o) => {
                       const selected = selectedOrgs.includes(o);
                       return (
@@ -684,10 +694,12 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                               prev.includes(o) ? prev.filter((v) => v !== o) : [...prev, o]
                             )
                           }
+                          className="py-2"
                         >
-                          <div className="flex items-start gap-2">
-                            <Check size={14} className={cn("opacity-0 mt-0.5 shrink-0", selected && "opacity-100")} />
-                            <span className="leading-tight">{o}</span>
+                          <div className="flex items-center gap-2 w-full">
+                            <Check size={14} className={selected ? "opacity-100 text-primary" : "opacity-0"} />
+                            <Users size={14} className="text-muted-foreground flex-shrink-0" />
+                            <span className="flex-1 truncate">{o}</span>
                           </div>
                         </CommandItem>
                       );
