@@ -288,8 +288,8 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
             </div>
           </div>
         </DialogHeader>
-        <div className="flex gap-3" ref={containerRef}>
-          <aside className="hidden md:block w-40 h-[calc(96vh-140px)] overflow-auto rounded-lg border bg-muted p-2">
+        <div className="flex gap-3 h-[calc(96vh-140px)] min-h-0" ref={containerRef}>
+          <aside className="hidden md:block w-40 shrink-0 overflow-auto rounded-lg border bg-muted p-2">
             
             {current && (
               <Document 
@@ -317,10 +317,10 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
             )}
           </aside>
 
-          <main className="flex-1 relative">
+          <main className="flex-1 min-w-0 relative overflow-hidden">
             
 
-            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-[calc(96vh-140px)] overflow-auto">
+            <div ref={viewerRef} className="relative group rounded-lg border bg-muted h-full overflow-auto">
               {current && (
                 loadErr ? (
                   <div className="p-6 text-sm">
@@ -350,7 +350,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
               )}
             </div>
 
-            <div className="absolute bottom-3 right-3 pointer-events-auto">
+            <div className="absolute bottom-3 right-3 pointer-events-auto z-10">
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" className="w-8" onClick={() => setScale(s => Math.max(0.6, s - 0.1))} aria-label="Zoom out">-</Button>
                 <Button variant="outline" size="sm" className="w-8" onClick={() => setScale(s => Math.min(2, s + 0.1))} aria-label="Zoom in">+</Button>
