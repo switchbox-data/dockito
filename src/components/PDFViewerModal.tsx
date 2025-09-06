@@ -263,15 +263,15 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
         }}
       >
         <DialogHeader>
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex-1 min-w-0">
               <DialogTitle className="truncate text-base">{current?.attachment_title}</DialogTitle>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Button variant="outline" size="sm" onClick={() => setIndex(i => (i - 1 + attachments.length) % attachments.length)} aria-label="Previous attachment">
                 <ChevronLeft size={16} />
               </Button>
-              <span className="text-sm text-muted-foreground">Doc {index + 1} / {attachments.length}</span>
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Doc {index + 1} / {attachments.length}</span>
               <Button variant="outline" size="sm" onClick={() => setIndex(i => (i + 1) % attachments.length)} aria-label="Next attachment">
                 <ChevronRight size={16} />
               </Button>
@@ -280,7 +280,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
                 <Button variant="outline" size="sm" onClick={() => go(page - 1)} disabled={page <= 1} aria-label="Previous page">
                   <ChevronUp size={16} />
                 </Button>
-                <span className="text-sm text-muted-foreground">Page {page} / {numPages || 1}</span>
+                <span className="text-sm text-muted-foreground whitespace-nowrap">Page {page} / {numPages || 1}</span>
                 <Button variant="outline" size="sm" onClick={() => go(page + 1)} disabled={page >= numPages} aria-label="Next page">
                   <ChevronDown size={16} />
                 </Button>
