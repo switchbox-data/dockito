@@ -875,6 +875,11 @@ export default function DocketsPage() {
                 containerRef={containerRef}
               />
 
+              {/* Filter label - shows only on wider screens */}
+              <span className="hidden xl:inline-block text-sm text-muted-foreground font-medium">
+                Filter:
+              </span>
+
               {/* Industry Filter */}
               <Popover open={industryMenuOpen} onOpenChange={setIndustryMenuOpen}>
                 <PopoverTrigger asChild>
@@ -1193,6 +1198,11 @@ export default function DocketsPage() {
                 open={dateOpen}
                 onOpenChange={setDateOpen}
               />
+
+              {/* Sort label - shows only on wider screens */}
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium">
+                Sort:
+              </span>
 
               {/* Sort */}
               <div className="shrink-0">

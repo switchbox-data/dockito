@@ -674,6 +674,11 @@ const isEndDateModified = useMemo(() => {
             containerRef={containerRef}
           />
 
+          {/* Filter label - shows only on wider screens */}
+          <span className="hidden xl:inline-block text-sm text-muted-foreground font-medium">
+            Filter:
+          </span>
+
           <Popover open={orgOpen} onOpenChange={setOrgOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
@@ -794,7 +799,8 @@ const isEndDateModified = useMemo(() => {
                 Clear
               </Button>
             )}
-            <span className="text-sm text-muted-foreground">Sort:</span>
+            {/* Sort label - shows only on wider screens */}
+            <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium">Sort:</span>
             <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
               {sortDir === "desc" ? "↓" : "↑"} Date
             </Button>
