@@ -55,7 +55,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         <div className="space-y-4">
           <h4 className="font-medium text-sm">Select date range</h4>
           <div className="space-y-3">
-            {/* Year ticks when crossing year boundaries */}
+            {/* Year ticks when crossing year boundaries, or month ticks for shorter ranges */}
             {(() => {
               if (!months.length || months.length <= 1) return null;
 
@@ -65,46 +65,93 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
               const maxYear = Math.max(...years);
               const yearSpan = maxYear - minYear;
 
-              // Determine interval based on span to avoid overcrowding
-              let interval: number;
-              if (yearSpan <= 1) return null; // Too small, no labels needed
-              else if (yearSpan <= 5) interval = 1; // Show every year
-              else if (yearSpan <= 15) interval = 2; // Show every 2 years
-              else if (yearSpan <= 30) interval = 5; // Show every 5 years
-              else interval = 10; // Show every 10 years for very large ranges
+              // Show year labels for longer spans
+              if (yearSpan > 1) {
+                // Determine interval based on span to avoid overcrowding
+                let interval: number;
+                if (yearSpan <= 5) interval = 1; // Show every year
+                else if (yearSpan <= 15) interval = 2; // Show every 2 years
+                else if (yearSpan <= 30) interval = 5; // Show every 5 years
+                else interval = 10; // Show every 10 years for very large ranges
 
-              // Find January positions for years that should be labeled
-              const labelPositions: { year: number; position: number }[] = [];
-              for (let i = 0; i < months.length; i++) {
-                const d = months[i];
-                if (d.getMonth() === 0) {
-                  // January
-                  const year = d.getFullYear();
-                  // Only show if year is on our interval
-                  if ((year - minYear) % interval === 0) {
-                    labelPositions.push({
-                      year,
-                      position: (i / (months.length - 1)) * 100,
-                    });
+                // Find January positions for years that should be labeled
+                const labelPositions: { year: number; position: number }[] = [];
+                for (let i = 0; i < months.length; i++) {
+                  const d = months[i];
+                  if (d.getMonth() === 0) {
+                    // January
+                    const year = d.getFullYear();
+                    // Only show if year is on our interval
+                    if ((year - minYear) % interval === 0) {
+                      labelPositions.push({
+                        year,
+                        position: (i / (months.length - 1)) * 100,
+                      });
+                    }
                   }
                 }
+
+                if (!labelPositions.length) return null;
+
+                return (
+                  <div className="relative h-4 mb-2">
+                    {labelPositions.map(({ year, position }) => (
+                      <div
+                        key={year}
+                        className="absolute text-xs text-muted-foreground font-medium"
+                        style={{ left: `${position}%`, transform: "translateX(-50%)" }}
+                      >
+                        {year}
+                      </div>
+                    ))}
+                  </div>
+                );
               }
 
-              if (!labelPositions.length) return null;
+              // Show month labels for shorter ranges (same year or spanning 1-2 years)
+              if (months.length >= 4) {
+                // Determine how many month labels to show based on range length
+                let interval: number;
+                if (months.length <= 6) interval = 2; // Every 2 months for very short ranges
+                else if (months.length <= 12) interval = 3; // Every 3 months for up to a year
+                else if (months.length <= 24) interval = 4; // Every 4 months for up to 2 years
+                else interval = 6; // Every 6 months for longer ranges
 
-              return (
-                <div className="relative h-4 mb-2">
-                  {labelPositions.map(({ year, position }) => (
-                    <div
-                      key={year}
-                      className="absolute text-xs text-muted-foreground font-medium"
-                      style={{ left: `${position}%`, transform: "translateX(-50%)" }}
-                    >
-                      {year}
-                    </div>
-                  ))}
-                </div>
-              );
+                const labelPositions: { month: string; position: number }[] = [];
+                for (let i = 0; i < months.length; i += interval) {
+                  const date = months[i];
+                  labelPositions.push({
+                    month: format(date, "MMM"),
+                    position: (i / (months.length - 1)) * 100,
+                  });
+                }
+
+                // Always include the last month if it's not already included
+                const lastIndex = months.length - 1;
+                const lastIncluded = labelPositions.some(pos => pos.position === 100);
+                if (!lastIncluded && labelPositions.length > 0) {
+                  labelPositions.push({
+                    month: format(months[lastIndex], "MMM"),
+                    position: 100,
+                  });
+                }
+
+                return (
+                  <div className="relative h-4 mb-2">
+                    {labelPositions.map(({ month, position }, idx) => (
+                      <div
+                        key={`${month}-${idx}`}
+                        className="absolute text-xs text-muted-foreground"
+                        style={{ left: `${position}%`, transform: "translateX(-50%)" }}
+                      >
+                        {month}
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+
+              return null;
             })()}
 
             <div className="space-y-3">
