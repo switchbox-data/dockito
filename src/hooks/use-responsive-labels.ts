@@ -15,7 +15,8 @@ export function useResponsiveLabels({
 
   const recompute = useCallback(() => {
     const container = containerRef.current as HTMLElement | null;
-    if (!container) {
+    const sortBtn = sortButtonRef.current as HTMLElement | null;
+    if (!container || !sortBtn) {
       setShowSortLabel(false);
       setShowFilterLabel(false);
       return;
@@ -32,20 +33,39 @@ export function useResponsiveLabels({
     const sortLabelW = sortLabelRef.current?.offsetWidth ?? 0;
     const filterLabelW = filterLabelRef.current?.offsetWidth ?? 0;
 
-    // Baseline width WITHOUT labels (subtract if currently shown)
-    let baseline = container.scrollWidth;
-    if (showSortLabel) baseline -= sortLabelW;
-    if (showFilterLabel) baseline -= filterLabelW;
+    // Measure visibility based on the scroll viewport of the container
+    const containerRect = container.getBoundingClientRect();
+    const sortRect = sortBtn.getBoundingClientRect();
 
-    // Only show Sort when the current content fits AND adding the label still fits
-    const canShowSort = baseline <= clientW && baseline + sortLabelW <= clientW;
+    // Space to the right of the sort button within the container viewport
+    const availableRight = containerRect.right - sortRect.right;
+    const leftVisible = sortRect.left >= containerRect.left;
+    const rightVisible = sortRect.right <= containerRect.right;
+    const sortFullyVisible = leftVisible && rightVisible;
 
-    // Only show Filter when Sort is shown AND adding Filter also still fits
-    const canShowFilter = canShowSort && baseline + sortLabelW + filterLabelW <= clientW;
+    // Responsive margin-left that will apply when labels are visible
+    const ml =
+      typeof window !== "undefined" && "matchMedia" in window
+        ? window.matchMedia("(min-width: 1536px)").matches
+          ? 32
+          : window.matchMedia("(min-width: 1280px)").matches
+          ? 16
+          : 0
+        : 0;
 
-    setShowSortLabel(canShowSort);
-    setShowFilterLabel(canShowFilter);
-  }, [containerRef, showSortLabel, showFilterLabel]);
+    // If Sort is currently hidden, we need extra space equal to the label width + margin
+    const needForSort = sortLabelW + ml;
+    const extraIfSortHidden = showSortLabel ? 0 : needForSort;
+
+    // Showing Filter pushes everything to the right as well, so require the combined space
+    const needForBoth = extraIfSortHidden + filterLabelW + ml;
+
+    const nextShowSort = sortFullyVisible && availableRight >= extraIfSortHidden;
+    const nextShowFilter = nextShowSort && availableRight >= needForBoth;
+
+    setShowSortLabel(nextShowSort);
+    setShowFilterLabel(nextShowFilter);
+  }, [containerRef, sortButtonRef, showSortLabel]);
 
   useLayoutEffect(() => {
     // Initial computation after first paint
@@ -63,7 +83,9 @@ export function useResponsiveLabels({
     if (sortBtn) ro.observe(sortBtn);
 
     const onResize = () => recompute();
+    const onScroll = () => recompute();
     window.addEventListener("resize", onResize);
+    container.addEventListener("scroll", onScroll, { passive: true });
 
     // Recompute on next frame as layout may stabilize after transitions
     const raf = requestAnimationFrame(recompute);
@@ -71,6 +93,7 @@ export function useResponsiveLabels({
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", onResize);
+      container.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
   }, [containerRef, sortButtonRef, recompute]);
