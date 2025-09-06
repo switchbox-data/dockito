@@ -665,124 +665,154 @@ const isEndDateModified = useMemo(() => {
       <div className="sticky top-0 z-40">
         <div className="relative border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md mb-3">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
-          <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-x-auto min-w-0">
-          <ExpandingSearchInput
-            ref={searchRef}
-            value={query}
-            onChange={setQuery}
-            placeholder="Search filings..."
-            containerRef={containerRef}
-          />
+          <div className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
+            {/* Main content wrapper - creates space between filter and sort sections on large screens */}
+            <div className="flex items-center gap-2 md:gap-3 lg:justify-between">
+              
+              {/* Left section: Search and filters */}
+              <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                <ExpandingSearchInput
+                  ref={searchRef}
+                  value={query}
+                  onChange={setQuery}
+                  placeholder="Search filings..."
+                  containerRef={containerRef}
+                />
 
-          {/* Filter label - shows only on wider screens */}
-          <span className="hidden xl:inline-block text-sm text-muted-foreground font-medium">
-            Filter:
-          </span>
-
-          <Popover open={orgOpen} onOpenChange={setOrgOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                <span className="inline-flex items-center gap-2">
-                  <Users size={16} className="text-muted-foreground" />
-                  {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
+                {/* Filter label - shows only on wider screens */}
+                <span className="hidden xl:inline-block text-sm text-muted-foreground font-medium">
+                  Filter:
                 </span>
-                <ChevronDown size={14} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[500px] p-0 z-50 bg-popover border max-h-[500px]" align="start">
-              <Command className="h-full">
-                <CommandInput placeholder="Search organizations..." className="text-sm" />
-                <CommandList className="max-h-[420px]">
-                  <CommandEmpty>No results.</CommandEmpty>
-                  <CommandGroup heading="Organizations">
-                    <CommandItem onSelect={() => setSelectedOrgs([])} className="py-2">
-                      <div className="flex items-center gap-2">
-                        <X size={14} className="text-muted-foreground" />
-                        <span className="font-medium">Clear all</span>
-                      </div>
-                    </CommandItem>
-                    {organizations.map((o) => {
-                      const selected = selectedOrgs.includes(o);
-                      return (
-                        <CommandItem
-                          key={o}
-                          onSelect={() =>
-                            setSelectedOrgs((prev) =>
-                              prev.includes(o) ? prev.filter((v) => v !== o) : [...prev, o]
-                            )
-                          }
-                          className="py-2"
-                        >
-                          <div className="flex items-center gap-2 w-full">
-                            <Check size={14} className={selected ? "opacity-100 text-primary" : "opacity-0"} />
-                            <Users size={14} className="text-muted-foreground flex-shrink-0" />
-                            <span className="flex-1 truncate">{o}</span>
-                          </div>
-                        </CommandItem>
-                      );
-                    })}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
 
-          <Popover open={typeOpen} onOpenChange={setTypeOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
-                <span className="inline-flex items-center gap-2">
-                  <Shapes size={16} className="text-muted-foreground" />
-                  {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
-                </span>
-                <ChevronDown size={14} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[700px] p-0 z-50 bg-popover border max-h-[600px] overflow-y-auto" align="start">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold">Filing Types</h3>
-                  <div className="flex items-center gap-2">
-                    {selectedTypes.length > 0 && (
-                      <Button variant="outline" size="sm" onClick={() => setSelectedTypes([])}>Clear</Button>
-                    )}
-                    <Button size="sm" onClick={() => setTypeOpen(false)}>Done</Button>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
-                  {types.map((t) => {
-                    const isSelected = selectedTypes.includes(t);
-                    const Icon = getFilingTypeIcon(t);
-                    return (
-                      <button
-                        key={t}
-                        onClick={() => {
-                          setSelectedTypes((prev) => prev.includes(t) ? prev.filter((v) => v !== t) : [...prev, t]);
-                        }}
-                        className={cn(
-                          "flex items-center gap-2 p-3 rounded-md border transition-colors text-left",
-                          isSelected ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted/50 border-border"
-                        )}
-                      >
-                        <Icon className={cn("h-4 w-4 flex-shrink-0", getFilingTypeColor(t))} />
-                        <div className="min-w-0 flex-1">
-                          <div className="font-medium text-sm truncate">{t}</div>
+                <Popover open={orgOpen} onOpenChange={setOrgOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                      <span className="inline-flex items-center gap-2">
+                        <Users size={16} className="text-muted-foreground" />
+                        {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
+                      </span>
+                      <ChevronDown size={14} />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[500px] p-0 z-50 bg-popover border max-h-[500px]" align="start">
+                    <Command className="h-full">
+                      <CommandInput placeholder="Search organizations..." className="text-sm" />
+                      <CommandList className="max-h-[420px]">
+                        <CommandEmpty>No results.</CommandEmpty>
+                        <CommandGroup heading="Organizations">
+                          <CommandItem onSelect={() => setSelectedOrgs([])} className="py-2">
+                            <div className="flex items-center gap-2">
+                              <X size={14} className="text-muted-foreground" />
+                              <span className="font-medium">Clear all</span>
+                            </div>
+                          </CommandItem>
+                          {organizations.map((o) => {
+                            const selected = selectedOrgs.includes(o);
+                            return (
+                              <CommandItem
+                                key={o}
+                                onSelect={() =>
+                                  setSelectedOrgs((prev) =>
+                                    prev.includes(o) ? prev.filter((v) => v !== o) : [...prev, o]
+                                  )
+                                }
+                                className="py-2"
+                              >
+                                <div className="flex items-center gap-2 w-full">
+                                  <Check size={14} className={selected ? "opacity-100 text-primary" : "opacity-0"} />
+                                  <Users size={14} className="text-muted-foreground flex-shrink-0" />
+                                  <span className="flex-1 truncate">{o}</span>
+                                </div>
+                              </CommandItem>
+                            );
+                          })}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                <Popover open={typeOpen} onOpenChange={setTypeOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                      <span className="inline-flex items-center gap-2">
+                        <Shapes size={16} className="text-muted-foreground" />
+                        {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
+                      </span>
+                      <ChevronDown size={14} />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[700px] p-0 z-50 bg-popover border max-h-[600px] overflow-y-auto" align="start">
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-semibold">Filing Types</h3>
+                        <div className="flex items-center gap-2">
+                          {selectedTypes.length > 0 && (
+                            <Button variant="outline" size="sm" onClick={() => setSelectedTypes([])}>Clear</Button>
+                          )}
+                          <Button size="sm" onClick={() => setTypeOpen(false)}>Done</Button>
                         </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+                      </div>
+                      <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                        {types.map((t) => {
+                          const isSelected = selectedTypes.includes(t);
+                          const Icon = getFilingTypeIcon(t);
+                          return (
+                            <button
+                              key={t}
+                              onClick={() => {
+                                setSelectedTypes((prev) => prev.includes(t) ? prev.filter((v) => v !== t) : [...prev, t]);
+                              }}
+                              className={cn(
+                                "flex items-center gap-2 p-3 rounded-md border transition-colors text-left",
+                                isSelected ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted/50 border-border"
+                              )}
+                            >
+                              <Icon className={cn("h-4 w-4 flex-shrink-0", getFilingTypeColor(t))} />
+                              <div className="min-w-0 flex-1">
+                                <div className="font-medium text-sm truncate">{t}</div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
 
-          {/* Date range (months) */}
-          <DateRangeFilter
-            months={months}
-            range={range}
-            onRangeChange={(r) => setRange(r)}
-            open={dateOpen}
-            onOpenChange={setDateOpen}
-          />
+                {/* Date range (months) */}
+                <DateRangeFilter
+                  months={months}
+                  range={range}
+                  onRangeChange={(r) => setRange(r)}
+                  open={dateOpen}
+                  onOpenChange={setDateOpen}
+                />
+              </div>
+
+              {/* Right section: Sort controls - floats right on large screens */}
+              <div className="flex items-center gap-2 lg:ml-auto">
+                {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedOrgs([]);
+                      setSelectedTypes([]);
+                      setQuery("");
+                      setRange(months.length ? [0, months.length - 1] : null);
+                    }}
+                  >
+                    Clear
+                  </Button>
+                )}
+                {/* Sort label - shows only on wider screens */}
+                <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium">Sort:</span>
+                <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+                  {sortDir === "desc" ? "↓" : "↑"} Date
+                </Button>
+              </div>
+            </div>
 
           <div className="ml-2 flex items-center gap-2">
             {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (

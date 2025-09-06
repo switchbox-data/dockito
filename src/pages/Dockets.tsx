@@ -865,7 +865,12 @@ export default function DocketsPage() {
       <div className="sticky top-0 z-50">
         <div className="relative border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
-          <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-x-auto min-w-0">
+          <div className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
+            {/* Main content wrapper - creates space between filter and sort sections on large screens */}
+            <div className="flex items-center gap-2 md:gap-3 lg:justify-between">
+              
+              {/* Left section: Search and filters */}
+              <div className="flex items-center gap-2 md:gap-3 min-w-0">
               {/* Search (compact, expands on focus) */}
               <ExpandingSearchInput
                 ref={searchRef}
@@ -1198,18 +1203,23 @@ export default function DocketsPage() {
                 open={dateOpen}
                 onOpenChange={setDateOpen}
               />
-
-              {/* Sort label - shows only on wider screens */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium">
-                Sort:
-              </span>
-
-              {/* Sort */}
-              <div className="shrink-0">
-                <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
-                  {sortDir === "desc" ? "↓" : "↑"} Date
-                </Button>
               </div>
+
+              {/* Right section: Sort controls - floats right on large screens */}
+              <div className="flex items-center gap-2 lg:ml-auto">
+                {/* Sort label - shows only on wider screens */}
+                <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium">
+                  Sort:
+                </span>
+
+                {/* Sort */}
+                <div className="shrink-0">
+                  <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+                    {sortDir === "desc" ? "↓" : "↑"} Date
+                  </Button>
+                </div>
+              </div>
+            </div>
             </div>
           </div>
         </div>
