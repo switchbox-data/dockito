@@ -775,7 +775,7 @@ const isEndDateModified = useMemo(() => {
               <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0 hover:border-primary/30" disabled={months.length <= 1}>
                 <span className="inline-flex items-center gap-2">
                   <Calendar size={16} className="text-muted-foreground" />
-                  Date Range
+                  Dates
                 </span>
                 <ChevronDown size={14} />
               </Button>
@@ -934,7 +934,7 @@ const isEndDateModified = useMemo(() => {
               <Badge variant="secondary" className="px-2 py-1">
                 <div className="flex items-center gap-1.5 mr-1">
                   <Calendar size={12} className="text-muted-foreground" />
-                  <span>Start: {range && months.length ? format(months[range[0]], "MMM yyyy") : "–"}</span>
+                  <span>Start Date: {range && months.length ? format(months[range[0]], "MMM yyyy") : "–"}</span>
                 </div>
                 <button
                   type="button"
@@ -950,7 +950,7 @@ const isEndDateModified = useMemo(() => {
               <Badge variant="secondary" className="px-2 py-1">
                 <div className="flex items-center gap-1.5 mr-1">
                   <Calendar size={12} className="text-muted-foreground" />
-                  <span>End: {range && months.length ? format(months[range[1]], "MMM yyyy") : "–"}</span>
+                  <span>End Date: {range && months.length ? format(months[range[1]], "MMM yyyy") : "–"}</span>
                 </div>
                 <button
                   type="button"

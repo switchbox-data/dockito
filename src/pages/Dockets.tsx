@@ -1137,7 +1137,7 @@ export default function DocketsPage() {
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     <span className="inline-flex items-center gap-2">
                       <CalendarIcon size={16} className="text-muted-foreground" />
-                      Date Range
+                      Dates
                     </span>
                     <ChevronDown size={14} />
                   </Button>
@@ -1403,7 +1403,7 @@ export default function DocketsPage() {
             <Badge variant="secondary" className="px-2 py-1">
               <div className="flex items-center gap-1.5 mr-1">
                 <CalendarIcon size={12} className="text-muted-foreground" />
-                <span>Start: {startDate ? format(startDate, "MMM yyyy") : "–"}</span>
+                <span>Start Date: {startDate ? format(startDate, "MMM yyyy") : "–"}</span>
               </div>
               <button
                 type="button"
@@ -1419,7 +1419,7 @@ export default function DocketsPage() {
             <Badge variant="secondary" className="px-2 py-1">
               <div className="flex items-center gap-1.5 mr-1">
                 <CalendarIcon size={12} className="text-muted-foreground" />
-                <span>End: {endDate ? format(endDate, "MMM yyyy") : "–"}</span>
+                <span>End Date: {endDate ? format(endDate, "MMM yyyy") : "–"}</span>
               </div>
               <button
                 type="button"
