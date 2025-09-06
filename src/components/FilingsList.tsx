@@ -18,6 +18,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { ExpandingSearchInput } from "@/components/ExpandingSearchInput";
+import { useResponsiveLabels } from "@/hooks/use-responsive-labels";
 export type FilingWithAttachments = Filling & { attachments: Attachment[] };
 
 type Props = {
@@ -80,6 +81,14 @@ const isEndDateModified = useMemo(() => {
   const filingRefs = useRef<(HTMLDivElement | null)[]>([]);
   const attachmentRefs = useRef<Record<string, (HTMLButtonElement | HTMLAnchorElement | null)[]>>({});
   const didInitRef = useRef(false);
+
+  // Toolbar measurement refs
+  const barRef = useRef<HTMLDivElement>(null);
+  const sortBtnRef = useRef<HTMLButtonElement>(null);
+  const { sortLabelRef, filterLabelRef, showSortLabel, showFilterLabel } = useResponsiveLabels({
+    containerRef: barRef,
+    sortButtonRef: sortBtnRef,
+  });
 
   const organizations = useMemo(() => {
     const set = new Set<string>();
@@ -667,7 +676,7 @@ const isEndDateModified = useMemo(() => {
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
           <div className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
             {/* Single flowing container - no justify-between so everything can be pushed */}
-            <div className="flex items-center gap-2 md:gap-3 min-w-0 overflow-x-auto">
+            <div ref={barRef} className="flex items-center gap-2 md:gap-3 min-w-0 overflow-x-auto">
               <ExpandingSearchInput
                 ref={searchRef}
                 value={query}
@@ -676,8 +685,14 @@ const isEndDateModified = useMemo(() => {
                 containerRef={containerRef}
               />
 
-              {/* Filter label - progressive appearance: hidden -> shows at lg -> gets spacing at xl+ */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">
+              {/* Filter label - dynamic: appears only when there's space (after Sort) */}
+              <span
+                ref={filterLabelRef}
+                className={cn(
+                  "text-sm text-muted-foreground font-medium whitespace-nowrap",
+                  showFilterLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 invisible pointer-events-none"
+                )}
+              >
                 Filter:
               </span>
 
@@ -802,9 +817,17 @@ const isEndDateModified = useMemo(() => {
                   Clear
                 </Button>
               )}
-              {/* Sort label - progressive appearance: hidden -> shows at md -> gets spacing at xl+ */}
-              <span className="hidden md:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">Sort:</span>
-              <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+              {/* Sort label - dynamic: appears only when there's space */}
+              <span
+                ref={sortLabelRef}
+                className={cn(
+                  "text-sm text-muted-foreground font-medium whitespace-nowrap",
+                  showSortLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 invisible pointer-events-none"
+                )}
+              >
+                Sort:
+              </span>
+              <Button ref={sortBtnRef} variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
                 {sortDir === "desc" ? "↓" : "↑"} Date
               </Button>
             </div>
