@@ -690,8 +690,9 @@ const isEndDateModified = useMemo(() => {
                 ref={filterLabelRef}
                 className={cn(
                   "text-sm text-muted-foreground font-medium whitespace-nowrap",
-                  showFilterLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 opacity-0 pointer-events-none"
+                  showFilterLabel ? "inline-block" : "absolute -z-10 opacity-0 pointer-events-none"
                 )}
+                style={showFilterLabel ? { marginLeft: "clamp(0rem, 5vw - 2rem, 3rem)" } : undefined}
               >
                 Filter:
               </span>
@@ -822,8 +823,9 @@ const isEndDateModified = useMemo(() => {
                 ref={sortLabelRef}
                 className={cn(
                   "text-sm text-muted-foreground font-medium whitespace-nowrap",
-                  showSortLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 opacity-0 pointer-events-none"
+                  showSortLabel ? "inline-block" : "absolute -z-10 opacity-0 pointer-events-none"
                 )}
+                style={showSortLabel ? { marginLeft: "clamp(0rem, 5vw - 2rem, 3rem)" } : undefined}
               >
                 Sort:
               </span>
