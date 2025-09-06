@@ -808,6 +808,12 @@ const isEndDateModified = useMemo(() => {
         <section aria-label="Active filters" className="mb-4">
           <div className="relative flex flex-wrap items-center gap-2 text-sm px-1">
             <div className="flex flex-wrap items-center gap-2 flex-1">
+              {/* Results count - only show when filters are active */}
+              {(selectedOrgs.length > 0 || selectedTypes.length > 0 || query || !isFullRange) && (
+                <span className="text-muted-foreground font-medium">
+                  {filtered.length === 1 ? "1 filing found with:" : `${filtered.length} filings found with:`}
+                </span>
+              )}
               {selectedOrgs.map((o) => (
                 <Badge key={`org-${o}`} variant="secondary" className="px-2 py-1">
                   <div className="flex items-center gap-1.5 mr-1">
