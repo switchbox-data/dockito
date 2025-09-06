@@ -806,7 +806,22 @@ const isEndDateModified = useMemo(() => {
       {/* Filter badges section - separate from sticky bar, matches Dockets page architecture */}
       {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
         <section aria-label="Active filters" className="mb-4">
-          <div className="flex flex-wrap gap-2 text-sm px-1">
+          <div className="flex flex-wrap items-center gap-2 text-sm px-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSelectedOrgs([]);
+                setSelectedTypes([]);
+                setQuery("");
+                if (months.length) {
+                  setRange([0, months.length - 1]);
+                }
+              }}
+              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 h-auto"
+            >
+              Clear all
+            </Button>
             {selectedOrgs.map((o) => (
               <Badge key={`org-${o}`} variant="secondary" className="px-2 py-1">
                 <div className="flex items-center gap-1.5 mr-1">

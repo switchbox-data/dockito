@@ -1207,6 +1207,28 @@ export default function DocketsPage() {
       <section aria-label="Filters" className="space-y-2">
         {/* Active filter chips with count */}
         <div className="flex flex-wrap items-center gap-2 text-sm px-1">
+          {/* Clear all button - only show when filters are active */}
+          {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0 || isStartDateModified || isEndDateModified) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSearch("");
+                setSelectedIndustries([]);
+                setDocketTypes([]);
+                setDocketSubtypes([]);
+                setPetitioners([]);
+                setRelationshipTypes([]);
+                setDateRange(undefined);
+                if (months.length) {
+                  setRange([0, months.length - 1]);
+                }
+              }}
+              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 h-auto"
+            >
+              Clear all
+            </Button>
+          )}
           {/* Results count - only show when filters are active */}
           {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0 || isStartDateModified || isEndDateModified) && (
             <span className="text-muted-foreground font-medium">
