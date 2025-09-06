@@ -331,7 +331,7 @@ export default function DocketsPage() {
         body: {
           orgName: lockedOrg,
           filters: {
-            relationshipTypes
+            relationshipTypes: relationshipTypes.length ? relationshipTypes : undefined
           },
           aggregateOnly: true
         }
@@ -548,8 +548,8 @@ export default function DocketsPage() {
               sortOrder: sortDir,
               industries: selectedIndustries.length ? selectedIndustries : undefined,
               docketTypes: docketTypes.length ? docketTypes : undefined,
-              docketSubtypes: docketSubtypes.length ? docketSubtypes : undefined,
-              relationshipTypes
+               docketSubtypes: docketSubtypes.length ? docketSubtypes : undefined,
+               relationshipTypes: relationshipTypes.length ? relationshipTypes : undefined
             },
             pagination: {
               page,
@@ -1318,9 +1318,9 @@ export default function DocketsPage() {
               </Badge>
             ))
           )}
-          {lockedOrg && relationshipTypes.length < 2 && (
+          {lockedOrg && relationshipTypes.length > 0 && relationshipTypes.length < 2 && (
             <Badge variant="secondary" className="px-2 py-1">
-              <span className="mr-1">Showing: {relationshipTypes[0] === "petitioned" ? "Petitioned dockets" : "Filed dockets"}</span>
+              <span className="mr-1">Showing: {relationshipTypes.includes("petitioned") ? "Petitioned dockets" : "Filed dockets"}</span>
               <button
                 type="button"
                 aria-label="Show both relationship types"
