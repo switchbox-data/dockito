@@ -677,7 +677,7 @@ const isEndDateModified = useMemo(() => {
               />
 
               {/* Filter label - shows on wide screens with generous spacing */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-0 xl:ml-8 2xl:ml-12">
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">
                 Filter:
               </span>
 
@@ -797,13 +797,13 @@ const isEndDateModified = useMemo(() => {
                     setQuery("");
                     setRange(months.length ? [0, months.length - 1] : null);
                   }}
-                  className="ml-12"
+                  className="ml-8"
                 >
                   Clear
                 </Button>
               )}
               {/* Sort label - shows only on wider screens */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-12">Sort:</span>
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">Sort:</span>
               <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
                 {sortDir === "desc" ? "↓" : "↑"} Date
               </Button>

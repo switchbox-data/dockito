@@ -877,7 +877,7 @@ export default function DocketsPage() {
               />
 
               {/* Filter label - shows on wide screens with generous spacing */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-0 xl:ml-8 2xl:ml-12">
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">
                 Filter:
               </span>
 
@@ -1202,7 +1202,7 @@ export default function DocketsPage() {
 
               {/* Sort section - now flows naturally, can be pushed by expanding search */}
               {/* Sort label - shows only on wider screens */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-12">
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">
                 Sort:
               </span>
 
