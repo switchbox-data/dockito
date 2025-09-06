@@ -649,6 +649,12 @@ export default function DocketsPage() {
       if (docketSubtypes.length) query = query.in("docket_subtype", docketSubtypes);
       if (startDate && !isNaN(startDate.getTime())) query = query.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
       if (endDate && !isNaN(endDate.getTime())) query = query.lte("opened_date", format(endOfMonth(endDate), "yyyy-MM-dd"));
+      // Add petitioner filtering - use contains operator for array
+      if (petitioners.length) {
+        // For multiple petitioners, we need to check if any of them are in the petitioner_strings array
+        const petitionerConditions = petitioners.map(p => `petitioner_strings.cs.{${p}}`).join(',');
+        query = query.or(petitionerConditions);
+      }
 
       const { data, error } = await query;
       if (error) throw error;
@@ -687,12 +693,7 @@ export default function DocketsPage() {
       // Apply client-side filters that couldn't be done in the query
       // (docketTypes filtering is now handled server-side)
 
-      // Filter by petitioners if selected
-      if (petitioners.length) {
-        dockets = dockets.filter((d: any) => 
-          d.petitioner_strings && d.petitioner_strings.some((p: string) => petitioners.includes(p))
-        );
-      }
+      // Client-side petitioner filtering is no longer needed since it's now handled server-side
 
       return dockets;
     },
