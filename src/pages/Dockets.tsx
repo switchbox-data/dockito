@@ -367,7 +367,7 @@ export default function DocketsPage() {
             relationshipTypes: relationshipTypes.length ? relationshipTypes : undefined,
             industries: selectedIndustries.length ? selectedIndustries : undefined,
             docketTypes: docketTypes.length ? docketTypes : undefined,
-            subtypes: docketSubtypes.length ? docketSubtypes : undefined,
+            docketSubtypes: docketSubtypes.length ? docketSubtypes : undefined,
             startDate: startDate ? format(startOfMonth(startDate), "yyyy-MM-dd") : undefined,
             endDate: endDate ? format(endOfMonth(endDate), "yyyy-MM-dd") : undefined,
             sortBy: 'opened_date',

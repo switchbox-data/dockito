@@ -202,12 +202,26 @@ Deno.serve(async (req) => {
           .select('opened_date, industry, docket_type, docket_subtype')
           .in('uuid', chunk)
 
-        // Apply date filters
+        // Apply filters
         if (filters?.startDate) {
           chunkQuery = chunkQuery.gte('opened_date', filters.startDate)
         }
         if (filters?.endDate) {
           chunkQuery = chunkQuery.lte('opened_date', filters.endDate)
+        }
+        if (filters?.industries && filters.industries.length > 0) {
+          chunkQuery = chunkQuery.in('industry', filters.industries)
+        }
+        if (filters?.docketTypes && filters.docketTypes.length > 0) {
+          chunkQuery = chunkQuery.in('docket_type', filters.docketTypes)
+        }
+        const subtypeFilters = (filters as any)?.docketSubtypes?.length
+          ? (filters as any).docketSubtypes
+          : (filters as any)?.subtypes?.length
+            ? (filters as any).subtypes
+            : undefined
+        if (subtypeFilters) {
+          chunkQuery = chunkQuery.in('docket_subtype', subtypeFilters)
         }
 
         const { data: chunkDockets, error: chunkError } = await chunkQuery
@@ -267,7 +281,7 @@ Deno.serve(async (req) => {
             docket_type: data.docket_type,
             count: data.count
           })),
-          totalCount: docketUuids.length,
+          totalCount: allDockets.length,
           petitionedCount: relationshipTypes.includes('petitioned') ? petitionedDocketCount : 0,
           filedCount: relationshipTypes.includes('filed') ? totalFilingCount : 0
         }),
