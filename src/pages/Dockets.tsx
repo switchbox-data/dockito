@@ -1227,7 +1227,7 @@ export default function DocketsPage() {
         {/* Active filter chips with count */}
         <div className="flex flex-wrap items-center gap-2 text-sm px-1">
           {/* Results count - only show when filters are active */}
-          {((selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch) || lockedOrg) && (
+          {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0) && (
             <span className="text-muted-foreground font-medium">
               {showCardSkeletons ? (
                 "Loading..."
