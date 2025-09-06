@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, Link2,
   Heart, DollarSign, Frown, FileCheck, Search, 
   BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
-  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb } from "lucide-react";
+  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, UserCheck } from "lucide-react";
 import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay, isSameMonth } from "date-fns";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -1161,33 +1161,50 @@ export default function DocketsPage() {
                 </PopoverContent>
               </Popover>
 
-              {/* Relationship Type filter (only for org pages) */}
+              {/* Role filter (only for org pages) */}
               {lockedOrg && (
                 <Popover open={relationshipOpen} onOpenChange={setRelationshipOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                       <span className="inline-flex items-center gap-2">
-                        <Link2 size={16} className="text-muted-foreground" />
-                        {relationshipTypes.length === 2 ? "Both" : relationshipTypes.length === 1 ? (relationshipTypes[0] === "petitioned" ? "Petitioned" : "Filed") : "None"}
+                        <UserCheck size={16} className="text-muted-foreground" />
+                        {relationshipTypes.length === 0 ? "Role" : relationshipTypes.length === 2 ? "Role (2)" : `Role (${relationshipTypes.length})`}
                       </span>
                       <ChevronDown size={14} />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 z-50 bg-popover border">
+                  <PopoverContent className="w-[300px] p-0 z-50 bg-popover border" align="start">
                     <Command>
                       <CommandList>
-                        <CommandGroup heading="Relationship Type">
-                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned", "filed"])}>Both</CommandItem>
-                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned"])}>
+                        <CommandGroup>
+                          <CommandItem onSelect={() => setRelationshipTypes([])}>
                             <div className="flex items-center gap-2">
-                              <Check size={14} className={relationshipTypes.includes("petitioned") && !relationshipTypes.includes("filed") ? "opacity-100" : "opacity-0"} />
-                              <span>Petitioned Only</span>
+                              <X size={14} className="text-muted-foreground" />
+                              <span className="font-medium">Clear all</span>
                             </div>
                           </CommandItem>
-                          <CommandItem onSelect={() => setRelationshipTypes(["filed"])}>
+                          <CommandItem onSelect={() => {
+                            if (relationshipTypes.includes("petitioned")) {
+                              setRelationshipTypes(prev => prev.filter(r => r !== "petitioned"));
+                            } else {
+                              setRelationshipTypes(prev => [...prev, "petitioned"]);
+                            }
+                          }}>
                             <div className="flex items-center gap-2">
-                              <Check size={14} className={relationshipTypes.includes("filed") && !relationshipTypes.includes("petitioned") ? "opacity-100" : "opacity-0"} />
-                              <span>Filed Only</span>
+                              <Check size={14} className={relationshipTypes.includes("petitioned") ? "opacity-100" : "opacity-0"} />
+                              <span>Docket petitioner</span>
+                            </div>
+                          </CommandItem>
+                          <CommandItem onSelect={() => {
+                            if (relationshipTypes.includes("filed")) {
+                              setRelationshipTypes(prev => prev.filter(r => r !== "filed"));
+                            } else {
+                              setRelationshipTypes(prev => [...prev, "filed"]);
+                            }
+                          }}>
+                            <div className="flex items-center gap-2">
+                              <Check size={14} className={relationshipTypes.includes("filed") ? "opacity-100" : "opacity-0"} />
+                              <span>Docket filer</span>
                             </div>
                           </CommandItem>
                         </CommandGroup>
