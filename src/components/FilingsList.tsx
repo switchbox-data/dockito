@@ -15,14 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 export type FilingWithAttachments = Filling & { attachments: Attachment[] };
 
 type Props = {
-  filings: FilingWithAttachments[];
+  docketGovId: string; // Change from receiving filings to receiving docket ID for server-side filtering
 };
-
-export const FilingsList = ({ filings }: Props) => {
   const [selectedOrgs, setSelectedOrgs] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [query, setQuery] = useState("");
@@ -37,6 +37,109 @@ const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
 const [dateOpen, setDateOpen] = useState(false);
 const [range, setRange] = useState<[number, number] | null>(null);
+
+// Server-side filtering with React Query
+const { data: filings = [], isLoading } = useQuery<FilingWithAttachments[]>({
+  queryKey: ["docket-filings", docketGovId, selectedOrgs, selectedTypes, query, range],
+  queryFn: async () => {
+    // Build the base query
+    let fillingsQuery = supabase
+      .from("fillings")
+      .select("*")
+      .eq("docket_govid", docketGovId);
+
+    // Apply organization filter
+    if (selectedOrgs.length > 0) {
+      const orgConditions = selectedOrgs.map(org => `organization_author_strings.cs.{${org}}`).join(',');
+      fillingsQuery = fillingsQuery.or(orgConditions);
+    }
+
+    // Apply type filter
+    if (selectedTypes.length > 0) {
+      fillingsQuery = fillingsQuery.in("filling_type", selectedTypes);
+    }
+
+    // Apply search filter
+    if (query.trim()) {
+      const searchTerm = query.trim();
+      fillingsQuery = fillingsQuery.or(
+        `filling_name.ilike.%${searchTerm}%,filling_description.ilike.%${searchTerm}%,filling_type.ilike.%${searchTerm}%,organization_author_strings.cs.{${searchTerm}}`
+      );
+    }
+
+    // Apply date range filter
+    if (range && months.length > 0) {
+      const startDate = format(startOfMonth(months[range[0]]), "yyyy-MM-dd");
+      const endDate = format(endOfMonth(months[range[1]]), "yyyy-MM-dd");
+      fillingsQuery = fillingsQuery.gte("filed_date", startDate).lte("filed_date", endDate);
+    }
+
+    // Apply sorting
+    fillingsQuery = fillingsQuery.order("filed_date", { ascending: sortDir === "asc" });
+
+    const { data: fills, error } = await fillingsQuery;
+    if (error) throw error;
+
+    // Fetch attachments for the filtered filings
+    const uuids = (fills ?? []).map((f: any) => f.uuid);
+    if (uuids.length === 0) return [];
+
+    const { data: atts, error: aerr } = await supabase
+      .from("attachments")
+      .select("*")
+      .in("parent_filling_uuid", uuids);
+    if (aerr) throw aerr;
+
+    // Apply attachment search filter if needed
+    let filteredAttachments = atts ?? [];
+    if (query.trim()) {
+      const searchTerm = query.trim().toLowerCase();
+      // Get UUIDs of filings that have matching attachments
+      const matchingFilingUuids = new Set(
+        filteredAttachments
+          .filter(a => 
+            a.attachment_title?.toLowerCase().includes(searchTerm) ||
+            a.attachment_file_name?.toLowerCase().includes(searchTerm) ||
+            a.attachment_file_extension?.toLowerCase().includes(searchTerm) ||
+            a.attachment_type?.toLowerCase().includes(searchTerm) ||
+            a.attachment_subtype?.toLowerCase().includes(searchTerm)
+          )
+          .map(a => a.parent_filling_uuid)
+      );
+      
+      // Include filings that either match directly or have matching attachments
+      const directMatches = (fills ?? []).filter((f: any) =>
+        f.filling_name?.toLowerCase().includes(searchTerm) ||
+        f.filling_description?.toLowerCase().includes(searchTerm) ||
+        f.filling_type?.toLowerCase().includes(searchTerm) ||
+        f.organization_author_strings?.some((o: string) => o.toLowerCase().includes(searchTerm))
+      );
+      
+      const attachmentMatches = (fills ?? []).filter((f: any) => matchingFilingUuids.has(f.uuid));
+      
+      // Combine and deduplicate
+      const allMatches = [...directMatches];
+      attachmentMatches.forEach(match => {
+        if (!allMatches.find(f => f.uuid === match.uuid)) {
+          allMatches.push(match);
+        }
+      });
+      
+      fills = allMatches;
+    }
+
+    const byParent = new Map<string, any[]>();
+    filteredAttachments.forEach((a: any) => {
+      const arr = byParent.get(a.parent_filling_uuid) ?? [];
+      arr.push(a);
+      byParent.set(a.parent_filling_uuid, arr);
+    });
+
+    const combined = (fills ?? []).map((f: any) => ({ ...f, attachments: byParent.get(f.uuid) ?? [] }));
+    return combined as FilingWithAttachments[];
+  },
+});
+
 const months = useMemo(() => {
   if (!filings?.length) return [] as Date[];
   const times = filings
@@ -54,46 +157,51 @@ const months = useMemo(() => {
 useEffect(() => { if (months.length && !range) setRange([0, months.length - 1]); }, [months, range]);
 const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 && range[1] === months.length - 1), [range, months]);
 
-// Default dates are the full range
-const defaultStartDate = useMemo(() => (months.length ? months[0] : undefined), [months]);
-const defaultEndDate = useMemo(() => (months.length ? months[months.length - 1] : undefined), [months]);
+  // Default dates are the full range
+  const defaultStartDate = useMemo(() => (months.length ? months[0] : undefined), [months]);
+  const defaultEndDate = useMemo(() => (months.length ? months[months.length - 1] : undefined), [months]);
+  
+  // Check if current dates differ from defaults
+  const isStartDateModified = useMemo(() => {
+    if (!range || !months.length || !defaultStartDate) return false;
+    const currentStart = months[range[0]];
+    return currentStart.getTime() !== defaultStartDate.getTime();
+  }, [range, months, defaultStartDate]);
+  
+  const isEndDateModified = useMemo(() => {
+    if (!range || !months.length || !defaultEndDate) return false;
+    const currentEnd = months[range[1]];
+    return currentEnd.getTime() !== defaultEndDate.getTime();
+  }, [range, months, defaultEndDate]);
 
-// Check if current dates differ from defaults
-const isStartDateModified = useMemo(() => {
-  if (!range || !months.length || !defaultStartDate) return false;
-  const currentStart = months[range[0]];
-  return currentStart.getTime() !== defaultStartDate.getTime();
-}, [range, months, defaultStartDate]);
-
-const isEndDateModified = useMemo(() => {
-  if (!range || !months.length || !defaultEndDate) return false;
-  const currentEnd = months[range[1]];
-  return currentEnd.getTime() !== defaultEndDate.getTime();
-}, [range, months, defaultEndDate]);
-
-  // Keyboard selection state
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const [selectedAttachmentIdx, setSelectedAttachmentIdx] = useState<number | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const filingRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const attachmentRefs = useRef<Record<string, (HTMLButtonElement | HTMLAnchorElement | null)[]>>({});
-  const didInitRef = useRef(false);
+  // Organizations and types are now derived from all possible values, not just filtered results
+  const { data: allFilings = [] } = useQuery<FilingWithAttachments[]>({
+    queryKey: ["all-docket-filings", docketGovId],
+    queryFn: async () => {
+      const { data: fills, error } = await supabase
+        .from("fillings")
+        .select("*")
+        .eq("docket_govid", docketGovId);
+      if (error) throw error;
+      return (fills ?? []).map((f: any) => ({ ...f, attachments: [] }));
+    },
+  });
 
   const organizations = useMemo(() => {
     const set = new Set<string>();
-    filings.forEach((f) => {
+    allFilings.forEach((f) => {
       f.organization_author_strings?.forEach((o) => set.add(o));
     });
     return Array.from(set).sort();
-  }, [filings]);
+  }, [allFilings]);
 
   const types = useMemo(() => {
     const set = new Set<string>();
-    filings.forEach((f) => {
+    allFilings.forEach((f) => {
       if (f.filling_type) set.add(f.filling_type);
     });
     return Array.from(set).sort();
-  }, [filings]);
+  }, [allFilings]);
 
   const typePalette = [
     "bg-primary/10 text-primary", 
@@ -471,21 +579,22 @@ const isEndDateModified = useMemo(() => {
   }, [filings, selectedOrgs, selectedTypes, query, sortDir, range, months]);
 
   useEffect(() => {
+  useEffect(() => {
     // Close viewer if active filing disappears (filter changed)
-    if (viewer && !filtered.find(f => f.uuid === viewer.filingId)) {
+    if (viewer && !filings.find(f => f.uuid === viewer.filingId)) {
       setViewer(null);
     }
-  }, [filtered, viewer]);
+  }, [filings, viewer]);
 
   // Focus and clamp selection
   // Removed automatic focus on mount to avoid scroll snapping when filings load
   useEffect(() => {
-    if (!filtered.length) { setSelectedIndex(0); setSelectedAttachmentIdx(null); return; }
-    if (selectedIndex > filtered.length - 1) setSelectedIndex(filtered.length - 1);
-    const filing = filtered[Math.min(selectedIndex, filtered.length - 1)];
+    if (!filings.length) { setSelectedIndex(0); setSelectedAttachmentIdx(null); return; }
+    if (selectedIndex > filings.length - 1) setSelectedIndex(filings.length - 1);
+    const filing = filings[Math.min(selectedIndex, filings.length - 1)];
     const attCount = filing ? filing.attachments.length : 0;
     if (selectedAttachmentIdx !== null && selectedAttachmentIdx >= attCount) setSelectedAttachmentIdx(attCount ? attCount - 1 : null);
-  }, [filtered, selectedIndex, selectedAttachmentIdx]);
+  }, [filings, selectedIndex, selectedAttachmentIdx]);
 
   // Refocus the keyboard container after the PDF modal closes (but not on initial mount)
   useEffect(() => {
@@ -519,10 +628,10 @@ const isEndDateModified = useMemo(() => {
       if (selectedAttachmentIdx !== null) {
         if (selectedAttachmentIdx > 0) {
           setSelectedAttachmentIdx(selectedAttachmentIdx - 1);
-          const filing = filtered[selectedIndex];
+          const filing = filings[selectedIndex];
           if (filing) scrollAttachmentIntoView(filing.uuid, selectedAttachmentIdx - 1);
         } else if (selectedIndex > 0) {
-          const prev = filtered[selectedIndex - 1];
+          const prev = filings[selectedIndex - 1];
           setSelectedIndex(selectedIndex - 1);
           if (prev && openIds.has(prev.uuid) && prev.attachments.length) {
             const last = prev.attachments.length - 1;
@@ -534,7 +643,7 @@ const isEndDateModified = useMemo(() => {
           }
         }
       } else if (selectedIndex > 0) {
-        const prev = filtered[selectedIndex - 1];
+        const prev = filings[selectedIndex - 1];
         setSelectedIndex(selectedIndex - 1);
         if (prev && openIds.has(prev.uuid) && prev.attachments.length) {
           const last = prev.attachments.length - 1;
@@ -550,15 +659,15 @@ const isEndDateModified = useMemo(() => {
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      const filing = filtered[selectedIndex];
+      const filing = filings[selectedIndex];
       if (filing && openIds.has(filing.uuid)) {
         const total = filing.attachments.length;
         if (selectedAttachmentIdx === null) {
           if (total) {
             setSelectedAttachmentIdx(0);
             scrollAttachmentIntoView(filing.uuid, 0);
-          } else if (selectedIndex < filtered.length - 1) {
-            const nextF = filtered[selectedIndex + 1];
+          } else if (selectedIndex < filings.length - 1) {
+            const nextF = filings[selectedIndex + 1];
             setSelectedIndex(selectedIndex + 1);
             if (nextF && openIds.has(nextF.uuid) && nextF.attachments.length) {
               setSelectedAttachmentIdx(0);
@@ -572,8 +681,8 @@ const isEndDateModified = useMemo(() => {
           if (selectedAttachmentIdx < total - 1) {
             setSelectedAttachmentIdx(selectedAttachmentIdx + 1);
             scrollAttachmentIntoView(filing.uuid, selectedAttachmentIdx + 1);
-          } else if (selectedIndex < filtered.length - 1) {
-            const nextF = filtered[selectedIndex + 1];
+          } else if (selectedIndex < filings.length - 1) {
+            const nextF = filings[selectedIndex + 1];
             setSelectedIndex(selectedIndex + 1);
             if (nextF && openIds.has(nextF.uuid) && nextF.attachments.length) {
               setSelectedAttachmentIdx(0);
@@ -584,8 +693,8 @@ const isEndDateModified = useMemo(() => {
             }
           }
         }
-      } else if (selectedIndex < filtered.length - 1) {
-        const nextF = filtered[selectedIndex + 1];
+      } else if (selectedIndex < filings.length - 1) {
+        const nextF = filings[selectedIndex + 1];
         setSelectedIndex(selectedIndex + 1);
         if (nextF && openIds.has(nextF.uuid) && nextF.attachments.length) {
           setSelectedAttachmentIdx(0);
@@ -600,7 +709,7 @@ const isEndDateModified = useMemo(() => {
 
     if (e.key === 'ArrowRight') {
       e.preventDefault();
-      const filing = filtered[selectedIndex];
+      const filing = filings[selectedIndex];
       if (filing) {
         setOpenIds((prev) => {
           const next = new Set(prev);
@@ -616,7 +725,7 @@ const isEndDateModified = useMemo(() => {
 
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      const filing = filtered[selectedIndex];
+      const filing = filings[selectedIndex];
       if (filing && openIds.has(filing.uuid)) {
         setSelectedAttachmentIdx(null);
         setOpenIds((prev) => {
@@ -631,7 +740,7 @@ const isEndDateModified = useMemo(() => {
 
     if (e.key === 'Enter') {
       e.preventDefault();
-      const filing = filtered[selectedIndex];
+      const filing = filings[selectedIndex];
       if (!filing) return;
       if (selectedAttachmentIdx !== null) {
         const att = filing.attachments[selectedAttachmentIdx];
@@ -967,7 +1076,7 @@ const isEndDateModified = useMemo(() => {
       )}
 
       <div className="space-y-2">
-        {filtered.map((f, idx) => {
+        {filings.map((f, idx) => {
           const isOpen = openIds.has(f.uuid);
           const isSelected = selectedIndex === idx;
           return (

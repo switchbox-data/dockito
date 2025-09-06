@@ -119,7 +119,7 @@ const DocketPage = () => {
       {filingsLoading ? (
         <div className="text-muted-foreground">Loading filings…</div>
       ) : (
-        <FilingsList filings={filings ?? []} />
+        <FilingsList docketGovId={docket.docket_govid} />
       )}
     </main>
   );
