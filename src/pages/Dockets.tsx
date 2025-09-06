@@ -311,13 +311,8 @@ export default function DocketsPage() {
   // Initialize/reset range when context changes
   useEffect(() => {
     if (months.length) {
-      if (lockedOrg) {
-        // For org pages: show full range of that org's activity
-        setRange([0, months.length - 1]);
-      } else {
-        // For main dockets page: default to last 10 years (120 months)
-        setRange([Math.max(0, months.length - Math.min(120, months.length)), months.length - 1]);
-      }
+      // Always show full range for all pages
+      setRange([0, months.length - 1]);
     }
   }, [months, lockedOrg]); // Reset whenever months or lockedOrg changes
 
