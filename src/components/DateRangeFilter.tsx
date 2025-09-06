@@ -40,9 +40,11 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
 }) => {
   // Calculate filing counts per month for histogram
   const filingCounts = React.useMemo(() => {
-    if (!filings.length || !months.length) return [];
+    if (!filings?.length || !months.length) {
+      return [];
+    }
     
-    return months.map(month => {
+    const counts = months.map(month => {
       const monthStart = startOfMonth(month);
       const monthEnd = endOfMonth(month);
       
@@ -51,6 +53,8 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         return filingDate >= monthStart && filingDate <= monthEnd;
       }).length;
     });
+    
+    return counts;
   }, [filings, months]);
 
   const maxCount = Math.max(...filingCounts, 1);
@@ -174,7 +178,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             })()}
 
             {/* Filing histogram */}
-            {filingCounts.length > 0 && (
+            {filings && filings.length > 0 && filingCounts.length > 0 && (
               <div className="relative h-12 mb-3 px-1">
                 <div className="flex items-end justify-between h-full gap-0.5">
                   {filingCounts.map((count, index) => {
