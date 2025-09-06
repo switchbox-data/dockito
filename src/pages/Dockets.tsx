@@ -1166,8 +1166,26 @@ export default function DocketsPage() {
           </div>
         </div>
       <section aria-label="Filters" className="space-y-2">
-        {/* Active filter chips */}
-        <div className="flex flex-wrap gap-2 text-sm px-1">
+        {/* Active filter chips with count */}
+        <div className="flex flex-wrap items-center gap-2 text-sm px-1">
+          {/* Results count */}
+          <span className="text-muted-foreground font-medium">
+            {showCardSkeletons ? (
+              "Loading..."
+            ) : lockedOrg ? (
+              orgAggregateData?.totalCount ? (
+                `${orgAggregateData.totalCount.toLocaleString()} docket${orgAggregateData.totalCount === 1 ? '' : 's'} found${selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch ? ' where:' : ''}`
+              ) : (
+                "No dockets found"
+              )
+            ) : (
+              items.length > 0 ? (
+                `${items.length.toLocaleString()}${hasNextPage ? '+' : ''} docket${items.length === 1 ? '' : 's'} found${selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch ? ' where:' : ''}`
+              ) : (
+                "No dockets found"
+              )
+            )}
+          </span>
           {selectedIndustries.map((ind) => (
             <Badge key={`ind-${ind}`} variant="secondary" className="px-2 py-1">
               <div className="flex items-center gap-1.5 mr-1">
@@ -1265,27 +1283,6 @@ export default function DocketsPage() {
           )}
         </div>
       </section>
-
-      {/* Results count display */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          {showCardSkeletons ? (
-            "Loading..."
-          ) : lockedOrg ? (
-            orgAggregateData?.totalCount ? (
-              `${orgAggregateData.totalCount.toLocaleString()} docket${orgAggregateData.totalCount === 1 ? '' : 's'} found`
-            ) : (
-              "No dockets found"
-            )
-          ) : (
-            items.length > 0 ? (
-              `${items.length.toLocaleString()}${hasNextPage ? '+' : ''} docket${items.length === 1 ? '' : 's'} found`
-            ) : (
-              "No dockets found"
-            )
-          )}
-        </div>
-      </div>
 
       <section aria-label="Results" className="space-y-4">
         {showCardSkeletons ? (
