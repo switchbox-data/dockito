@@ -677,7 +677,7 @@ const isEndDateModified = useMemo(() => {
               />
 
               {/* Filter label - shows on wide screens with generous spacing */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-0">
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-0 xl:ml-8 2xl:ml-12">
                 Filter:
               </span>
 
