@@ -679,14 +679,14 @@ const isEndDateModified = useMemo(() => {
                   containerRef={containerRef}
                 />
 
-                {/* Filter label - shows only on wider screens with spacing */}
-                <span className="hidden xl:inline-block text-sm text-muted-foreground font-medium ml-4">
+                {/* Filter label - shows on wide screens with generous spacing */}
+                <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">
                   Filter:
                 </span>
 
                 <Popover open={orgOpen} onOpenChange={setOrgOpen}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30 xl:ml-0 ml-4">
+                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30 lg:ml-0 ml-6">
                       <span className="inline-flex items-center gap-2">
                         <Users size={16} className="text-muted-foreground" />
                         {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
