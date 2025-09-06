@@ -173,8 +173,8 @@ export const FilingsList = ({ filings }: Props) => {
   return (
     <div className="space-y-4">
       <section ref={containerRef} className="space-y-4 focus-visible:outline-none">
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
-        <div className="flex flex-col sm:flex-row gap-2 flex-1">
+        <div className="flex flex-col sm:flex-row gap-2 flex-1 items-start">
+          <div className="flex flex-col sm:flex-row gap-2 flex-1">
           <Input
             ref={searchRef}
             type="text"
@@ -368,14 +368,14 @@ export const FilingsList = ({ filings }: Props) => {
               </div>
             </PopoverContent>
           </Popover>
+          </div>
+          
+          <div className="shrink-0">
+            <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+              {sortDir === "desc" ? "↓" : "↑"} Date
+            </Button>
+          </div>
         </div>
-        
-        <div className="shrink-0">
-          <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
-            {sortDir === "desc" ? "↓" : "↑"} Date
-          </Button>
-        </div>
-      </div>
       </section>
 
       <section aria-label="Filters" className="space-y-2">
