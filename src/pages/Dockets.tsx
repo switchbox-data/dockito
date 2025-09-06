@@ -1403,7 +1403,7 @@ export default function DocketsPage() {
             <Badge variant="secondary" className="px-2 py-1">
               <div className="flex items-center gap-1.5 mr-1">
                 <CalendarIcon size={12} className="text-muted-foreground" />
-                <span>Start Date: {startDate ? format(startDate, "MMM yyyy") : "–"}</span>
+                <span>Started after: {startDate ? format(startDate, "MMM yyyy") : "–"}</span>
               </div>
               <button
                 type="button"
@@ -1419,7 +1419,7 @@ export default function DocketsPage() {
             <Badge variant="secondary" className="px-2 py-1">
               <div className="flex items-center gap-1.5 mr-1">
                 <CalendarIcon size={12} className="text-muted-foreground" />
-                <span>End Date: {endDate ? format(endDate, "MMM yyyy") : "–"}</span>
+                <span>Started before: {endDate ? format(endDate, "MMM yyyy") : "–"}</span>
               </div>
               <button
                 type="button"
