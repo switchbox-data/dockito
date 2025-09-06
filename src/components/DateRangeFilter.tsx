@@ -14,7 +14,6 @@ export type DateRangeFilterProps = {
   onOpenChange: (open: boolean) => void;
   className?: string;
   disabled?: boolean;
-  filings?: Array<{ filed_date: string }>;
 };
 
 export function monthsBetween(min: Date, max: Date) {
@@ -36,28 +35,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   onOpenChange,
   className,
   disabled,
-  filings = [],
 }) => {
-  // Calculate filing counts per month for histogram
-  const filingCounts = React.useMemo(() => {
-    if (!filings?.length || !months.length) {
-      return [];
-    }
-    
-    const counts = months.map(month => {
-      const monthStart = startOfMonth(month);
-      const monthEnd = endOfMonth(month);
-      
-      return filings.filter(filing => {
-        const filingDate = new Date(filing.filed_date);
-        return filingDate >= monthStart && filingDate <= monthEnd;
-      }).length;
-    });
-    
-    return counts;
-  }, [filings, months]);
-
-  const maxCount = Math.max(...filingCounts, 1);
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
@@ -176,39 +154,6 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
 
               return null;
             })()}
-
-            {/* Filing histogram */}
-            {filings && filings.length > 0 && filingCounts.length > 0 && (
-              <div className="relative h-12 mb-3 px-1">
-                <div className="flex items-end justify-between h-full gap-0.5">
-                  {filingCounts.map((count, index) => {
-                    const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
-                    const isInRange = range ? index >= range[0] && index <= range[1] : true;
-                    
-                    return (
-                      <div 
-                        key={index} 
-                        className="flex-1 flex flex-col items-center justify-end group relative"
-                      >
-                        <div
-                          className={cn(
-                            "w-full rounded-t-sm transition-colors",
-                            isInRange 
-                              ? "bg-primary/70 hover:bg-primary/90" 
-                              : "bg-muted-foreground/20 hover:bg-muted-foreground/30"
-                          )}
-                          style={{ height: `${Math.max(height, 2)}%` }}
-                        />
-                        {/* Tooltip on hover */}
-                        <div className="absolute bottom-full mb-1 px-2 py-1 bg-popover border rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 whitespace-nowrap">
-                          {format(months[index], "MMM yyyy")}: {count} filing{count !== 1 ? 's' : ''}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
             <div className="space-y-3">
               <Slider

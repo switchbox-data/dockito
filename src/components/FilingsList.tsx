@@ -777,7 +777,6 @@ const isEndDateModified = useMemo(() => {
             onRangeChange={(r) => setRange(r)}
             open={dateOpen}
             onOpenChange={setDateOpen}
-            filings={filings}
           />
 
           <div className="ml-2 flex items-center gap-2">
