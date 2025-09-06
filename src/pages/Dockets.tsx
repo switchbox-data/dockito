@@ -599,7 +599,6 @@ export default function DocketsPage() {
             filters: {
               startDate: startDate && !isNaN(startDate.getTime()) ? format(startOfMonth(startDate), "yyyy-MM-dd") : undefined,
               endDate: endDate && !isNaN(endDate.getTime()) ? format(endOfMonth(endDate), "yyyy-MM-dd") : undefined,
-              search: normalizedSearch || undefined, // Add search filter
               sortBy: 'opened_date',
               sortOrder: sortDir,
               industries: selectedIndustries.length ? selectedIndustries : undefined,
@@ -619,8 +618,18 @@ export default function DocketsPage() {
           throw error;
         }
         
-        // Search filtering is now handled server-side in the edge function
-        return data?.dockets || [];
+        // Apply client-side search filter since it's not supported server-side yet
+        let filteredDockets = data?.dockets || [];
+        
+        if (normalizedSearch) {
+          filteredDockets = filteredDockets.filter((d: any) => 
+            d.docket_govid?.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
+            d.docket_title?.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
+            d.docket_description?.toLowerCase().includes(normalizedSearch.toLowerCase())
+          );
+        }
+        
+        return filteredDockets;
       }
       
       // For main page, use regular query

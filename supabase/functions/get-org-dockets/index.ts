@@ -11,7 +11,6 @@ interface GetOrgDocketsRequest {
     docketTypes?: string[]
     docketSubtypes?: string[]
     relationshipTypes?: string[] // 'petitioned', 'filed', or both
-    search?: string // Add search filter support
   }
   aggregateOnly?: boolean
   pagination?: {
@@ -224,14 +223,6 @@ Deno.serve(async (req) => {
         if (subtypeFilters) {
           chunkQuery = chunkQuery.in('docket_subtype', subtypeFilters)
         }
-        if (filters?.search) {
-          const searchTerm = filters.search.trim()
-          if (searchTerm) {
-            chunkQuery = chunkQuery.or(
-              `docket_govid.ilike.%${searchTerm}%,docket_title.ilike.%${searchTerm}%,docket_description.ilike.%${searchTerm}%,petitioner_strings.cs.{${searchTerm}}`
-            )
-          }
-        }
 
         const { data: chunkDockets, error: chunkError } = await chunkQuery
 
@@ -345,14 +336,6 @@ Deno.serve(async (req) => {
       }
       if (filters?.docketSubtypes && filters.docketSubtypes.length > 0) {
         chunkQuery = chunkQuery.in('docket_subtype', filters.docketSubtypes)
-      }
-      if (filters?.search) {
-        const searchTerm = filters.search.trim()
-        if (searchTerm) {
-          chunkQuery = chunkQuery.or(
-            `docket_govid.ilike.%${searchTerm}%,docket_title.ilike.%${searchTerm}%,docket_description.ilike.%${searchTerm}%,petitioner_strings.cs.{${searchTerm}}`
-          )
-        }
       }
 
       const { data: chunkDockets, error: chunkError } = await chunkQuery
