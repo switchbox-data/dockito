@@ -131,7 +131,7 @@ All colors MUST be HSL. */
 
 @layer utilities {
   .bg-gradient-primary { background-image: var(--gradient-primary); }
-  .hover\:bg-gradient-interactive:hover { background-image: var(--gradient-interactive); }
-  .group:hover .group-hover\:bg-gradient-interactive { background-image: var(--gradient-interactive); }
+  .hover\:bg-gradient-interactive:hover { @apply hover:bg-muted; }
+  .group:hover .group-hover\:bg-gradient-interactive { @apply bg-muted; }
 }
 
