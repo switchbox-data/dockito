@@ -347,7 +347,16 @@ export default function DocketsPage() {
 
   // Get filtered aggregate data for counting results
   const { data: orgAggregateData, isLoading: isAggregateLoading } = useQuery({
-    queryKey: ["org-aggregate-data", { org: lockedOrg ?? null, relationshipTypes: relationshipTypes.join(",") }],
+    queryKey: ["org-aggregate-data", { 
+      org: lockedOrg ?? null, 
+      relationshipTypes: relationshipTypes.join(","),
+      industries: selectedIndustries.join(","),
+      docketTypes: docketTypes.join(","),
+      subtypes: docketSubtypes.join(","),
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      sortDir
+    }],
     queryFn: async () => {
       if (!lockedOrg) return null;
       
@@ -355,7 +364,14 @@ export default function DocketsPage() {
         body: {
           orgName: lockedOrg,
           filters: {
-            relationshipTypes: relationshipTypes.length ? relationshipTypes : undefined
+            relationshipTypes: relationshipTypes.length ? relationshipTypes : undefined,
+            industries: selectedIndustries.length ? selectedIndustries : undefined,
+            docketTypes: docketTypes.length ? docketTypes : undefined,
+            subtypes: docketSubtypes.length ? docketSubtypes : undefined,
+            startDate: startDate ? format(startOfMonth(startDate), "yyyy-MM-dd") : undefined,
+            endDate: endDate ? format(endOfMonth(endDate), "yyyy-MM-dd") : undefined,
+            sortBy: 'opened_date',
+            sortOrder: sortDir
           },
           aggregateOnly: true
         }
