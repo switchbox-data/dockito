@@ -70,6 +70,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
      setLoadErr(null);
      setProbing(true);
      setBlobUrl(null);
+     setNumPages(0);
 
      // Use cached Blob URL if available
      const cached = blobCache.get(current.uuid);
@@ -133,27 +134,28 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
      };
    }, [current?.uuid]);
   // Restore remembered page when switching/opening and sync URL atomically
-  useEffect(() => {
-    if (!current) return;
-    skipUrlUpdateRef.current = true;
-
-    const params = new URLSearchParams(location.search);
-    const aParam = params.get("a");
-    const pParam = parseInt(params.get("p") || "", 10);
-
-    const urlPageValidForCurrent = aParam === current.uuid && Number.isFinite(pParam) && pParam > 0;
-    const saved = urlPageValidForCurrent ? pParam : (pageMemory.get(current.uuid) ?? 1);
-
-    pageMemory.set(current.uuid, saved);
-    setPage(saved);
-
-    // Ensure URL reflects the current attachment and its restored page
-    params.set("a", current.uuid);
-    params.set("p", String(saved));
-    navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
-
-    queueMicrotask(() => { skipUrlUpdateRef.current = false; });
-  }, [current?.uuid, open]);
+   useEffect(() => {
+     if (!current) return;
+     skipUrlUpdateRef.current = true;
+     setNumPages(0);
+ 
+     const params = new URLSearchParams(location.search);
+     const aParam = params.get("a");
+     const pParam = parseInt(params.get("p") || "", 10);
+ 
+     const urlPageValidForCurrent = aParam === current.uuid && Number.isFinite(pParam) && pParam > 0;
+     const saved = urlPageValidForCurrent ? pParam : (pageMemory.get(current.uuid) ?? 1);
+ 
+     pageMemory.set(current.uuid, saved);
+     setPage(saved);
+ 
+     // Ensure URL reflects the current attachment and its restored page
+     params.set("a", current.uuid);
+     params.set("p", String(saved));
+     navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
+ 
+     queueMicrotask(() => { skipUrlUpdateRef.current = false; });
+   }, [current?.uuid, open]);
 
   // Reset auto-fit when switching attachments
   useEffect(() => {
