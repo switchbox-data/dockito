@@ -250,18 +250,18 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
-        className="sm:max-w-[900px] md:max-w-[1000px] max-h-[96vh] md:max-h-[96vh]"
-        tabIndex={-1}
-        onKeyDownCapture={(e) => {
-          if (!open) return;
-          if (e.key === 'ArrowRight') { setIndex(i => (i + 1) % attachments.length); e.preventDefault(); }
-          if (e.key === 'ArrowLeft')  { setIndex(i => (i - 1 + attachments.length) % attachments.length); e.preventDefault(); }
-          if (e.key === 'ArrowDown')  { go(page + 1); e.preventDefault(); }
-          if (e.key === 'ArrowUp')    { go(page - 1); e.preventDefault(); }
-          if (e.key === 'Escape')     { onOpenChange(false); }
-        }}
-      >
+        <DialogContent 
+          className="sm:max-w-[900px] md:max-w-[1000px] max-h-[96vh] md:max-h-[96vh] w-[95vw] overflow-hidden flex flex-col"
+          tabIndex={-1}
+          onKeyDownCapture={(e) => {
+            if (!open) return;
+            if (e.key === 'ArrowRight') { setIndex(i => (i + 1) % attachments.length); e.preventDefault(); }
+            if (e.key === 'ArrowLeft')  { setIndex(i => (i - 1 + attachments.length) % attachments.length); e.preventDefault(); }
+            if (e.key === 'ArrowDown')  { go(page + 1); e.preventDefault(); }
+            if (e.key === 'ArrowUp')    { go(page - 1); e.preventDefault(); }
+            if (e.key === 'Escape')     { onOpenChange(false); }
+          }}
+        >
         <DialogHeader>
           <div className="flex items-center gap-3 min-w-0">
             <div className="flex-1 min-w-0">
@@ -288,10 +288,11 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
             </div>
           </div>
         </DialogHeader>
-        <div className="flex gap-3 h-[calc(96vh-140px)] min-h-0" ref={containerRef}>
-          <aside className="hidden md:block w-40 shrink-0 overflow-auto rounded-lg border bg-muted p-2">
-            
-            {current && (
+          <DialogDescription className="sr-only">PDF viewer modal. Use arrow keys to change attachments (left/right) and pages (up/down).</DialogDescription>
+          <div className="flex gap-3 flex-1 min-h-0" ref={containerRef}>
+            <aside className="hidden md:block w-40 shrink-0 h-full overflow-auto rounded-lg border bg-muted p-2">
+              
+              {current && (
               <Document 
                 key={current.uuid} 
                 file={blobUrl ?? buildFileUrl(current)} 
