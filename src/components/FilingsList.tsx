@@ -268,12 +268,11 @@ export const FilingsList = ({ filings }: Props) => {
                           selected ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
                         )}
                       >
-                        <Icon className={cn("h-4 w-4 flex-shrink-0", getFilingTypeColor(t))} />
-                        <div className="min-w-0 flex-1">
-                          <div className="font-medium text-sm truncate">{t}</div>
-        </div>
-      </div>
-                      </button>
+                         <Icon className={cn("h-4 w-4 flex-shrink-0", getFilingTypeColor(t))} />
+                         <div className="min-w-0 flex-1">
+                           <div className="font-medium text-sm truncate">{t}</div>
+                         </div>
+                       </button>
                     );
                   })}
                 </div>
@@ -376,6 +375,7 @@ export const FilingsList = ({ filings }: Props) => {
             {sortDir === "desc" ? "↓" : "↑"} Date
           </Button>
         </div>
+      </div>
       </section>
 
       <section aria-label="Filters" className="space-y-2">
