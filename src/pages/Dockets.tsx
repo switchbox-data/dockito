@@ -680,6 +680,12 @@ export default function DocketsPage() {
       if (docketSubtypes.length) {
         query = query.in("docket_subtype", docketSubtypes);
       }
+      // Add petitioner filtering - use contains operator for array
+      if (petitioners.length) {
+        // For multiple petitioners, we need to check if any of them are in the petitioner_strings array
+        const petitionerConditions = petitioners.map(p => `petitioner_strings.cs.{${p}}`).join(',');
+        query = query.or(petitionerConditions);
+      }
       if (startDate && !isNaN(startDate.getTime())) {
         query = query.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
       }
