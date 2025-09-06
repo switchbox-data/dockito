@@ -876,15 +876,15 @@ export default function DocketsPage() {
                 containerRef={containerRef}
               />
 
-              {/* Filter label - shows on wide screens with generous spacing */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">
+              {/* Filter label - progressive appearance: hidden -> shows at md -> gets spacing at xl+ */}
+              <span className="hidden md:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">
                 Filter:
               </span>
 
               {/* Industry Filter */}
               <Popover open={industryMenuOpen} onOpenChange={setIndustryMenuOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30 lg:ml-0 ml-6">
+                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     <span className="inline-flex items-center gap-2">
                       <Factory size={16} className="text-muted-foreground" />
                       {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Industries"}
@@ -1201,8 +1201,8 @@ export default function DocketsPage() {
               />
 
               {/* Sort section - now flows naturally, can be pushed by expanding search */}
-              {/* Sort label - shows only on wider screens */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">
+              {/* Sort label - progressive appearance: hidden -> shows at lg -> gets spacing at xl+ */}
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">
                 Sort:
               </span>
 
