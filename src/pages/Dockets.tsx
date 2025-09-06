@@ -903,12 +903,6 @@ export default function DocketsPage() {
                               <span className="font-medium">Clear all</span>
                             </div>
                           </CommandItem>
-                          <CommandItem onSelect={() => setPetitioners(petitionerOptions.map(p => p.name))} className="py-2">
-                            <div className="flex items-center gap-2">
-                              <Check size={14} className="text-muted-foreground" />
-                              <span className="font-medium">Select all</span>
-                            </div>
-                          </CommandItem>
                           {petitionerOptions.map(({ name, count }) => {
                             const selected = petitioners.includes(name);
                             return (

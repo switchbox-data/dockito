@@ -678,12 +678,6 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                         <span className="font-medium">Clear all</span>
                       </div>
                     </CommandItem>
-                    <CommandItem onSelect={() => setSelectedOrgs(organizations)} className="py-2">
-                      <div className="flex items-center gap-2">
-                        <Check size={14} className="text-muted-foreground" />
-                        <span className="font-medium">Select all</span>
-                      </div>
-                    </CommandItem>
                     {organizations.map((o) => {
                       const selected = selectedOrgs.includes(o);
                       return (
