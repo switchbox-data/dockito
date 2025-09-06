@@ -876,8 +876,8 @@ export default function DocketsPage() {
                 containerRef={containerRef}
               />
 
-              {/* Filter label - progressive appearance: hidden -> shows at md -> gets spacing at xl+ */}
-              <span className="hidden md:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">
+              {/* Filter label - progressive appearance: hidden -> shows at lg -> gets spacing at xl+ */}
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">
                 Filter:
               </span>
 
@@ -1201,8 +1201,8 @@ export default function DocketsPage() {
               />
 
               {/* Sort section - now flows naturally, can be pushed by expanding search */}
-              {/* Sort label - progressive appearance: hidden -> shows at lg -> gets spacing at xl+ */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">
+              {/* Sort label - progressive appearance: hidden -> shows at md -> gets spacing at xl+ */}
+              <span className="hidden md:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">
                 Sort:
               </span>
 

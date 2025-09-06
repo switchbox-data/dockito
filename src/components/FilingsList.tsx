@@ -676,8 +676,8 @@ const isEndDateModified = useMemo(() => {
                 containerRef={containerRef}
               />
 
-              {/* Filter label - progressive appearance: hidden -> shows at md -> gets spacing at xl+ */}
-              <span className="hidden md:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">
+              {/* Filter label - progressive appearance: hidden -> shows at lg -> gets spacing at xl+ */}
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">
                 Filter:
               </span>
 
@@ -802,8 +802,8 @@ const isEndDateModified = useMemo(() => {
                   Clear
                 </Button>
               )}
-              {/* Sort label - progressive appearance: hidden -> shows at lg -> gets spacing at xl+ */}
-              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">Sort:</span>
+              {/* Sort label - progressive appearance: hidden -> shows at md -> gets spacing at xl+ */}
+              <span className="hidden md:inline-block text-sm text-muted-foreground font-medium xl:ml-4 2xl:ml-8">Sort:</span>
               <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
                 {sortDir === "desc" ? "↓" : "↑"} Date
               </Button>
