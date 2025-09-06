@@ -276,7 +276,7 @@ export default function DocketsPage() {
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
   const [dateOpen, setDateOpen] = useState(false);
-  const [relationshipTypes, setRelationshipTypes] = useState<string[]>(["petitioned", "filed"]);
+  const [relationshipTypes, setRelationshipTypes] = useState<string[]>([]);
   const [relationshipOpen, setRelationshipOpen] = useState(false);
 
   const searchRef = useRef<HTMLInputElement>(null);
@@ -1168,8 +1168,7 @@ export default function DocketsPage() {
                     <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                       <span className="inline-flex items-center gap-2">
                         <UserCheck size={16} className="text-muted-foreground" />
-                        {relationshipTypes.length === 2 ? "Role" : relationshipTypes.length === 1 ? 
-                          (relationshipTypes[0] === "petitioned" ? "Role (petitioner)" : "Role (filer)") : "Role (0)"}
+                        {relationshipTypes.length === 0 ? "Role" : `Role (${relationshipTypes.length})`}
                       </span>
                       <ChevronDown size={14} />
                     </Button>
@@ -1178,7 +1177,7 @@ export default function DocketsPage() {
                     <Command>
                       <CommandList>
                         <CommandGroup>
-                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned", "filed"])}>
+                          <CommandItem onSelect={() => setRelationshipTypes([])}>
                             <div className="flex items-center gap-2">
                               <X size={14} className="text-muted-foreground" />
                               <span className="font-medium">Clear all</span>
