@@ -1266,6 +1266,27 @@ export default function DocketsPage() {
         </div>
       </section>
 
+      {/* Results count display */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          {showCardSkeletons ? (
+            "Loading..."
+          ) : lockedOrg ? (
+            orgAggregateData?.totalCount ? (
+              `${orgAggregateData.totalCount.toLocaleString()} docket${orgAggregateData.totalCount === 1 ? '' : 's'} found`
+            ) : (
+              "No dockets found"
+            )
+          ) : (
+            items.length > 0 ? (
+              `${items.length.toLocaleString()}${hasNextPage ? '+' : ''} docket${items.length === 1 ? '' : 's'} found`
+            ) : (
+              "No dockets found"
+            )
+          )}
+        </div>
+      </div>
+
       <section aria-label="Results" className="space-y-4">
         {showCardSkeletons ? (
           <div className="grid gap-4 md:grid-cols-2">
