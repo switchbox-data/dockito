@@ -33,8 +33,8 @@ export const ExpandingSearchInput = forwardRef<HTMLInputElement, ExpandingSearch
         className={cn(
           "transition-all duration-300 hover:border-primary/30",
           isFocused 
-            ? "w-[50%] flex-shrink-0" 
-            : "w-[10rem] md:w-[16rem] flex-shrink-0",
+            ? "w-[50%] min-w-[8rem] flex-shrink" 
+            : "w-[10rem] md:w-[16rem] min-w-[8rem] flex-shrink",
           className
         )}
         onFocus={() => setIsFocused(true)}
