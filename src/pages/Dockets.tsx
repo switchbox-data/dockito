@@ -286,12 +286,11 @@ export default function DocketsPage() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
-
   // Toolbar measurement refs
-  const barRef = useRef<HTMLDivElement | null>(null);
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
   const sortBtnRef = useRef<HTMLButtonElement | null>(null);
   const { sortLabelRef, filterLabelRef, showSortLabel, showFilterLabel } = useResponsiveLabels({
-    containerRef: barRef,
+    containerRef: scrollerRef,
     sortButtonRef: sortBtnRef,
   });
   const navigate = useNavigate();
@@ -874,9 +873,9 @@ export default function DocketsPage() {
       <div className="sticky top-0 z-50">
         <div className="relative border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
-          <div className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
+          <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
             {/* Single flowing container - no justify-between so everything can be pushed */}
-            <div ref={barRef} className="flex items-center gap-2 md:gap-3 min-w-0 overflow-x-auto">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0 overflow-x-auto">
               <ExpandingSearchInput
                 ref={searchRef}
                 value={search}
@@ -890,7 +889,7 @@ export default function DocketsPage() {
                 ref={filterLabelRef}
                 className={cn(
                   "text-sm text-muted-foreground font-medium whitespace-nowrap",
-                  showFilterLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 invisible pointer-events-none"
+                  showFilterLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 opacity-0 pointer-events-none"
                 )}
               >
                 Filter:
@@ -1221,7 +1220,7 @@ export default function DocketsPage() {
                 ref={sortLabelRef}
                 className={cn(
                   "text-sm text-muted-foreground font-medium whitespace-nowrap",
-                  showSortLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 invisible pointer-events-none"
+                  showSortLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 opacity-0 pointer-events-none"
                 )}
               >
                 Sort:

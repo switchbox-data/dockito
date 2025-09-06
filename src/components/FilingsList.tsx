@@ -83,10 +83,10 @@ const isEndDateModified = useMemo(() => {
   const didInitRef = useRef(false);
 
   // Toolbar measurement refs
-  const barRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const sortBtnRef = useRef<HTMLButtonElement>(null);
   const { sortLabelRef, filterLabelRef, showSortLabel, showFilterLabel } = useResponsiveLabels({
-    containerRef: barRef,
+    containerRef: scrollerRef,
     sortButtonRef: sortBtnRef,
   });
 
@@ -674,9 +674,9 @@ const isEndDateModified = useMemo(() => {
       <div className="sticky top-0 z-40">
         <div className="relative border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md mb-3">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
-          <div className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
+          <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
             {/* Single flowing container - no justify-between so everything can be pushed */}
-            <div ref={barRef} className="flex items-center gap-2 md:gap-3 min-w-0 overflow-x-auto">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0 overflow-x-auto">
               <ExpandingSearchInput
                 ref={searchRef}
                 value={query}
@@ -690,7 +690,7 @@ const isEndDateModified = useMemo(() => {
                 ref={filterLabelRef}
                 className={cn(
                   "text-sm text-muted-foreground font-medium whitespace-nowrap",
-                  showFilterLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 invisible pointer-events-none"
+                  showFilterLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 opacity-0 pointer-events-none"
                 )}
               >
                 Filter:
@@ -822,7 +822,7 @@ const isEndDateModified = useMemo(() => {
                 ref={sortLabelRef}
                 className={cn(
                   "text-sm text-muted-foreground font-medium whitespace-nowrap",
-                  showSortLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 invisible pointer-events-none"
+                  showSortLabel ? "inline-block xl:ml-4 2xl:ml-8" : "absolute -z-10 opacity-0 pointer-events-none"
                 )}
               >
                 Sort:
