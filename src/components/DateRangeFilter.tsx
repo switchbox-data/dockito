@@ -109,10 +109,11 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
               }
 
               // Show month labels for shorter ranges (same year or spanning 1-2 years)
-              if (months.length >= 4) {
+              if (months.length >= 1) {
                 // Determine how many month labels to show based on range length
                 let interval: number;
-                if (months.length <= 6) interval = 1; // Every month for 4-6 months
+                if (months.length <= 3) interval = 1; // Every month for 1-3 months
+                else if (months.length <= 6) interval = 1; // Every month for 4-6 months
                 else if (months.length <= 12) interval = 2; // Every 2 months for 7-12 months
                 else if (months.length <= 24) interval = 3; // Every 3 months for 13-24 months
                 else interval = 6; // Every 6 months for longer ranges
