@@ -259,15 +259,7 @@ export default function OrganizationsPage() {
 
       {normalizedSearch && (
         <section aria-label="Filters" className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2 text-sm px-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSearch("")}
-              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 h-auto"
-            >
-              Clear all
-            </Button>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm px-1">
             <Badge variant="secondary" className="px-2 py-1">
               <div className="flex items-center gap-1.5 mr-1">
                 <Search size={12} className="text-muted-foreground" />
@@ -282,6 +274,14 @@ export default function OrganizationsPage() {
                 <span className="text-xs">✕</span>
               </button>
             </Badge>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSearch("")}
+              className="text-xs text-muted-foreground px-2 py-1 h-auto ml-auto"
+            >
+              Clear all
+            </Button>
           </div>
         </section>
       )}
