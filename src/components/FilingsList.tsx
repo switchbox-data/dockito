@@ -666,27 +666,24 @@ const isEndDateModified = useMemo(() => {
         <div className="relative border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md mb-3">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
           <div className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
-            {/* Main content wrapper - creates space between filter and sort sections on large screens */}
-            <div className="flex items-center gap-2 md:gap-3 lg:justify-between">
-              
-              {/* Left section: Search and filters */}
-              <div className="flex items-center gap-2 md:gap-3 min-w-0">
-                <ExpandingSearchInput
-                  ref={searchRef}
-                  value={query}
-                  onChange={setQuery}
-                  placeholder="Search filings..."
-                  containerRef={containerRef}
-                />
+            {/* Single flowing container - no justify-between so everything can be pushed */}
+            <div className="flex items-center gap-2 md:gap-3 min-w-0 overflow-x-auto">
+              <ExpandingSearchInput
+                ref={searchRef}
+                value={query}
+                onChange={setQuery}
+                placeholder="Search filings..."
+                containerRef={containerRef}
+              />
 
-                {/* Filter label - shows on wide screens with generous spacing */}
-                <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">
-                  Filter:
-                </span>
+              {/* Filter label - shows on wide screens with generous spacing */}
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">
+                Filter:
+              </span>
 
-                <Popover open={orgOpen} onOpenChange={setOrgOpen}>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30 lg:ml-0 ml-6">
+              <Popover open={orgOpen} onOpenChange={setOrgOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30 lg:ml-0 ml-6">
                       <span className="inline-flex items-center gap-2">
                         <Users size={16} className="text-muted-foreground" />
                         {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
@@ -780,38 +777,36 @@ const isEndDateModified = useMemo(() => {
                   </PopoverContent>
                 </Popover>
 
-                {/* Date range (months) */}
-                <DateRangeFilter
-                  months={months}
-                  range={range}
-                  onRangeChange={(r) => setRange(r)}
-                  open={dateOpen}
-                  onOpenChange={setDateOpen}
-                />
-              </div>
+              {/* Date range (months) */}
+              <DateRangeFilter
+                months={months}
+                range={range}
+                onRangeChange={(r) => setRange(r)}
+                open={dateOpen}
+                onOpenChange={setDateOpen}
+              />
 
-              {/* Right section: Sort controls - floats right on large screens */}
-              <div className="flex items-center gap-2 lg:ml-auto">
-                {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedOrgs([]);
-                      setSelectedTypes([]);
-                      setQuery("");
-                      setRange(months.length ? [0, months.length - 1] : null);
-                    }}
-                  >
-                    Clear
-                  </Button>
-                )}
-                {/* Sort label - shows only on wider screens */}
-                <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium">Sort:</span>
-                <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
-                  {sortDir === "desc" ? "↓" : "↑"} Date
+              {/* Sort section - now flows naturally, can be pushed by expanding search */}
+              {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedOrgs([]);
+                    setSelectedTypes([]);
+                    setQuery("");
+                    setRange(months.length ? [0, months.length - 1] : null);
+                  }}
+                  className="ml-8"
+                >
+                  Clear
                 </Button>
-              </div>
+              )}
+              {/* Sort label - shows only on wider screens */}
+              <span className="hidden lg:inline-block text-sm text-muted-foreground font-medium ml-8">Sort:</span>
+              <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+                {sortDir === "desc" ? "↓" : "↑"} Date
+              </Button>
             </div>
           </div>
         </div>
