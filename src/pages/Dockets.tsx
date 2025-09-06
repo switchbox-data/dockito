@@ -21,6 +21,7 @@ import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
 import { OrganizationHeader } from "@/components/OrganizationHeader";
 import { DocketCardSkeleton } from "@/components/DocketCardSkeleton";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { ExpandingSearchInput } from "@/components/ExpandingSearchInput";
 
 import { X } from "lucide-react";
 
@@ -864,16 +865,14 @@ export default function DocketsPage() {
       <div className="sticky top-0 z-50">
         <div className="relative border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
-          <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-x-auto">
+          <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-x-auto min-w-0">
               {/* Search (compact, expands on focus) */}
-              <Input
-                id="search"
-                placeholder="Search docket ID, description, or petitioner"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-[10rem] md:w-[16rem] focus:w-[24rem] md:focus:w-[36rem] transition-[width] duration-300 hover:border-primary/30"
+              <ExpandingSearchInput
                 ref={searchRef}
-                onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
+                value={search}
+                onChange={setSearch}
+                placeholder="Search docket ID, description, or petitioner"
+                containerRef={containerRef}
               />
 
               {/* Industry Filter */}
