@@ -40,7 +40,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
             <span className="text-sm font-medium text-foreground">Stats</span>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {(petitionedCount !== undefined || isLoading) && (
+          {(docketCount !== undefined || isLoading) && (
             <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
                 <FileText size={16} />
@@ -48,7 +48,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">Dockets</div>
                 <div className="text-sm font-medium">
-                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30 mt-0.5" /> : petitionedCount?.toLocaleString()}
+                  {isLoading ? <Skeleton className="h-4 w-12 bg-muted-foreground/30 mt-0.5" /> : docketCount?.toLocaleString()}
                 </div>
               </div>
             </div>
