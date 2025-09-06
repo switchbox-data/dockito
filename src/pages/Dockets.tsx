@@ -321,7 +321,31 @@ export default function DocketsPage() {
 
   const normalizedSearch = useMemo(() => sanitize(search), [search]);
 
-  // Get aggregate data (including total count) for org pages
+  // Get static organization stats (never filtered)
+  const { data: orgStats, isLoading: isOrgStatsLoading } = useQuery({
+    queryKey: ["org-stats", { org: lockedOrg ?? null }],
+    queryFn: async () => {
+      if (!lockedOrg) return null;
+      
+      const { data, error } = await supabase.functions.invoke('get-org-dockets', {
+        body: {
+          orgName: lockedOrg,
+          filters: {}, // No filters for static stats
+          aggregateOnly: true
+        }
+      });
+      
+      if (error) {
+        console.error('Error fetching org stats:', error);
+        return null;
+      }
+      
+      return data;
+    },
+    enabled: !!lockedOrg,
+  });
+
+  // Get filtered aggregate data for counting results
   const { data: orgAggregateData, isLoading: isAggregateLoading } = useQuery({
     queryKey: ["org-aggregate-data", { org: lockedOrg ?? null, relationshipTypes: relationshipTypes.join(",") }],
     queryFn: async () => {
@@ -792,11 +816,11 @@ export default function DocketsPage() {
       {lockedOrg ? (
         <OrganizationHeader 
           orgName={lockedOrg} 
-          docketCount={orgAggregateData?.totalCount || items.length}
-          petitionedCount={orgAggregateData?.petitionedCount}
-          filedCount={orgAggregateData?.filedCount}
-          dateBounds={orgAggregateData?.dateBounds}
-          isLoading={isAggregateLoading}
+          docketCount={orgStats?.totalCount}
+          petitionedCount={orgStats?.petitionedCount}
+          filedCount={orgStats?.filedCount}
+          dateBounds={orgStats?.dateBounds}
+          isLoading={isOrgStatsLoading}
         />
       ) : (
         <header className="space-y-2">
