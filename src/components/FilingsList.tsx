@@ -795,7 +795,7 @@ const isEndDateModified = useMemo(() => {
               </Button>
             )}
             <span className="text-sm text-muted-foreground">Sort:</span>
-            <Button variant="outline" size="sm" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+            <Button variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
               {sortDir === "desc" ? "↓" : "↑"} Date
             </Button>
           </div>
