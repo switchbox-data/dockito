@@ -1206,56 +1206,36 @@ export default function DocketsPage() {
         </div>
       <section aria-label="Filters" className="space-y-2">
         {/* Active filter chips with count */}
-        <div className="flex flex-wrap items-center justify-between gap-2 text-sm px-1">
-          {/* Results count - only show when filters are active */}
-          {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0 || isStartDateModified || isEndDateModified) && (
-            <span className="text-muted-foreground font-medium">
-              {showCardSkeletons ? (
-                "Loading..."
-              ) : lockedOrg ? (
-                orgAggregateData?.totalCount ? (
-                  `${orgAggregateData.totalCount.toLocaleString()} docket${orgAggregateData.totalCount === 1 ? '' : 's'} found with:`
+        <div className="relative flex flex-wrap items-center gap-2 text-sm px-1">
+          {/* Results count and filter badges group */}
+          <div className="flex flex-wrap items-center gap-2 flex-1">
+            {/* Results count - only show when filters are active */}
+            {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0 || isStartDateModified || isEndDateModified) && (
+              <span className="text-muted-foreground font-medium">
+                {showCardSkeletons ? (
+                  "Loading..."
+                ) : lockedOrg ? (
+                  orgAggregateData?.totalCount ? (
+                    `${orgAggregateData.totalCount.toLocaleString()} docket${orgAggregateData.totalCount === 1 ? '' : 's'} found with:`
+                  ) : (
+                    "No dockets found with:"
+                  )
+                ) : exactCount !== undefined ? (
+                  exactCount > 0 ? (
+                    `${exactCount.toLocaleString()} docket${exactCount === 1 ? '' : 's'} found with:`
+                  ) : (
+                    "No dockets found with:"
+                  )
                 ) : (
-                  "No dockets found with:"
-                )
-              ) : exactCount !== undefined ? (
-                exactCount > 0 ? (
-                  `${exactCount.toLocaleString()} docket${exactCount === 1 ? '' : 's'} found with:`
-                ) : (
-                  "No dockets found with:"
-                )
-              ) : (
-                items.length > 0 ? (
-                  `${items.length.toLocaleString()}${hasNextPage ? '+' : ''} docket${items.length === 1 ? '' : 's'} found with:`
-                ) : (
-                  "No dockets found with:"
-                )
-              )}
-            </span>
-          )}
-          {/* Clear all button on the right */}
-          {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0 || isStartDateModified || isEndDateModified) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSearch("");
-                setSelectedIndustries([]);
-                setDocketTypes([]);
-                setDocketSubtypes([]);
-                setPetitioners([]);
-                setRelationshipTypes([]);
-                setDateRange(undefined);
-                if (months.length) {
-                  setRange([0, months.length - 1]);
-                }
-              }}
-              className="text-xs text-muted-foreground px-2 py-1 h-auto ml-auto"
-            >
-              Clear all
-            </Button>
-          )}
-          {selectedIndustries.map((ind) => (
+                  items.length > 0 ? (
+                    `${items.length.toLocaleString()}${hasNextPage ? '+' : ''} docket${items.length === 1 ? '' : 's'} found with:`
+                  ) : (
+                    "No dockets found with:"
+                  )
+                )}
+              </span>
+            )}
+            {selectedIndustries.map((ind) => (
             <Badge key={`ind-${ind}`} variant="secondary" className="px-2 py-1">
               <div className="flex items-center gap-1.5 mr-1">
                 <Factory size={12} className="text-muted-foreground" />
@@ -1394,6 +1374,29 @@ export default function DocketsPage() {
                 <X size={12} />
               </button>
             </Badge>
+          )}
+          </div>
+          {/* Clear all button on the right */}
+          {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0 || isStartDateModified || isEndDateModified) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSearch("");
+                setSelectedIndustries([]);
+                setDocketTypes([]);
+                setDocketSubtypes([]);
+                setPetitioners([]);
+                setRelationshipTypes([]);
+                setDateRange(undefined);
+                if (months.length) {
+                  setRange([0, months.length - 1]);
+                }
+              }}
+              className="text-xs text-muted-foreground px-2 py-1 h-auto"
+            >
+              Clear all
+            </Button>
           )}
         </div>
       </section>

@@ -259,26 +259,28 @@ export default function OrganizationsPage() {
 
       {normalizedSearch && (
         <section aria-label="Filters" className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-sm px-1">
-            <Badge variant="secondary" className="px-2 py-1">
-              <div className="flex items-center gap-1.5 mr-1">
-                <Search size={12} className="text-muted-foreground" />
-                <span>Search: {normalizedSearch}</span>
-              </div>
-              <button
-                type="button"
-                aria-label="Clear search"
-                onClick={() => setSearch("")}
-                className="inline-flex"
-              >
-                <span className="text-xs">✕</span>
-              </button>
-            </Badge>
+          <div className="relative flex flex-wrap items-center gap-2 text-sm px-1">
+            <div className="flex flex-wrap items-center gap-2 flex-1">
+              <Badge variant="secondary" className="px-2 py-1">
+                <div className="flex items-center gap-1.5 mr-1">
+                  <Search size={12} className="text-muted-foreground" />
+                  <span>Search: {normalizedSearch}</span>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  onClick={() => setSearch("")}
+                  className="inline-flex"
+                >
+                  <span className="text-xs">✕</span>
+                </button>
+              </Badge>
+            </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setSearch("")}
-              className="text-xs text-muted-foreground px-2 py-1 h-auto ml-auto"
+              className="text-xs text-muted-foreground px-2 py-1 h-auto"
             >
               Clear all
             </Button>

@@ -806,8 +806,8 @@ const isEndDateModified = useMemo(() => {
       {/* Filter badges section - separate from sticky bar, matches Dockets page architecture */}
       {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
         <section aria-label="Active filters" className="mb-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-sm px-1">
-            <div className="flex flex-wrap gap-2">
+          <div className="relative flex flex-wrap items-center gap-2 text-sm px-1">
+            <div className="flex flex-wrap items-center gap-2 flex-1">
               {selectedOrgs.map((o) => (
                 <Badge key={`org-${o}`} variant="secondary" className="px-2 py-1">
                   <div className="flex items-center gap-1.5 mr-1">
@@ -900,7 +900,7 @@ const isEndDateModified = useMemo(() => {
                   setRange([0, months.length - 1]);
                 }
               }}
-              className="text-xs text-muted-foreground px-2 py-1 h-auto ml-auto"
+              className="text-xs text-muted-foreground px-2 py-1 h-auto"
             >
               Clear all
             </Button>
