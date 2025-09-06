@@ -291,7 +291,7 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
           </div>
         </DialogHeader>
           <DialogDescription className="sr-only">PDF viewer modal. Use arrow keys to change attachments (left/right) and pages (up/down).</DialogDescription>
-          <div className="flex gap-3 flex-1 min-h-0" ref={containerRef}>
+          <div className="flex gap-3 h-[calc(96vh-140px)] min-h-0" ref={containerRef}>
             <aside className="hidden md:block w-40 shrink-0 h-full overflow-auto rounded-lg border bg-muted p-2">
               
               {current && (
