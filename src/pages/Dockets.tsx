@@ -1168,7 +1168,8 @@ export default function DocketsPage() {
                     <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                       <span className="inline-flex items-center gap-2">
                         <UserCheck size={16} className="text-muted-foreground" />
-                        {relationshipTypes.length === 0 ? "Role" : relationshipTypes.length === 2 ? "Role (2)" : `Role (${relationshipTypes.length})`}
+                        {relationshipTypes.length === 2 ? "Role" : relationshipTypes.length === 1 ? 
+                          (relationshipTypes[0] === "petitioned" ? "Role (petitioner)" : "Role (filer)") : "Role (0)"}
                       </span>
                       <ChevronDown size={14} />
                     </Button>
@@ -1177,7 +1178,7 @@ export default function DocketsPage() {
                     <Command>
                       <CommandList>
                         <CommandGroup>
-                          <CommandItem onSelect={() => setRelationshipTypes([])}>
+                          <CommandItem onSelect={() => setRelationshipTypes(["petitioned", "filed"])}>
                             <div className="flex items-center gap-2">
                               <X size={14} className="text-muted-foreground" />
                               <span className="font-medium">Clear all</span>
