@@ -1133,15 +1133,6 @@ export default function DocketsPage() {
                 </PopoverContent>
               </Popover>
 
-              {/* Date range (months) */}
-              <DateRangeFilter
-                months={months}
-                range={range}
-                onRangeChange={(r) => setRange(r)}
-                open={dateOpen}
-                onOpenChange={setDateOpen}
-              />
-
               {/* Role filter (only for org pages) */}
               {lockedOrg && (
                 <Popover open={relationshipOpen} onOpenChange={setRelationshipOpen}>
@@ -1194,6 +1185,15 @@ export default function DocketsPage() {
                   </PopoverContent>
                 </Popover>
               )}
+
+              {/* Date range (months) */}
+              <DateRangeFilter
+                months={months}
+                range={range}
+                onRangeChange={(r) => setRange(r)}
+                open={dateOpen}
+                onOpenChange={setDateOpen}
+              />
 
               {/* Sort */}
               <div className="shrink-0">
