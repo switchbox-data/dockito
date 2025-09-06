@@ -650,6 +650,52 @@ export default function DocketsPage() {
     staleTime: 5 * 60 * 1000, // 5 minutes for better performance
   });
 
+  // Get exact count when filters are applied (for main dockets page)
+  const hasActiveFilters = selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch;
+  const { data: exactCount } = useQuery({
+    queryKey: ["dockets-count", { 
+      search: normalizedSearch, 
+      industries: selectedIndustries.sort().join(","), 
+      types: docketTypes.sort().join(","),
+      subtypes: docketSubtypes.sort().join(","),
+      petitioners: petitioners.sort().join(","),
+      startDate: startDate?.toISOString(),
+      endDate: endDate?.toISOString()
+    }],
+    queryFn: async () => {
+      if (lockedOrg) return null; // Not needed for org pages
+      
+      let query = supabase.from("dockets").select("*", { count: 'exact', head: true });
+
+      // Apply same filters as main query
+      if (normalizedSearch) {
+        query = query.or(`docket_govid.ilike.%${normalizedSearch}%,docket_title.ilike.%${normalizedSearch}%,docket_description.ilike.%${normalizedSearch}%,petitioner_strings.cs.{${normalizedSearch}}`);
+      }
+      if (selectedIndustries.length) {
+        query = query.in("industry", selectedIndustries);
+      }
+      if (docketTypes.length) {
+        query = query.in("docket_type", docketTypes);
+      }
+      if (docketSubtypes.length) {
+        query = query.in("docket_subtype", docketSubtypes);
+      }
+      if (startDate && !isNaN(startDate.getTime())) {
+        query = query.gte("opened_date", format(startOfMonth(startDate), "yyyy-MM-dd"));
+      }
+      if (endDate && !isNaN(endDate.getTime())) {
+        query = query.lte("opened_date", format(endOfMonth(endDate), "yyyy-MM-dd"));
+      }
+
+      const { count, error } = await query;
+      if (error) throw error;
+      
+      return count || 0;
+    },
+    enabled: !lockedOrg && hasActiveFilters && !!(range && months.length),
+    staleTime: 30 * 1000, // 30 seconds for count queries
+  });
+
   // Prefetch logic: load page 2 immediately after first page, then keep one page ahead after user-triggered fetches
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const userTriggeredRef = useRef(false);
@@ -1176,6 +1222,12 @@ export default function DocketsPage() {
               ) : lockedOrg ? (
                 orgAggregateData?.totalCount ? (
                   `${orgAggregateData.totalCount.toLocaleString()} docket${orgAggregateData.totalCount === 1 ? '' : 's'} found with:`
+                ) : (
+                  "No dockets found with:"
+                )
+              ) : exactCount !== undefined ? (
+                exactCount > 0 ? (
+                  `${exactCount.toLocaleString()} docket${exactCount === 1 ? '' : 's'} found with:`
                 ) : (
                   "No dockets found with:"
                 )
