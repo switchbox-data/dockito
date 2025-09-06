@@ -1318,13 +1318,26 @@ export default function DocketsPage() {
               </Badge>
             ))
           )}
-          {lockedOrg && relationshipTypes.length > 0 && relationshipTypes.length < 2 && (
+          {lockedOrg && relationshipTypes.includes("petitioned") && (
             <Badge variant="secondary" className="px-2 py-1">
-              <span className="mr-1">Showing: {relationshipTypes.includes("petitioned") ? "Petitioned dockets" : "Filed dockets"}</span>
+              <span className="mr-1">Showing: Petitioned dockets</span>
               <button
                 type="button"
-                aria-label="Show both relationship types"
-                onClick={() => setRelationshipTypes(["petitioned", "filed"])}
+                aria-label="Remove petitioned filter"
+                onClick={() => setRelationshipTypes(prev => prev.filter(r => r !== "petitioned"))}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
+          )}
+          {lockedOrg && relationshipTypes.includes("filed") && (
+            <Badge variant="secondary" className="px-2 py-1">
+              <span className="mr-1">Showing: Filed dockets</span>
+              <button
+                type="button"
+                aria-label="Remove filed filter"
+                onClick={() => setRelationshipTypes(prev => prev.filter(r => r !== "filed"))}
                 className="inline-flex"
               >
                 <X size={12} />
