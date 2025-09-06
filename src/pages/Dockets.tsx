@@ -318,6 +318,21 @@ export default function DocketsPage() {
 
   const startDate = useMemo(() => (range && months.length ? months[range[0]] : undefined), [range, months]);
   const endDate = useMemo(() => (range && months.length ? months[range[1]] : undefined), [range, months]);
+  
+  // Default dates are the full range
+  const defaultStartDate = useMemo(() => (months.length ? months[0] : undefined), [months]);
+  const defaultEndDate = useMemo(() => (months.length ? months[months.length - 1] : undefined), [months]);
+  
+  // Check if current dates differ from defaults
+  const isStartDateModified = useMemo(() => {
+    if (!startDate || !defaultStartDate) return false;
+    return startDate.getTime() !== defaultStartDate.getTime();
+  }, [startDate, defaultStartDate]);
+  
+  const isEndDateModified = useMemo(() => {
+    if (!endDate || !defaultEndDate) return false;
+    return endDate.getTime() !== defaultEndDate.getTime();
+  }, [endDate, defaultEndDate]);
 
   const normalizedSearch = useMemo(() => sanitize(search), [search]);
 
@@ -1122,7 +1137,7 @@ export default function DocketsPage() {
                   <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
                     <span className="inline-flex items-center gap-2">
                       <CalendarIcon size={16} className="text-muted-foreground" />
-                      {startDate && !isNaN(startDate.getTime()) ? format(startDate, "MMM yyyy") : "–"} – {endDate && !isNaN(endDate.getTime()) ? format(endDate, "MMM yyyy") : "–"}
+                      Date Range
                     </span>
                     <ChevronDown size={14} />
                   </Button>
@@ -1267,7 +1282,7 @@ export default function DocketsPage() {
         {/* Active filter chips with count */}
         <div className="flex flex-wrap items-center gap-2 text-sm px-1">
           {/* Results count - only show when filters are active */}
-          {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0) && (
+          {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0 || isStartDateModified || isEndDateModified) && (
             <span className="text-muted-foreground font-medium">
               {showCardSkeletons ? (
                 "Loading..."
@@ -1378,6 +1393,38 @@ export default function DocketsPage() {
                 type="button"
                 aria-label="Remove filed filter"
                 onClick={() => setRelationshipTypes(prev => prev.filter(r => r !== "filed"))}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
+          )}
+          {isStartDateModified && (
+            <Badge variant="secondary" className="px-2 py-1">
+              <div className="flex items-center gap-1.5 mr-1">
+                <CalendarIcon size={12} className="text-muted-foreground" />
+                <span>Start: {startDate ? format(startDate, "MMM yyyy") : "–"}</span>
+              </div>
+              <button
+                type="button"
+                aria-label="Reset start date"
+                onClick={() => setRange(prev => prev && months.length ? [0, prev[1]] : null)}
+                className="inline-flex"
+              >
+                <X size={12} />
+              </button>
+            </Badge>
+          )}
+          {isEndDateModified && (
+            <Badge variant="secondary" className="px-2 py-1">
+              <div className="flex items-center gap-1.5 mr-1">
+                <CalendarIcon size={12} className="text-muted-foreground" />
+                <span>End: {endDate ? format(endDate, "MMM yyyy") : "–"}</span>
+              </div>
+              <button
+                type="button"
+                aria-label="Reset end date"
+                onClick={() => setRange(prev => prev && months.length ? [prev[0], months.length - 1] : null)}
                 className="inline-flex"
               >
                 <X size={12} />

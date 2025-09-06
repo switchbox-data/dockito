@@ -54,6 +54,23 @@ const months = useMemo(() => {
 useEffect(() => { if (months.length && !range) setRange([0, months.length - 1]); }, [months, range]);
 const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 && range[1] === months.length - 1), [range, months]);
 
+// Default dates are the full range
+const defaultStartDate = useMemo(() => (months.length ? months[0] : undefined), [months]);
+const defaultEndDate = useMemo(() => (months.length ? months[months.length - 1] : undefined), [months]);
+
+// Check if current dates differ from defaults
+const isStartDateModified = useMemo(() => {
+  if (!range || !months.length || !defaultStartDate) return false;
+  const currentStart = months[range[0]];
+  return currentStart.getTime() !== defaultStartDate.getTime();
+}, [range, months, defaultStartDate]);
+
+const isEndDateModified = useMemo(() => {
+  if (!range || !months.length || !defaultEndDate) return false;
+  const currentEnd = months[range[1]];
+  return currentEnd.getTime() !== defaultEndDate.getTime();
+}, [range, months, defaultEndDate]);
+
   // Keyboard selection state
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [selectedAttachmentIdx, setSelectedAttachmentIdx] = useState<number | null>(null);
@@ -758,7 +775,7 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
               <Button variant="outline" size="sm" className="min-w-[180px] justify-between shrink-0 hover:border-primary/30" disabled={months.length <= 1}>
                 <span className="inline-flex items-center gap-2">
                   <Calendar size={16} className="text-muted-foreground" />
-                  {months.length === 1 ? format(months[0], "MMM yyyy") : months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}
+                  Date Range
                 </span>
                 <ChevronDown size={14} />
               </Button>
@@ -913,16 +930,32 @@ const isFullRange = useMemo(() => !!(range && months.length && range[0] === 0 &&
                 </button>
               </Badge>
             )}
-            {!isFullRange && (
+            {isStartDateModified && (
               <Badge variant="secondary" className="px-2 py-1">
                 <div className="flex items-center gap-1.5 mr-1">
                   <Calendar size={12} className="text-muted-foreground" />
-                  <span>Date: {months.length && range ? `${format(months[range[0]], "MMM yyyy")} – ${format(months[range[1]], "MMM yyyy")}` : "–"}</span>
+                  <span>Start: {range && months.length ? format(months[range[0]], "MMM yyyy") : "–"}</span>
                 </div>
                 <button
                   type="button"
-                  aria-label="Reset date range"
-                  onClick={() => setRange(months.length ? [0, months.length - 1] : null)}
+                  aria-label="Reset start date"
+                  onClick={() => setRange(prev => prev && months.length ? [0, prev[1]] : null)}
+                  className="inline-flex"
+                >
+                  <X size={12} />
+                </button>
+              </Badge>
+            )}
+            {isEndDateModified && (
+              <Badge variant="secondary" className="px-2 py-1">
+                <div className="flex items-center gap-1.5 mr-1">
+                  <Calendar size={12} className="text-muted-foreground" />
+                  <span>End: {range && months.length ? format(months[range[1]], "MMM yyyy") : "–"}</span>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Reset end date"
+                  onClick={() => setRange(prev => prev && months.length ? [prev[0], months.length - 1] : null)}
                   className="inline-flex"
                 >
                   <X size={12} />
