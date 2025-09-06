@@ -796,7 +796,7 @@ const isEndDateModified = useMemo(() => {
                     
                     // Determine interval based on span to avoid overcrowding
                     let interval: number;
-                    if (yearSpan <= 2) return null; // Too small, no labels needed
+                    if (yearSpan <= 1) return null; // Too small, no labels needed
                     else if (yearSpan <= 5) interval = 1; // Show every year
                     else if (yearSpan <= 15) interval = 2; // Show every 2 years
                     else if (yearSpan <= 30) interval = 5; // Show every 5 years
@@ -835,15 +835,13 @@ const isEndDateModified = useMemo(() => {
                     );
                   })()}
                   
-                  <div className="space-y-3">
-                    <Slider
-                      value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
-                      min={0}
-                      max={Math.max(0, (months.length || 1) - 1)}
-                      step={1}
-                      onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
-                    />
-                  </div>
+                  <Slider
+                    value={range ?? [0, Math.max(0, (months.length || 1) - 1)]}
+                    min={0}
+                    max={Math.max(0, (months.length || 1) - 1)}
+                    step={1}
+                    onValueChange={(v) => setRange([v[0], v[1]] as [number, number])}
+                  />
                   
                   <div className="flex justify-between text-sm text-muted-foreground">
                     <span>{months.length ? format(months[0], "MMM yyyy") : "—"}</span>
