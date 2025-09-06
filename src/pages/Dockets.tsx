@@ -651,7 +651,7 @@ export default function DocketsPage() {
   });
 
   // Get exact count when filters are applied (for main dockets page)
-  const hasActiveFilters = selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch;
+  const hasActiveFilters = selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || !!normalizedSearch;
   const { data: exactCount } = useQuery({
     queryKey: ["dockets-count", { 
       search: normalizedSearch, 
