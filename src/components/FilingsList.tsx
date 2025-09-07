@@ -806,21 +806,6 @@ const isEndDateModified = useMemo(() => {
               />
 
               {/* Sort section - now flows naturally, can be pushed by expanding search */}
-              {(selectedOrgs.length > 0 || selectedTypes.length > 0 || !!query || !isFullRange) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedOrgs([]);
-                    setSelectedTypes([]);
-                    setQuery("");
-                    setRange(months.length ? [0, months.length - 1] : null);
-                  }}
-                  className="ml-8"
-                >
-                  Clear
-                </Button>
-              )}
               {/* Sort label - dynamic: appears only when there's space */}
               <span
                 ref={sortLabelRef}
