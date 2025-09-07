@@ -166,8 +166,12 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             </div>
 
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>{months.length ? format(months[0], "MMM yyyy") : "—"}</span>
-              <span>{months.length ? format(months[months.length - 1], "MMM yyyy") : "—"}</span>
+              <span>
+                {months.length && range ? format(months[range[0]], "MMM yyyy") : "Start"}
+              </span>
+              <span>
+                {months.length && range ? format(months[range[1]], "MMM yyyy") : "End"}
+              </span>
             </div>
           </div>
         </div>
