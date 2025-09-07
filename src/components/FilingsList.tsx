@@ -90,21 +90,6 @@ const isEndDateModified = useMemo(() => {
     sortButtonRef: sortBtnRef,
   });
 
-  const organizations = useMemo(() => {
-    const set = new Set<string>();
-    filings.forEach((f) => {
-      f.organization_author_strings?.forEach((o) => set.add(o));
-    });
-    return Array.from(set).sort();
-  }, [filings]);
-
-  const types = useMemo(() => {
-    const set = new Set<string>();
-    filings.forEach((f) => {
-      if (f.filling_type) set.add(f.filling_type);
-    });
-    return Array.from(set).sort();
-  }, [filings]);
 
   const typePalette = [
     "bg-primary/10 text-primary", 
@@ -480,6 +465,24 @@ const isEndDateModified = useMemo(() => {
     );
     return list;
   }, [filings, selectedOrgs, selectedTypes, query, sortDir, range, months]);
+
+  // Organizations that appear in the currently filtered result set
+  const organizations = useMemo(() => {
+    const set = new Set<string>();
+    filtered.forEach((f) => {
+      f.organization_author_strings?.forEach((o) => set.add(o));
+    });
+    return Array.from(set).sort();
+  }, [filtered]);
+
+  // Filing types that appear in the currently filtered result set
+  const types = useMemo(() => {
+    const set = new Set<string>();
+    filtered.forEach((f) => {
+      if (f.filling_type) set.add(f.filling_type);
+    });
+    return Array.from(set).sort();
+  }, [filtered]);
 
   useEffect(() => {
     // Close viewer if active filing disappears (filter changed)

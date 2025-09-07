@@ -545,41 +545,6 @@ export default function DocketsPage() {
     staleTime: 60_000,
   });
 
-  const { data: petitionerOptions = [] } = useQuery<{ id: string; name: string; count: number }[]>({
-    queryKey: [
-      "petitioners-ranked",
-      {
-        industries: selectedIndustries.join(","),
-        docketTypes: docketTypes.join(","),
-        start: startDate?.toISOString(),
-        end: endDate?.toISOString(),
-        search: normalizedSearch,
-      },
-    ],
-    queryFn: async () => {
-      const { data: rels, error: relErr } = await supabase
-        .from("docket_petitioned_by_org")
-        .select("petitioner_uuid");
-      if (relErr) throw relErr;
-      const uuids = Array.from(new Set((rels ?? []).map((r: any) => r.petitioner_uuid).filter(Boolean)));
-      if (!uuids.length) return [];
-      const { data: orgs, error: orgErr } = await supabase
-        .from("organizations")
-        .select("uuid,name")
-        .in("uuid", uuids);
-      if (orgErr) throw orgErr;
-      const nameById = new Map<string, string>();
-      (orgs ?? []).forEach((o: any) => nameById.set(o.uuid, o.name));
-      const counts = new Map<string, number>();
-      (rels ?? []).forEach((r: any) => {
-        if (r.petitioner_uuid) counts.set(r.petitioner_uuid, (counts.get(r.petitioner_uuid) ?? 0) + 1);
-      });
-      return Array.from(counts.entries())
-        .map(([id, count]) => ({ id, name: nameById.get(id) ?? id, count }))
-        .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
-    },
-    staleTime: 30_000,
-  });
 
   const {
     data,
@@ -810,6 +775,20 @@ export default function DocketsPage() {
 
   const pages = (data?.pages ?? []) as Docket[][];
   const items = pages.flat();
+
+  // Petitioners that appear in the currently displayed dockets  
+  const petitionerOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    items.forEach(docket => {
+      docket.petitioner_strings?.forEach(petitionerName => {
+        counts.set(petitionerName, (counts.get(petitionerName) || 0) + 1);
+      });
+    });
+    
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ id: name, name, count }))
+      .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
+  }, [items]);
 
   // Derived loading states to prevent flicker
   const hasAnyPage = pages.length > 0;
