@@ -888,7 +888,7 @@ const isEndDateModified = useMemo(() => {
               <Badge variant="secondary" className="px-2 py-1">
                 <div className="flex items-center gap-1.5 mr-1">
                   <Calendar size={12} className="text-muted-foreground" />
-                  <span>Started after: {range && months.length ? format(months[range[0]], "MMM yyyy") : "–"}</span>
+                  <span>Filed on or after: {range && months.length ? format(months[range[0]], "MMM yyyy") : "–"}</span>
                 </div>
                 <button
                   type="button"
@@ -904,7 +904,7 @@ const isEndDateModified = useMemo(() => {
               <Badge variant="secondary" className="px-2 py-1">
                 <div className="flex items-center gap-1.5 mr-1">
                   <Calendar size={12} className="text-muted-foreground" />
-                  <span>Started before: {range && months.length ? format(months[range[1]], "MMM yyyy") : "–"}</span>
+                  <span>Filed on or before: {range && months.length ? format(months[range[1]], "MMM yyyy") : "–"}</span>
                 </div>
                 <button
                   type="button"
