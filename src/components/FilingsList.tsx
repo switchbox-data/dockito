@@ -475,14 +475,14 @@ const isEndDateModified = useMemo(() => {
     return Array.from(set).sort();
   }, [filtered]);
 
-  // Filing types that appear in the currently filtered result set
+  // Filing types - show all available types from original data, not filtered
   const types = useMemo(() => {
     const set = new Set<string>();
-    filtered.forEach((f) => {
+    filings.forEach((f) => {
       if (f.filling_type) set.add(f.filling_type);
     });
     return Array.from(set).sort();
-  }, [filtered]);
+  }, [filings]);
 
   useEffect(() => {
     // Close viewer if active filing disappears (filter changed)
