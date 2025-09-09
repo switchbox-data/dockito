@@ -675,7 +675,7 @@ const isEndDateModified = useMemo(() => {
   return (
     <section ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="mt-6 outline-none">
       <div className="sticky top-0 z-40">
-        <div className="relative border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md mb-3">
+        <div className="relative border bg-card/65 backdrop-blur supports-[backdrop-filter]:bg-card/65 shadow-[var(--shadow-elegant)] rounded-md mb-3">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
           <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
             {/* Single flowing container - no justify-between so everything can be pushed */}
