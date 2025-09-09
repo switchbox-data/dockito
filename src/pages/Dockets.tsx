@@ -1485,38 +1485,40 @@ export default function DocketsPage() {
                                 {d.industry}
                               </Badge>
                             )}
-                            {/* Favorite button - only show when logged in */}
-                            {user && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  toggleFavorite(d.docket_govid);
-                                }}
-                                className="h-8 w-8 p-0 hover:bg-yellow-50"
-                              >
-                                <Star
-                                  size={16}
-                                  className={cn(
-                                    "transition-colors",
-                                    isFavorited(d.docket_govid)
-                                      ? "text-yellow-500 fill-current"
-                                      : "text-muted-foreground hover:text-yellow-500"
-                                  )}
-                                />
-                              </Button>
-                            )}
                           </div>
                           </div>
                          
                           <div className="border-t border-border/50 pt-3">
                            <div className="space-y-2 pb-2">
-                           <div className="flex items-center justify-between">
-                             <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
-                             <span className="text-xs text-muted-foreground">Opened: {d.opened_date && !isNaN(new Date(d.opened_date).getTime()) ? format(new Date(d.opened_date), "MMM d, yyyy") : "—"}</span>
-                           </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
+                                {/* Favorite button - only show when logged in */}
+                                {user && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      toggleFavorite(d.docket_govid);
+                                    }}
+                                    className="h-8 w-8 p-0 hover:bg-yellow-50"
+                                  >
+                                    <Star
+                                      size={16}
+                                      className={cn(
+                                        "transition-colors",
+                                        isFavorited(d.docket_govid)
+                                          ? "text-yellow-500 fill-current"
+                                          : "text-muted-foreground hover:text-yellow-500"
+                                      )}
+                                    />
+                                  </Button>
+                                )}
+                              </div>
+                              <span className="text-xs text-muted-foreground">Opened: {d.opened_date && !isNaN(new Date(d.opened_date).getTime()) ? format(new Date(d.opened_date), "MMM d, yyyy") : "—"}</span>
+                            </div>
                             <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
                           </div>
                           
