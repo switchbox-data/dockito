@@ -52,7 +52,8 @@ const AppSidebar = () => {
       // Close notification expansion after animation completes
       const timer = setTimeout(() => {
         setIsNotificationExpanded(false);
-      }, 2500);
+        setIsExpanded(false); // force collapse after celebration
+      }, 2000);
       
       return () => {
         clearTimeout(confettiTimer);
