@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { FolderOpen, Building } from "lucide-react";
+import { FolderOpen, Building, Home } from "lucide-react";
 
 const SEARCH_DELAY = 300;
 const sanitizeQuery = (s: string) => s.replace(/[,%]/g, " ").trim();
@@ -91,6 +91,15 @@ export const CommandK = () => {
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
         <CommandGroup heading="Commands">
+          <CommandItem
+            onSelect={() => {
+              navigate('/');
+              setOpen(false);
+            }}
+          >
+            <Home className="mr-2 h-4 w-4" />
+            <span className="text-base font-normal">View Home</span>
+          </CommandItem>
           <CommandItem
             onSelect={() => {
               navigate('/dockets');
