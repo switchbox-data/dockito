@@ -1,8 +1,12 @@
 import { CalendarDays, Building2, Layers, Tag, Clock, ExternalLink, Heart, DollarSign, Frown, FileCheck, Search, 
   BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
-  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, FolderOpen, Files } from "lucide-react";
+  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, FolderOpen, Files, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
+import { cn } from "@/lib/utils";
+import { User } from "@supabase/supabase-js";
+
 type Docket = {
   uuid: string;
   docket_govid: string;
@@ -23,7 +27,12 @@ import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-type Props = { docket: Docket };
+type Props = { 
+  docket: Docket;
+  user?: User | null;
+  isFavorited?: boolean;
+  onToggleFavorite?: () => void;
+};
 
 // Helper function to get appropriate icon for docket types
 const getDocketTypeIcon = (type: string) => {
@@ -154,7 +163,7 @@ const getDocketTypeBadgeColors = (type: string) => {
   }
 };
 
-export const DocketHeader = ({ docket }: Props) => {
+export const DocketHeader = ({ docket, user, isFavorited = false, onToggleFavorite }: Props) => {
   const fmt = (d?: string | null) => (d ? format(new Date(d), "PPP") : "—");
 
   // Query to get filing count for this docket
@@ -235,6 +244,25 @@ export const DocketHeader = ({ docket }: Props) => {
             </Badge>
             {docket.current_status && (
               <span className="px-3 py-1 rounded-full bg-accent/10 text-foreground text-xs border border-gray-300">{docket.current_status}</span>
+            )}
+            {/* Favorite button - only show when logged in */}
+            {user && onToggleFavorite && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onToggleFavorite}
+                className="h-9 w-9 p-0 hover:bg-yellow-50"
+              >
+                <Star
+                  size={20}
+                  className={cn(
+                    "transition-colors",
+                    isFavorited
+                      ? "text-yellow-500 fill-current"
+                      : "text-muted-foreground hover:text-yellow-500"
+                  )}
+                />
+              </Button>
             )}
           </div>
         </div>

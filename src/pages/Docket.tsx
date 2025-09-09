@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/hooks/useFavorites";
 import { DocketHeader } from "@/components/DocketHeader";
 import { FilingsList } from "@/components/FilingsList";
 import type { FilingWithAttachments } from "@/components/FilingsList";
@@ -23,6 +25,8 @@ import { useQuery } from "@tanstack/react-query";
 
 const DocketPage = () => {
   const { docket_govid } = useParams<{ docket_govid: string }>();
+  const { user } = useAuth();
+  const { isFavorited, toggleFavorite } = useFavorites();
 
   const { data: docket, isLoading: docketLoading } = useQuery({
     queryKey: ["docket", docket_govid],
@@ -115,7 +119,12 @@ const DocketPage = () => {
 
   return (
     <main className="container py-8 space-y-6">
-      <DocketHeader docket={{ ...docket, petitioner_strings: petitioners ?? docket.petitioner_strings }} />
+      <DocketHeader 
+        docket={{ ...docket, petitioner_strings: petitioners ?? docket.petitioner_strings }} 
+        user={user}
+        isFavorited={docket_govid ? isFavorited(docket_govid) : false}
+        onToggleFavorite={() => docket_govid && toggleFavorite(docket_govid)}
+      />
       {filingsLoading ? (
         <div className="text-muted-foreground">Loading filings…</div>
       ) : (

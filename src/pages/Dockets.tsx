@@ -3,9 +3,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, Link2,
   Heart, DollarSign, Frown, FileCheck, Search, FolderOpen,
   BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
-  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, UserCheck } from "lucide-react";
+  FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, UserCheck, Star } from "lucide-react";
 import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay, isSameMonth } from "date-fns";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/hooks/useFavorites";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -266,6 +268,8 @@ function monthsBetween(min: Date, max: Date) {
 }
 
 export default function DocketsPage() {
+  const { user } = useAuth();
+  const { isFavorited, toggleFavorite } = useFavorites();
   const [search, setSearch] = useState("");
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   
@@ -1453,17 +1457,40 @@ export default function DocketsPage() {
                              )}
                            {d.docket_subtype && <Badge variant="outline" className="border-gray-300 bg-background group-hover:border-primary/30 transition-colors">{d.docket_subtype}</Badge>}
                          </div>
-                         <div className="flex flex-col items-end gap-1">
-                           {d.industry && (
-                             <Badge variant="outline" className="inline-flex items-center gap-1.5 border-gray-300 bg-background group-hover:border-primary/30 transition-colors">
-                               {(() => {
-                                 const IndustryIcon = getIndustryIcon(d.industry);
-                                 return <IndustryIcon size={12} className={getIndustryColor(d.industry)} />;
-                               })()}
-                               {d.industry}
-                             </Badge>
-                             )}
-                            </div>
+                          <div className="flex flex-col items-end gap-1">
+                            {d.industry && (
+                              <Badge variant="outline" className="inline-flex items-center gap-1.5 border-gray-300 bg-background group-hover:border-primary/30 transition-colors">
+                                {(() => {
+                                  const IndustryIcon = getIndustryIcon(d.industry);
+                                  return <IndustryIcon size={12} className={getIndustryColor(d.industry)} />;
+                                })()}
+                                {d.industry}
+                              </Badge>
+                            )}
+                            {/* Favorite button - only show when logged in */}
+                            {user && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  toggleFavorite(d.docket_govid);
+                                }}
+                                className="h-8 w-8 p-0 hover:bg-yellow-50"
+                              >
+                                <Star
+                                  size={16}
+                                  className={cn(
+                                    "transition-colors",
+                                    isFavorited(d.docket_govid)
+                                      ? "text-yellow-500 fill-current"
+                                      : "text-muted-foreground hover:text-yellow-500"
+                                  )}
+                                />
+                              </Button>
+                            )}
+                          </div>
                           </div>
                          
                           <div className="border-t border-border/50 pt-3">
