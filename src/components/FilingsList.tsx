@@ -781,7 +781,7 @@ const isEndDateModified = useMemo(() => {
                               }}
                               className={cn(
                                 "flex items-center gap-2 p-3 rounded-md border transition-colors text-left",
-                                isSelected ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted/50 border-border"
+                                isSelected ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted/50 border-gray-300"
                               )}
                             >
                               <Icon className={cn("h-4 w-4 flex-shrink-0", getFilingTypeColor(t))} />
