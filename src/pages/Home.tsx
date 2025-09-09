@@ -274,8 +274,8 @@ const Home = () => {
       ],
     },
     {
-      title: "Telecommunications & Policy",
-      description: "Communications industry regulations and policies",
+      title: "Policy Dockets",
+      description: "Proceedings that are charting the energy transition",
       icon: Building,
       viewAllPath: "/dockets?industries=Communication,Miscellaneous&types=Tariff,Rulemaking",
       dockets: [
@@ -462,7 +462,7 @@ const Home = () => {
                   <div className={cn(
                     "flex items-center justify-center w-8 h-8 rounded-full",
                     section.title === "Recent Rate Cases" && "bg-green-100 text-green-700",
-                    section.title === "Telecommunications & Policy" && "bg-blue-100 text-blue-700",
+                    section.title === "Policy Dockets" && "bg-blue-100 text-blue-700",
                     section.title === "Energy Facility Siting" && "bg-yellow-100 text-yellow-700"
                   )}>
                     <IconComponent className="h-4 w-4" />
