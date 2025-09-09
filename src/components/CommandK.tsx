@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { FolderOpen, Building2 } from "lucide-react";
+import { FolderOpen, Building } from "lucide-react";
 
 const SEARCH_DELAY = 300;
 const sanitizeQuery = (s: string) => s.replace(/[,%]/g, " ").trim();
@@ -106,7 +106,7 @@ export const CommandK = () => {
               setOpen(false);
             }}
           >
-            <Building2 className="mr-2 h-4 w-4" />
+            <Building className="mr-2 h-4 w-4" />
             <span className="text-base font-semibold">View Organizations</span>
           </CommandItem>
         </CommandGroup>
@@ -122,7 +122,7 @@ export const CommandK = () => {
                 }}
                 className="flex items-start gap-3"
               >
-                <Building2 className="mr-0 h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+                <Building className="mr-0 h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
                 <div className="flex flex-col items-start gap-1 min-w-0">
                   <span className="text-base font-semibold">{org.name}</span>
                   <span className="text-muted-foreground text-sm line-clamp-1">{org.description}</span>
