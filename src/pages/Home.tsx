@@ -90,7 +90,7 @@ const Home = () => {
         {/* Search Section */}
         <div className="max-w-4xl mx-auto mb-12">
           <div 
-            className="relative cursor-pointer flex h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="relative cursor-pointer flex h-12 w-full rounded-md border border-gray-300 bg-white/95 px-4 py-3 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             onClick={openCommandK}
           >
             <Search className="mr-3 h-5 w-5 shrink-0 opacity-50" />
