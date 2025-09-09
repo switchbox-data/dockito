@@ -199,8 +199,8 @@ export default function OrganizationsPage() {
   };
 
   return (
-    <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-8 space-y-8">
-      <header className="space-y-3 mb-8">
+    <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-8 md:py-10 space-y-10 md:space-y-12">
+      <header className="mt-6 md:mt-8 space-y-2 md:space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
           <Building className="h-8 w-8 text-muted-foreground" />
           Organizations
