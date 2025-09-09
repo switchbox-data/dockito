@@ -199,7 +199,7 @@ export const DocketHeader = ({ docket }: Props) => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {docket.docket_type && (
-                <Badge variant="outline" className={`text-xs inline-flex items-center gap-1.5 ${getDocketTypeBadgeColors(docket.docket_type)}`}>
+                <Badge variant="outline" className="text-xs bg-gray-50 border-gray-300 inline-flex items-center gap-1.5">
                   {(() => {
                     const TypeIcon = getDocketTypeIcon(docket.docket_type);
                     const typeColor = getDocketTypeColor(docket.docket_type);
@@ -286,7 +286,7 @@ export const DocketHeader = ({ docket }: Props) => {
 };
 
 const Info = ({ icon, label, value }: { icon: React.ReactNode; label: string; value?: string | null }) => (
-  <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
+  <div className="flex items-center gap-3 rounded-lg border border-gray-300 bg-background/60 px-3 py-2">
     <div className="shrink-0 text-foreground/80">{icon}</div>
     <div className="min-w-0">
       <div className="text-xs text-muted-foreground">{label}</div>

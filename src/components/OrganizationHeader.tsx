@@ -40,7 +40,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {(docketCount !== undefined || isLoading) && (
-            <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
+            <div className="flex items-center gap-3 rounded-lg border border-gray-300 bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
                 <FileText size={16} />
               </div>
@@ -54,7 +54,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
           )}
           
           {(filedCount !== undefined || isLoading) && (
-            <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
+            <div className="flex items-center gap-3 rounded-lg border border-gray-300 bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
                 <FilePlus size={16} />
               </div>
@@ -68,7 +68,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
           )}
           
           {(docketCount !== undefined && petitionedCount === undefined && filedCount === undefined && !isLoading) && (
-            <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
+            <div className="flex items-center gap-3 rounded-lg border border-gray-300 bg-background/60 px-3 py-2">
               <div className="shrink-0 text-foreground/80">
                 <FileText size={16} />
               </div>
@@ -81,7 +81,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
             </div>
           )}
           
-          <div className="flex items-center gap-3 rounded-lg border bg-background/60 px-3 py-2">
+          <div className="flex items-center gap-3 rounded-lg border border-gray-300 bg-background/60 px-3 py-2">
             <div className="shrink-0 text-foreground/80">
               <Calendar size={16} />
             </div>
