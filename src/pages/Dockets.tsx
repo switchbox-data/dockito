@@ -845,8 +845,8 @@ export default function DocketsPage() {
         />
       ) : (
         <header className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight">New York PSC Dockets</h1>
-          <p className="text-muted-foreground">Public Service Commission • State: NY • Explore and filter dockets</p>
+          <h1 className="text-3xl font-semibold tracking-tight">Dockets</h1>
+          <p className="text-muted-foreground">New York Public Service Commission</p>
         </header>
       )}
       <div className="sticky top-14 z-30">
