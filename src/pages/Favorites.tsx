@@ -192,13 +192,16 @@ const FavoritesPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
+    <main className="container py-6 space-y-6">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
           <Star className="h-6 w-6 text-yellow-500 fill-current" />
-          <h1 className="text-3xl font-bold">My Favorites</h1>
-        </div>
+          My Favorites
+        </h1>
+        <p className="text-muted-foreground">Your saved dockets</p>
+      </header>
 
+      <section aria-label="Results" className="space-y-4">
         {dockets.length === 0 ? (
           <div className="text-center py-12">
             <Star className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -313,8 +316,8 @@ const FavoritesPage = () => {
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 
