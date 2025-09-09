@@ -199,7 +199,7 @@ export const DocketHeader = ({ docket }: Props) => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {docket.docket_type && (
-                <Badge variant="outline" className="text-xs bg-gray-50 border-gray-300 inline-flex items-center gap-1.5">
+                <Badge variant="outline" className={`text-xs inline-flex items-center gap-1.5 ${getDocketTypeBadgeColors(docket.docket_type)}`}>
                   {(() => {
                     const TypeIcon = getDocketTypeIcon(docket.docket_type);
                     const typeColor = getDocketTypeColor(docket.docket_type);
