@@ -51,7 +51,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
           <ChevronDown size={14} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[500px] p-4 z-[60] bg-popover border" align="end">
+      <PopoverContent className="w-[500px] p-4 z-[60] bg-white border" align="end">
         <div className="space-y-4">
           <h4 className="font-medium text-sm">Select date range</h4>
           <div className="space-y-3">
