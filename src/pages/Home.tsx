@@ -274,8 +274,8 @@ const Home = () => {
       ],
     },
     {
-      title: "Major Energy Projects",
-      description: "Large-scale renewable energy facility applications",
+      title: "Energy Facility Siting",
+      description: "Utility-scale generation and transmission applications",
       icon: Zap,
       viewAllPath: "/dockets?types=Petition&industries=Facility Gen.",
       dockets: [
@@ -462,7 +462,7 @@ const Home = () => {
                   <div className={cn(
                     "flex items-center justify-center w-8 h-8 rounded-full",
                     section.title === "Recent Rate Cases" && "bg-green-100 text-green-700",
-                    section.title === "Major Energy Projects" && "bg-yellow-100 text-yellow-700", 
+                    section.title === "Energy Facility Siting" && "bg-yellow-100 text-yellow-700", 
                     section.title === "Telecommunications & Policy" && "bg-blue-100 text-blue-700"
                   )}>
                     <IconComponent className="h-4 w-4" />
