@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Home, FolderOpen, Building, Search, Star } from "lucide-react";
+import { Home, FolderOpen, Building, Search, Star, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCommandK } from "@/components/CommandK";
@@ -17,7 +17,7 @@ const AppSidebar = () => {
   const location = useLocation();
   const { open: openCommandK } = useCommandK();
   const { user } = useAuth();
-  const { favorites } = useFavorites();
+  const { favorites, toggleFavorite } = useFavorites();
   const { animatingFavorite } = useSidebarNotification();
   const isMobile = useIsMobile();
 
@@ -197,24 +197,39 @@ const AppSidebar = () => {
             {shouldShowExpanded && topFavoriteDockets.length > 0 && (
               <div className="ml-6 space-y-1 mt-2">
                 {topFavoriteDockets.map((docket) => (
-                  <Link
+                  <div
                     key={docket.govid}
-                    to={`/docket/${docket.govid}`}
                     className={cn(
-                      "flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-200 text-sm",
+                      "flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-200 text-sm group/favorite relative",
                       "hover:bg-muted/90 focus-visible:outline-none",
                       isActive(`/docket/${docket.govid}`) && "bg-muted/90 text-primary font-medium",
                       animatingFavorite === docket.govid && "animate-pulse bg-yellow-100 border-2 border-yellow-400"
                     )}
                   >
-                    <div className={cn(
-                      "w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0 transition-all duration-300",
-                      animatingFavorite === docket.govid && "scale-150 bg-yellow-500"
-                    )} />
-                    <span className="truncate">
-                      {docket.govid}
-                    </span>
-                  </Link>
+                    <Link
+                      to={`/docket/${docket.govid}`}
+                      className="flex items-center gap-2 flex-1 min-w-0"
+                    >
+                      <div className={cn(
+                        "w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0 transition-all duration-300",
+                        animatingFavorite === docket.govid && "scale-150 bg-yellow-500"
+                      )} />
+                      <span className="truncate">
+                        {docket.govid}
+                      </span>
+                    </Link>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFavorite(docket.govid);
+                      }}
+                      className="opacity-0 group-hover/favorite:opacity-100 transition-opacity duration-200 p-1 hover:bg-red-100 rounded text-red-500 hover:text-red-700"
+                      aria-label={`Remove ${docket.govid} from favorites`}
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
                 ))}
                 {favorites.length > 5 && (
                   <div className="px-2 py-1 text-xs text-muted-foreground">
