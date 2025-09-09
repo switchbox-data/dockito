@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import DocketPage from "./pages/Docket";
 import DocketsPage from "./pages/Dockets";
 import OrganizationsPage from "./pages/Organizations";
+import AttachmentPage from "./pages/Attachment";
 import { CommandKProvider } from "@/components/CommandK";
 import Navbar from "@/components/Navbar";
 import AppSidebar from "@/components/AppSidebar";
@@ -48,6 +49,7 @@ const App = () => (
                 <Route path="/dockets" element={<DocketsPage />} />
                 <Route path="/orgs" element={<OrganizationsPage />} />
                 <Route path="/docket/:docket_govid" element={<DocketPage />} />
+                <Route path="/docket/:docket_govid/attachment/:attachment_uuid" element={<AttachmentPage />} />
                 <Route path="/org/:orgName" element={<DocketsPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
