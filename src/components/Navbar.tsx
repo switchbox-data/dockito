@@ -52,7 +52,8 @@ const Navbar = () => {
                   <>
                     <span className="text-muted-foreground">Org:</span>
                     <span className="text-foreground font-medium">
-                      {params.orgName ? decodeURIComponent(params.orgName) : "Organization"}
+                      {params.orgName ? decodeURIComponent(params.orgName) : 
+                       location.pathname.split('/org/')[1] ? decodeURIComponent(location.pathname.split('/org/')[1]) : "Organization"}
                     </span>
                   </>
                 )}
@@ -60,7 +61,8 @@ const Navbar = () => {
                   <>
                     <span className="text-muted-foreground">Docket:</span>
                     <span className="text-foreground font-medium">
-                      {params.docket_govid || "Docket"}
+                      {params.docket_govid ? params.docket_govid : 
+                       location.pathname.split('/docket/')[1] ? location.pathname.split('/docket/')[1] : "Docket"}
                     </span>
                   </>
                 )}
