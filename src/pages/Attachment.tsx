@@ -140,6 +140,122 @@ const AttachmentPage = () => {
     }
   };
 
+  // Helper function to get semantic colors for filing types
+  const getFilingTypeColor = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'correspondence':
+        return 'text-blue-600'; // Blue for communication
+      case 'reports':
+        return 'text-green-600'; // Green for reports/data
+      case 'tariff':
+      case 'tariffs':
+        return 'text-emerald-600'; // Emerald for rates/money
+      case 'petitions':
+        return 'text-purple-600'; // Purple for requests
+      case 'orders':
+        return 'text-red-600'; // Dark red for commands
+      case 'motions':
+        return 'text-cyan-600'; // Cyan for movements/actions
+      case 'letters':
+        return 'text-blue-500'; // Light blue for correspondence
+      case 'comments':
+      case 'public comments':
+        return 'text-orange-600'; // Orange for public input
+      case 'notices':
+        return 'text-yellow-600'; // Yellow for announcements
+      case 'rulings':
+        return 'text-red-700'; // Dark red for judicial decisions
+      case 'plans and proposals':
+        return 'text-purple-600'; // Purple for future planning
+      case 'exhibits':
+        return 'text-pink-600'; // Pink for evidence/displays
+      case 'contract':
+        return 'text-purple-700'; // Dark purple for agreements
+      case 'press releases':
+        return 'text-amber-600'; // Amber for announcements
+      case 'transcripts':
+        return 'text-slate-600'; // Slate for recorded proceedings
+      case 'testimony':
+        return 'text-rose-600'; // Rose for witness statements
+      case 'joint proposals and stipulations':
+        return 'text-lime-600'; // Lime for collaborative agreements
+      case 'briefs':
+        return 'text-indigo-600'; // Dark indigo for legal documents
+      case 'attachment':
+        return 'text-gray-600'; // Gray for supporting documents
+      case 'complaints':
+        return 'text-red-600'; // Red for grievances
+      case 'memorandum':
+      case 'memorandum and resolution':
+        return 'text-blue-700'; // Dark blue for official memos
+      case 'application':
+        return 'text-green-700'; // Dark green for formal requests
+      case 'protective order':
+        return 'text-orange-700'; // Dark orange for protective measures
+      default:
+        return 'text-muted-foreground'; // Default muted color
+    }
+  };
+
+  // Helper function to get subtle background and border colors for filing type badges
+  const getFilingTypeBadgeColors = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'correspondence':
+        return 'bg-blue-50 border-blue-200'; // Blue theme
+      case 'reports':
+        return 'bg-green-50 border-green-200'; // Green theme
+      case 'tariff':
+      case 'tariffs':
+        return 'bg-emerald-50 border-emerald-200'; // Emerald theme
+      case 'petitions':
+        return 'bg-purple-50 border-purple-200'; // Purple theme
+      case 'orders':
+        return 'bg-red-50 border-red-200'; // Dark red theme
+      case 'motions':
+        return 'bg-cyan-50 border-cyan-200'; // Cyan theme
+      case 'letters':
+        return 'bg-blue-50 border-blue-300'; // Light blue theme
+      case 'comments':
+      case 'public comments':
+        return 'bg-orange-50 border-orange-200'; // Orange theme
+      case 'notices':
+        return 'bg-yellow-50 border-yellow-200'; // Yellow theme
+      case 'rulings':
+        return 'bg-red-50 border-red-200'; // Red theme
+      case 'plans and proposals':
+        return 'bg-purple-50 border-purple-200'; // Purple theme
+      case 'exhibits':
+        return 'bg-pink-50 border-pink-200'; // Pink theme
+      case 'contract':
+        return 'bg-purple-50 border-purple-300'; // Dark purple theme
+      case 'press releases':
+        return 'bg-amber-50 border-amber-200'; // Amber theme
+      case 'transcripts':
+        return 'bg-slate-50 border-slate-200'; // Slate theme
+      case 'testimony':
+        return 'bg-rose-50 border-rose-200'; // Rose theme
+      case 'joint proposals and stipulations':
+        return 'bg-lime-50 border-lime-200'; // Lime theme
+      case 'briefs':
+        return 'bg-indigo-50 border-indigo-300'; // Dark indigo theme
+      case 'attachment':
+        return 'bg-gray-50 border-gray-200'; // Gray theme
+      case 'complaints':
+        return 'bg-red-50 border-red-300'; // Red theme (different border)
+      case 'memorandum':
+      case 'memorandum and resolution':
+        return 'bg-blue-50 border-blue-300'; // Dark blue theme
+      case 'application':
+        return 'bg-green-50 border-green-300'; // Dark green theme
+      case 'protective order':
+        return 'bg-orange-50 border-orange-300'; // Dark orange theme
+      default:
+        return 'bg-gray-50 border-gray-200'; // Default theme
+    }
+  };
+
   // Navigation functions
   const goToPrevAttachment = () => {
     if (currentAttachmentIndex > 0) {
@@ -363,6 +479,24 @@ const AttachmentPage = () => {
         {/* Attachment Info Card - Non-sticky */}
         <Card>
           <CardHeader>
+            {/* Filing Type Badge at Top Left */}
+            {filing?.filling_type && (
+              <div className="mb-4">
+                <Badge 
+                  variant="outline" 
+                  className={`inline-flex items-center gap-1.5 transition-colors ${getFilingTypeBadgeColors(filing.filling_type)}`}
+                >
+                  {(() => {
+                    const TypeIcon = getFilingTypeIcon(filing.filling_type);
+                    const typeColor = getFilingTypeColor(filing.filling_type);
+                    return <TypeIcon size={12} className={typeColor} />;
+                  })()}
+                  {filing.filling_type}
+                </Badge>
+                <div className="h-px bg-border mt-4" />
+              </div>
+            )}
+            
             <div className="flex items-center gap-4">
               <div className="bg-muted rounded-lg p-3">
                 <FileText className="h-8 w-8 text-muted-foreground" />
@@ -395,21 +529,10 @@ const AttachmentPage = () => {
                     </button>
                   </div>
                   {filing && (
-                    <>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>on {formatDate(filing.filed_date)}</span>
-                      </div>
-                      {filing.filling_type && (
-                        <div className="flex items-center gap-1">
-                          {(() => {
-                            const IconComponent = getFilingTypeIcon(filing.filling_type);
-                            return <IconComponent className="h-4 w-4" />;
-                          })()}
-                          <span>{filing.filling_type}</span>
-                        </div>
-                      )}
-                    </>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4 w-4" />
+                      <span>on {formatDate(filing.filed_date)}</span>
+                    </div>
                   )}
                 </div>
               </div>
