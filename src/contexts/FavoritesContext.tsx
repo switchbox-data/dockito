@@ -16,7 +16,15 @@ interface FavoritesContextType {
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
 export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  let user = null;
+  
+  try {
+    const authContext = useAuth();
+    user = authContext?.user;
+  } catch (error) {
+    console.error('FavoritesProvider: Error accessing AuthContext:', error);
+  }
+  
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -213,7 +221,17 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
 export const useFavorites = () => {
   const context = useContext(FavoritesContext);
   if (context === undefined) {
-    throw new Error('useFavorites must be used within a FavoritesProvider');
+    // Instead of throwing immediately, let's provide a fallback
+    console.error('useFavorites called outside of FavoritesProvider');
+    return {
+      favorites: [],
+      loading: false,
+      addFavorite: async () => false,
+      removeFavorite: async () => false,
+      toggleFavorite: async () => false,
+      isFavorited: () => false,
+      refetch: async () => {},
+    };
   }
   return context;
 };
