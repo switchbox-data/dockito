@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useFavorites } from "@/hooks/useFavorites";
+import { useFavorites } from "@/contexts/FavoritesContext";
 import { DocketHeader } from "@/components/DocketHeader";
 import { FilingsList } from "@/components/FilingsList";
 import type { FilingWithAttachments } from "@/components/FilingsList";

@@ -7,7 +7,7 @@ import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, A
 import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay, isSameMonth } from "date-fns";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
-import { useFavorites } from "@/hooks/useFavorites";
+import { useFavorites } from "@/contexts/FavoritesContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

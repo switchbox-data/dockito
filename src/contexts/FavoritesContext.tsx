@@ -1,9 +1,21 @@
-import { useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-export const useFavorites = () => {
+interface FavoritesContextType {
+  favorites: string[];
+  loading: boolean;
+  addFavorite: (docketGovId: string) => Promise<boolean>;
+  removeFavorite: (docketGovId: string) => Promise<boolean>;
+  toggleFavorite: (docketGovId: string) => Promise<boolean>;
+  isFavorited: (docketGovId: string) => boolean;
+  refetch: () => Promise<void>;
+}
+
+const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
+
+export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,7 +40,9 @@ export const useFavorites = () => {
         return;
       }
 
-      setFavorites(data?.map(f => f.docket_govid) || []);
+      const newFavorites = data?.map(f => f.docket_govid) || [];
+      console.log('FavoritesContext: Fetched favorites:', newFavorites);
+      setFavorites(newFavorites);
     } catch (err) {
       console.error('Error fetching favorites:', err);
       toast.error('Failed to load favorites');
@@ -52,24 +66,24 @@ export const useFavorites = () => {
           docket_govid: docketGovId,
         });
 
-        if (error) {
-          if (error.code === '23505') { // unique constraint violation
-            toast.error('This docket is already in your favorites');
-          } else {
-            console.error('Error adding favorite:', error);
-            toast.error('Failed to add favorite');
-          }
-          return false;
+      if (error) {
+        if (error.code === '23505') { // unique constraint violation
+          toast.error('This docket is already in your favorites');
+        } else {
+          console.error('Error adding favorite:', error);
+          toast.error('Failed to add favorite');
         }
+        return false;
+      }
 
-        // Optimistic UI update for instant feedback; realtime will reconcile
-        console.log('useFavorites: Adding favorite optimistically', docketGovId);
-        setFavorites(prev => {
-          const newFavorites = prev.includes(docketGovId) ? prev : [...prev, docketGovId];
-          console.log('useFavorites: New favorites after add:', newFavorites);
-          return newFavorites;
-        });
-        toast.success('Added to favorites');
+      // Optimistic UI update for instant feedback; realtime will reconcile
+      console.log('FavoritesContext: Adding favorite optimistically', docketGovId);
+      setFavorites(prev => {
+        const newFavorites = prev.includes(docketGovId) ? prev : [...prev, docketGovId];
+        console.log('FavoritesContext: New favorites after add:', newFavorites);
+        return newFavorites;
+      });
+      toast.success('Added to favorites');
       return true;
     } catch (err) {
       console.error('Error adding favorite:', err);
@@ -96,10 +110,10 @@ export const useFavorites = () => {
       }
 
       // Optimistic UI update for instant feedback; realtime will reconcile
-      console.log('useFavorites: Removing favorite optimistically', docketGovId);
+      console.log('FavoritesContext: Removing favorite optimistically', docketGovId);
       setFavorites(prev => {
         const newFavorites = prev.filter(id => id !== docketGovId);
-        console.log('useFavorites: New favorites after remove:', newFavorites);
+        console.log('FavoritesContext: New favorites after remove:', newFavorites);
         return newFavorites;
       });
       toast.success('Removed from favorites');
@@ -147,7 +161,7 @@ export const useFavorites = () => {
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          console.log('Real-time favorites change:', payload);
+          console.log('FavoritesContext: Real-time favorites change:', payload);
           
           // Use setTimeout to defer state updates and avoid React queue issues
           setTimeout(() => {
@@ -155,13 +169,19 @@ export const useFavorites = () => {
               const newFavorite = payload.new as { docket_govid: string };
               setFavorites(prev => {
                 if (!prev.includes(newFavorite.docket_govid)) {
-                  return [...prev, newFavorite.docket_govid];
+                  const updated = [...prev, newFavorite.docket_govid];
+                  console.log('FavoritesContext: Real-time add:', updated);
+                  return updated;
                 }
                 return prev;
               });
             } else if (payload.eventType === 'DELETE') {
               const removedFavorite = payload.old as { docket_govid: string };
-              setFavorites(prev => prev.filter(id => id !== removedFavorite.docket_govid));
+              setFavorites(prev => {
+                const updated = prev.filter(id => id !== removedFavorite.docket_govid);
+                console.log('FavoritesContext: Real-time remove:', updated);
+                return updated;
+              });
             }
           }, 0);
         }
@@ -173,13 +193,27 @@ export const useFavorites = () => {
     };
   }, [user]);
 
-  return {
-    favorites,
-    loading,
-    addFavorite,
-    removeFavorite,
-    toggleFavorite,
-    isFavorited,
-    refetch: fetchFavorites,
-  };
+  return (
+    <FavoritesContext.Provider
+      value={{
+        favorites,
+        loading,
+        addFavorite,
+        removeFavorite,
+        toggleFavorite,
+        isFavorited,
+        refetch: fetchFavorites,
+      }}
+    >
+      {children}
+    </FavoritesContext.Provider>
+  );
+};
+
+export const useFavorites = () => {
+  const context = useContext(FavoritesContext);
+  if (context === undefined) {
+    throw new Error('useFavorites must be used within a FavoritesProvider');
+  }
+  return context;
 };

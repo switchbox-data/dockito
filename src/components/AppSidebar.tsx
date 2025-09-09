@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCommandK } from "@/components/CommandK";
 import { useAuth } from "@/contexts/AuthContext";
-import { useFavorites } from "@/hooks/useFavorites";
+import { useFavorites } from "@/contexts/FavoritesContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -19,21 +19,13 @@ const AppSidebar = () => {
 
   // Fetch top 5 favorite dockets
   useEffect(() => {
-    console.log('AppSidebar: useEffect triggered', { 
-      user: !!user, 
-      favoritesLength: favorites.length, 
-      favorites: favorites.slice(0, 5) 
-    });
-    
     const fetchTopFavorites = async () => {
       if (!user || favorites.length === 0) {
-        console.log('AppSidebar: Clearing top favorites (no user or empty favorites)');
         setTopFavoriteDockets([]);
         return;
       }
 
       try {
-        console.log('AppSidebar: Fetching docket details for favorites:', favorites.slice(0, 5));
         const { data, error } = await supabase
           .from('dockets')
           .select('docket_govid, docket_title')
@@ -49,7 +41,6 @@ const AppSidebar = () => {
           title: d.docket_title || `Docket ${d.docket_govid}`
         }));
 
-        console.log('AppSidebar: Setting top favorite dockets:', formattedDockets);
         setTopFavoriteDockets(formattedDockets);
       } catch (err) {
         console.error('Error fetching favorite dockets:', err);
@@ -59,36 +50,6 @@ const AppSidebar = () => {
     fetchTopFavorites();
   }, [user, favorites]);
 
-  // Listen for real-time changes to favorites
-  useEffect(() => {
-    if (!user) return;
-
-    const channel = supabase
-      .channel('favorites-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'favorites',
-          filter: `user_id=eq.${user.id}`
-        },
-        (payload) => {
-          console.log('Favorites changed:', payload);
-          // The favorites will be refetched by the useFavorites hook
-          // which will trigger the useEffect above to update topFavoriteDockets
-          // Use setTimeout to avoid React queue issues
-          setTimeout(() => {
-            // Force a re-render by updating a dummy state if needed
-          }, 0);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user]);
 
   const navigationItems = [
     {
