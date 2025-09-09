@@ -205,7 +205,7 @@ export default function OrganizationsPage() {
         <p className="text-muted-foreground">Organizations that petition the New York PSC</p>
       </header>
 
-      <div className="sticky top-16 z-30">
+      <div className="sticky top-14 z-30">
         <div className="relative border bg-card/65 backdrop-blur supports-[backdrop-filter]:bg-card/65 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
           <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3">

@@ -849,7 +849,7 @@ export default function DocketsPage() {
           <p className="text-muted-foreground">Public Service Commission • State: NY • Explore and filter dockets</p>
         </header>
       )}
-      <div className="sticky top-16 z-30">
+      <div className="sticky top-14 z-30">
         <div className="relative border bg-card/65 backdrop-blur supports-[backdrop-filter]:bg-card/65 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
           <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
