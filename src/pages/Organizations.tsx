@@ -206,7 +206,7 @@ export default function OrganizationsPage() {
       </header>
 
       <div className="sticky top-14 z-30">
-        <div className="relative border border-gray-500 bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75 shadow-[var(--shadow-elegant)] rounded-md">
+        <div className="relative border border-gray-400 bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
           <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3">
             {/* Search */}
