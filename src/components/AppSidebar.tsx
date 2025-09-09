@@ -55,7 +55,7 @@ const AppSidebar = () => {
               to={item.path}
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200",
-                "hover:bg-muted/60 focus-visible:outline-none",
+                "hover:bg-muted/80 focus-visible:outline-none",
                 active && "bg-muted/90 text-primary font-medium"
               )}
             >
