@@ -38,8 +38,8 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-500 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="w-full px-4 h-14 flex items-center">
-        <div className="flex items-center w-full">
+      <div className="w-full h-14 flex items-center">
+        <div className="flex items-center w-full pl-4">
           {/* Hoverable Dockito Logo */}
           <div className="group flex items-center">
             <div className="flex items-center">
@@ -55,8 +55,8 @@ const Navbar = () => {
           {/* Breadcrumb arrow separator */}
           <ChevronRight className="h-4 w-4 text-muted-foreground mx-2" />
           
-          {/* Breadcrumb content that gets pushed */}
-          <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out">
+          {/* Breadcrumb content that aligns with main content */}
+          <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out pl-14">
             <span className="text-muted-foreground">State:</span>
             <span className="text-foreground font-medium">New York</span>
             
