@@ -26,10 +26,12 @@ const AppSidebar = () => {
   // Handle favorite notifications - temporarily expand sidebar and show confetti
   useEffect(() => {
     if (animatingFavorite && !isMobile) {
+      console.log('🎉 Starting animation for:', animatingFavorite);
       setIsNotificationExpanded(true);
       
       // Trigger confetti after a brief delay to let the sidebar expand
       const confettiTimer = setTimeout(() => {
+        console.log('🎊 Triggering confetti');
         const favoriteElement = favoritesRefs.current[animatingFavorite];
         if (favoriteElement) {
           const rect = favoriteElement.getBoundingClientRect();
@@ -51,14 +53,18 @@ const AppSidebar = () => {
       
       // Close notification expansion after animation completes
       const timer = setTimeout(() => {
+        console.log('🔄 Attempting to close sidebar - isNotificationExpanded:', isNotificationExpanded, 'isExpanded:', isExpanded);
         setIsNotificationExpanded(false);
+        console.log('📋 Set isNotificationExpanded to false');
         // Small delay to allow hover state to be checked before forcing collapse
         setTimeout(() => {
+          console.log('🔒 Forcing isExpanded to false');
           setIsExpanded(false);
         }, 100);
       }, 2000);
       
       return () => {
+        console.log('🧹 Cleaning up timers');
         clearTimeout(confettiTimer);
         clearTimeout(timer);
       };
