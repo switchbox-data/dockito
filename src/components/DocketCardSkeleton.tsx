@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const DocketCardSkeleton = () => {
   return (
-    <Card className="transition-colors animate-pulse">
+    <Card className="transition-colors animate-pulse bg-white/95">
       <CardContent className="p-4 space-y-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-1">

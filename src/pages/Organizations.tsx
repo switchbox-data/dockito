@@ -304,7 +304,7 @@ export default function OrganizationsPage() {
                   className="group block focus-visible:outline-none"
                   ref={(el) => { cardRefs.current[idx] = el; }}
                 >
-                  <Card className={cn("transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background", isSelected ? "bg-muted" : "")}
+                  <Card className={cn("transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background bg-white/95", isSelected ? "bg-muted" : "")}
                   >
                     <CardContent className="p-4 space-y-3">
                       <div className="flex items-start justify-between gap-3">

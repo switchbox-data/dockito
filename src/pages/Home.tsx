@@ -120,7 +120,7 @@ const Home = () => {
                 {/* Dockets Grid */}
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {section.dockets.map((docket) => (
-                    <Card key={docket.docket_govid} className="hover:shadow-md hover:scale-105 transition-all duration-200 hover-scale">
+                    <Card key={docket.docket_govid} className="hover:shadow-md hover:scale-105 transition-all duration-200 hover-scale bg-white/95">
                       <CardContent className="p-4">
                         <div className="space-y-3">
                           {/* Docket ID Badge */}
