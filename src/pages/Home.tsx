@@ -216,58 +216,72 @@ const Home = () => {
       title: "Recent Rate Cases",
       description: "Latest utility rate adjustment proceedings",
       icon: TrendingUp,
+      viewAllPath: "/dockets?types=Tariff&subtypes=Major rate",
       dockets: [
         {
-          uuid: "1",
-          docket_govid: "22-E-0319",
-          docket_title: "Proceeding on Motion of the Commission as to the Rates, Charges, Rules and Regulations of Rochester Gas and Electric Corporation for Electric Service.",
+          uuid: "f244f2ab-4ace-4738-b64f-768a5dd47e9a",
+          docket_govid: "25-G-0378",
+          docket_title: "Proceeding on Motion of the Commission as to the Rates, Charges, Rules and Regulations of New York State Electric & Gas Corporation for Gas Service.",
+          docket_description: null,
+          industry: "Gas",
+          docket_type: "Tariff",
+          docket_subtype: "Major rate",
+          petitioner_strings: ["New York State Electric & Gas"],
+          opened_date: "2025-06-30",
+          current_status: "",
+          petitioner: "New York State Electric & Gas"
+        },
+        {
+          uuid: "1ae4a267-fad7-4e3f-a18c-108b0e809c0a",
+          docket_govid: "25-E-0375",
+          docket_title: "Proceeding on Motion of the Commission as to the Rates, Charges, Rules and Regulations of New York State Electric & Gas Corporation for Electric Service",
           docket_description: null,
           industry: "Electric",
           docket_type: "Tariff",
-          petitioner_strings: ["Rochester Gas and Electric"],
-          opened_date: "2022-05-26",
-          docket_subtype: null,
+          docket_subtype: "Major rate", 
+          petitioner_strings: ["New York State Electric & Gas"],
+          opened_date: "2025-06-30",
           current_status: "",
-          petitioner: "Rochester Gas and Electric"
+          petitioner: "New York State Electric & Gas"
         },
         {
-          uuid: "2", 
-          docket_govid: "21-E-0545",
-          docket_title: "Proceeding on Motion of the Commission as to the Rates, Charges, Rules and Regulations of Orange and Rockland Utilities, Inc. for Electric Service.",
-          docket_description: null,
-          industry: "Electric",
-          docket_type: "Tariff", 
-          petitioner_strings: ["Orange and Rockland Utilities"],
-          opened_date: "2021-11-18",
-          docket_subtype: null,
-          current_status: "",
-          petitioner: "Orange and Rockland Utilities"
-        },
-        {
-          uuid: "3",
-          docket_govid: "19-E-0239",
-          docket_title: "Proceeding on Motion of the Commission as to the Rates, Charges, Rules and Regulations of Central Hudson Gas & Electric Corporation for Electric Service.",
-          docket_description: null,
-          industry: "Electric",
-          docket_type: "Tariff",
-          petitioner_strings: ["Central Hudson Gas & Electric"],
-          opened_date: "2019-05-16", 
-          docket_subtype: null,
-          current_status: "",
-          petitioner: "Central Hudson Gas & Electric"
-        },
-        {
-          uuid: "4",
-          docket_govid: "18-E-0067",
+          uuid: "8585e97f-5c4a-47e7-aeba-8f39d453c259",
+          docket_govid: "25-E-0072",
           docket_title: "Proceeding on Motion of the Commission as to the Rates, Charges, Rules and Regulations of Consolidated Edison Company of New York, Inc. for Electric Service.",
           docket_description: null,
           industry: "Electric",
           docket_type: "Tariff",
+          docket_subtype: "Major rate",
           petitioner_strings: ["Consolidated Edison Company of New York"],
-          opened_date: "2018-01-25",
-          docket_subtype: null,
+          opened_date: "2025-01-31",
           current_status: "",
           petitioner: "Consolidated Edison Company of New York"
+        },
+        {
+          uuid: "e4a7be29-f6f5-4b79-8172-3d4869dd1520",
+          docket_govid: "24-G-0668",
+          docket_title: "Proceeding on Motion of the Commission as to the Rates, Charges, Rules and Regulations of Liberty Utilities (St. Lawrence Gas) Corp. for Gas Service.",
+          docket_description: null,
+          industry: "Gas",
+          docket_type: "Tariff",
+          docket_subtype: "Major rate",
+          petitioner_strings: ["Liberty Utilities (St. Lawrence Gas)"],
+          opened_date: "2024-11-27",
+          current_status: "",
+          petitioner: "Liberty Utilities (St. Lawrence Gas)"
+        },
+        {
+          uuid: "28b7d69c-5396-4155-81e9-986e656e8dc4",
+          docket_govid: "24-G-0462",
+          docket_title: "Proceeding on Motion of the Commission as to the Rates, Charges, Rules and Regulations of Central Hudson Gas & Electric Corporation for Gas Service.",
+          docket_description: null,
+          industry: "Gas",
+          docket_type: "Tariff",
+          docket_subtype: "Major rate",
+          petitioner_strings: ["Central Hudson Gas & Electric"],
+          opened_date: "2024-08-01",
+          current_status: "",
+          petitioner: "Central Hudson Gas & Electric"
         }
       ],
     },
@@ -275,6 +289,7 @@ const Home = () => {
       title: "Major Energy Projects",
       description: "Large-scale renewable energy facility applications",
       icon: Zap,
+      viewAllPath: "/dockets?types=Petition&industries=Facility Gen.",
       dockets: [
         {
           uuid: "5",
@@ -334,6 +349,7 @@ const Home = () => {
       title: "Telecommunications & Policy",
       description: "Communications industry regulations and policies",
       icon: Building,
+      viewAllPath: "/dockets?industries=Communication,Miscellaneous&types=Tariff,Rulemaking",
       dockets: [
         {
           uuid: "9",
@@ -538,7 +554,7 @@ const Home = () => {
                 {/* Show more link */}
                 <div className="text-center pt-2">
                   <Link 
-                    to="/dockets" 
+                    to={section.viewAllPath || "/dockets"} 
                     className="text-sm text-primary hover:underline story-link"
                   >
                     View all {section.title.toLowerCase()} →

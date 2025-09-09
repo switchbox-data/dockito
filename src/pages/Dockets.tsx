@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, Link2,
   Heart, DollarSign, Frown, FileCheck, Search, FolderOpen,
   BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
@@ -299,6 +299,7 @@ export default function DocketsPage() {
   });
   const navigate = useNavigate();
   const { orgName } = useParams();
+  const [searchParams] = useSearchParams();
   const lockedOrg = useMemo(() => (orgName ? decodeURIComponent(orgName) : null), [orgName]);
   
   // Date slider uses month indices
@@ -329,6 +330,23 @@ export default function DocketsPage() {
       setRange([0, months.length - 1]);
     }
   }, [months, lockedOrg]); // Reset whenever months or lockedOrg changes
+
+  // Initialize filters from URL parameters
+  useEffect(() => {
+    const types = searchParams.get('types');
+    const subtypes = searchParams.get('subtypes');
+    const industries = searchParams.get('industries');
+    
+    if (types) {
+      setDocketTypes(types.split(',').filter(Boolean));
+    }
+    if (subtypes) {
+      setDocketSubtypes(subtypes.split(',').filter(Boolean));
+    }
+    if (industries) {
+      setSelectedIndustries(industries.split(',').filter(Boolean));
+    }
+  }, [searchParams]);
 
   const startDate = useMemo(() => (range && months.length ? months[range[0]] : undefined), [range, months]);
   const endDate = useMemo(() => (range && months.length ? months[range[1]] : undefined), [range, months]);
