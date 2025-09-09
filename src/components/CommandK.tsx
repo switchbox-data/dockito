@@ -98,7 +98,7 @@ export const CommandK = () => {
             }}
           >
             <FolderOpen className="mr-2 h-4 w-4" />
-            <span>View Dockets</span>
+            <span className="text-base">View Dockets</span>
           </CommandItem>
           <CommandItem
             onSelect={() => {
@@ -107,7 +107,7 @@ export const CommandK = () => {
             }}
           >
             <Building className="mr-2 h-4 w-4" />
-            <span>View Organizations</span>
+            <span className="text-base">View Organizations</span>
           </CommandItem>
         </CommandGroup>
         {orgResults.length > 0 && (
@@ -124,7 +124,7 @@ export const CommandK = () => {
               >
                 <Building className="mr-0 h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
                 <div className="flex flex-col items-start gap-1 min-w-0">
-                  <span>{org.name}</span>
+                  <span className="text-base">{org.name}</span>
                   <span className="text-muted-foreground text-sm line-clamp-1">{org.description}</span>
                 </div>
               </CommandItem>
@@ -145,7 +145,7 @@ export const CommandK = () => {
               >
                 <FolderOpen className="mr-0 h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
                 <div className="flex flex-col items-start gap-1 min-w-0">
-                  <span>{d.docket_govid}</span>
+                  <span className="text-base">{d.docket_govid}</span>
                   <span className="text-muted-foreground text-sm line-clamp-2 leading-relaxed">{d.docket_title}</span>
                 </div>
               </CommandItem>
