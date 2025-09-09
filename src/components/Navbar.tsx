@@ -41,9 +41,9 @@ const Navbar = () => {
       <div className="w-full px-4 h-14 flex items-center justify-start">
         <div className="flex items-center gap-4">
           {/* Hoverable Dockito Logo */}
-          <div className="group flex items-center">
+          <div className="group flex items-center overflow-hidden">
             <DockitoLogo />
-            <span className="ml-2 text-foreground font-semibold opacity-0 w-0 overflow-hidden transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:w-auto group-hover:ml-2">
+            <span className="text-foreground font-semibold transform translate-x-[-100%] opacity-0 transition-all duration-300 ease-in-out group-hover:translate-x-2 group-hover:opacity-100">
               dockito
             </span>
           </div>
