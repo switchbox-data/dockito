@@ -5,8 +5,10 @@ import { cn } from "@/lib/utils";
 import { useCommandK } from "@/components/CommandK";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useSidebarNotification } from "@/contexts/SidebarNotificationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const AppSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -15,7 +17,25 @@ const AppSidebar = () => {
   const { open: openCommandK } = useCommandK();
   const { user } = useAuth();
   const { favorites } = useFavorites();
+  const { animatingFavorite } = useSidebarNotification();
+  const { open, setOpen } = useSidebar();
   const isMobile = useIsMobile();
+
+  // Handle favorite notifications - open sidebar, then close after animation
+  useEffect(() => {
+    if (animatingFavorite && !isMobile) {
+      setOpen(true);
+      setIsExpanded(true);
+      
+      // Close sidebar after animation completes
+      const timer = setTimeout(() => {
+        setOpen(false);
+        setIsExpanded(false);
+      }, 2500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [animatingFavorite, isMobile, setOpen]);
 
   // Fetch top 5 favorite dockets
   useEffect(() => {
@@ -88,13 +108,13 @@ const AppSidebar = () => {
         isMobile 
           ? "h-full bg-white border-r border-gray-500" 
           : "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75 border-r border-t border-gray-500 transition-all duration-150 ease-in-out z-40",
-        !isMobile && (isExpanded ? "w-48" : "w-14")
+        !isMobile && (isExpanded || open ? "w-48" : "w-14")
       )}
     >
       <div
         className="h-full"
-        onMouseEnter={() => !isMobile && setIsExpanded(true)}
-        onMouseLeave={() => !isMobile && setIsExpanded(false)}
+        onMouseEnter={() => !isMobile && !animatingFavorite && setIsExpanded(true)}
+        onMouseLeave={() => !isMobile && !animatingFavorite && setIsExpanded(false)}
       >
       <nav className="p-2 space-y-2">
         {navigationItems.map((item, index) => {
@@ -115,7 +135,7 @@ const AppSidebar = () => {
                   <span 
                     className={cn(
                       "transition-opacity duration-150 whitespace-nowrap",
-                      (isMobile || isExpanded) ? "opacity-100" : "opacity-0"
+                      (isMobile || isExpanded || open) ? "opacity-100" : "opacity-0"
                     )}
                   >
                     {item.label}
@@ -141,7 +161,7 @@ const AppSidebar = () => {
               <span 
                 className={cn(
                   "transition-opacity duration-150 whitespace-nowrap",
-                  (isMobile || isExpanded) ? "opacity-100" : "opacity-0"
+                  (isMobile || isExpanded || open) ? "opacity-100" : "opacity-0"
                 )}
               >
                 {item.label}
@@ -166,7 +186,7 @@ const AppSidebar = () => {
               <span 
                 className={cn(
                   "transition-opacity duration-150 whitespace-nowrap",
-                  (isMobile || isExpanded) ? "opacity-100" : "opacity-0"
+                  (isMobile || isExpanded || open) ? "opacity-100" : "opacity-0"
                 )}
               >
                 Favorites ({favorites.length})
@@ -174,7 +194,7 @@ const AppSidebar = () => {
             </Link>
             
             {/* Top 5 favorite dockets */}
-            {(isMobile || isExpanded) && topFavoriteDockets.length > 0 && (
+            {(isMobile || isExpanded || open) && topFavoriteDockets.length > 0 && (
               <div className="ml-6 space-y-1 mt-2">
                 {topFavoriteDockets.map((docket) => (
                   <Link
@@ -183,10 +203,14 @@ const AppSidebar = () => {
                     className={cn(
                       "flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-200 text-sm",
                       "hover:bg-muted/90 focus-visible:outline-none",
-                      isActive(`/docket/${docket.govid}`) && "bg-muted/90 text-primary font-medium"
+                      isActive(`/docket/${docket.govid}`) && "bg-muted/90 text-primary font-medium",
+                      animatingFavorite === docket.govid && "animate-pulse bg-yellow-100 border-2 border-yellow-400"
                     )}
                   >
-                    <div className="w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0" />
+                    <div className={cn(
+                      "w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0 transition-all duration-300",
+                      animatingFavorite === docket.govid && "scale-150 bg-yellow-500"
+                    )} />
                     <span className="truncate">
                       {docket.govid}
                     </span>

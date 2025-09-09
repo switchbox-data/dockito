@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useSidebarNotification } from '@/contexts/SidebarNotificationContext';
 
 interface FavoritesContextType {
   favorites: string[];
@@ -27,6 +28,15 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Get notification context (with fallback)
+  let showNotification = (docketGovId: string) => {};
+  try {
+    const notificationContext = useSidebarNotification();
+    showNotification = notificationContext.showNotification;
+  } catch (error) {
+    // Fallback - notification context might not be available
+  }
 
   // Fetch user's favorites
   const fetchFavorites = async () => {
@@ -91,6 +101,9 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
         console.log('FavoritesContext: New favorites after add:', newFavorites);
         return newFavorites;
       });
+      
+      // Show sidebar notification
+      showNotification(docketGovId);
       toast.success('Added to favorites');
       return true;
     } catch (err) {

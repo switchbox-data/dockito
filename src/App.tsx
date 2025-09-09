@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
+import { SidebarNotificationProvider } from "@/contexts/SidebarNotificationContext";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import Home from "./pages/Home";
 import DocketPage from "./pages/Docket";
@@ -73,8 +74,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <FavoritesProvider>
-            <Toaster />
+          <SidebarNotificationProvider>
+            <FavoritesProvider>
+              <Toaster />
             <Sonner />
             <BrowserRouter>
               <CommandKProvider>
@@ -82,7 +84,8 @@ function App() {
                 <AppContent />
               </CommandKProvider>
             </BrowserRouter>
-          </FavoritesProvider>
+            </FavoritesProvider>
+          </SidebarNotificationProvider>
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
