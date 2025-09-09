@@ -121,7 +121,7 @@ const AppSidebar = () => {
                   </span>
                 </button>
                 {/* Separator after search */}
-                <div className="h-px bg-border my-4" />
+                <div className="h-px bg-border my-2" />
               </div>
             );
           }
