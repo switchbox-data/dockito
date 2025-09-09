@@ -878,7 +878,7 @@ export default function DocketsPage() {
               {/* Industry Filter */}
               <Popover open={industryMenuOpen} onOpenChange={setIndustryMenuOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                  <Button variant="outline" className="shrink-0 justify-between border-gray-300 hover:border-gray-300">
                     <span className="inline-flex items-center gap-2">
                       <Factory size={16} className="text-muted-foreground" />
                       {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Industries"}
@@ -939,7 +939,7 @@ export default function DocketsPage() {
               {!lockedOrg && (
                 <Popover open={petOpen} onOpenChange={setPetOpen}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                    <Button variant="outline" className="shrink-0 justify-between border-gray-300 hover:border-gray-300">
                       <span className="inline-flex items-center gap-2">
                         <Users size={16} className="text-muted-foreground" />
                         {petitioners.length ? `Petitioners (${petitioners.length})` : "Petitioners"}
@@ -990,7 +990,7 @@ export default function DocketsPage() {
               {/* Types Menu */}
               <Popover open={typeMenuOpen} onOpenChange={setTypeMenuOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                  <Button variant="outline" className="shrink-0 justify-between border-gray-300 hover:border-gray-300">
                     <span className="inline-flex items-center gap-2">
                       <Shapes size={16} className="text-muted-foreground" />
                       {docketTypes.length || docketSubtypes.length ? `Types (${docketTypes.length + docketSubtypes.length})` : "Types"}
@@ -1136,7 +1136,7 @@ export default function DocketsPage() {
               {lockedOrg && (
                 <Popover open={relationshipOpen} onOpenChange={setRelationshipOpen}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                    <Button variant="outline" className="shrink-0 justify-between border-gray-300 hover:border-gray-300">
                       <span className="inline-flex items-center gap-2">
                         <UserCheck size={16} className="text-muted-foreground" />
                         {relationshipTypes.length === 0 ? "Role" : `Role (${relationshipTypes.length})`}
@@ -1208,7 +1208,7 @@ export default function DocketsPage() {
               </span>
 
               {/* Sort */}
-              <Button ref={sortBtnRef} variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+              <Button ref={sortBtnRef} variant="outline" className="border-gray-300 hover:border-gray-300" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
                 {sortDir === "desc" ? "↓" : "↑"} Date
               </Button>
             </div>

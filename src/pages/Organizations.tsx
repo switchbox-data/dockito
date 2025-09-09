@@ -215,7 +215,7 @@ export default function OrganizationsPage() {
               placeholder="Search organization names..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 hover:border-primary/30"
+              className="flex-1 border-gray-300 hover:border-gray-300"
               ref={searchRef}
               onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); (e.currentTarget as HTMLInputElement).blur(); containerRef.current?.focus(); } }}
             />
@@ -224,7 +224,7 @@ export default function OrganizationsPage() {
             <div className="shrink-0 flex gap-2">
               <Button 
                 variant={sortBy === "dockets" ? "default" : "outline"} 
-                className="hover:border-primary/30" 
+                className="border-gray-300 hover:border-gray-300"
                 onClick={() => {
                   if (sortBy === "dockets") {
                     setSortDir((d) => (d === "desc" ? "asc" : "desc"));
@@ -239,7 +239,7 @@ export default function OrganizationsPage() {
               </Button>
               <Button 
                 variant={sortBy === "name" ? "default" : "outline"} 
-                className="hover:border-primary/30" 
+                className="border-gray-300 hover:border-gray-300" 
                 onClick={() => {
                   if (sortBy === "name") {
                     setSortDir((d) => (d === "asc" ? "desc" : "asc"));

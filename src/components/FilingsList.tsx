@@ -702,7 +702,7 @@ const isEndDateModified = useMemo(() => {
 
               <Popover open={orgOpen} onOpenChange={setOrgOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                  <Button variant="outline" className="shrink-0 justify-between border-gray-300 hover:border-gray-300">
                       <span className="inline-flex items-center gap-2">
                         <Users size={16} className="text-muted-foreground" />
                         {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
@@ -750,7 +750,7 @@ const isEndDateModified = useMemo(() => {
 
                 <Popover open={typeOpen} onOpenChange={setTypeOpen}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="shrink-0 justify-between hover:border-primary/30">
+                    <Button variant="outline" className="shrink-0 justify-between border-gray-300 hover:border-gray-300">
                       <span className="inline-flex items-center gap-2">
                         <Shapes size={16} className="text-muted-foreground" />
                         {selectedTypes.length ? `Types (${selectedTypes.length})` : "Types"}
@@ -817,7 +817,7 @@ const isEndDateModified = useMemo(() => {
               >
                 Sort:
               </span>
-              <Button ref={sortBtnRef} variant="outline" className="hover:border-primary/30" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+              <Button ref={sortBtnRef} variant="outline" className="border-gray-300 hover:border-gray-300" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
                 {sortDir === "desc" ? "↓" : "↑"} Date
               </Button>
             </div>
