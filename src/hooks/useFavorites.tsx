@@ -120,6 +120,44 @@ export const useFavorites = () => {
     fetchFavorites();
   }, [user]);
 
+  // Listen for real-time changes to favorites
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('user-favorites')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'favorites',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Real-time favorites change:', payload);
+          
+          if (payload.eventType === 'INSERT') {
+            const newFavorite = payload.new as { docket_govid: string };
+            setFavorites(prev => {
+              if (!prev.includes(newFavorite.docket_govid)) {
+                return [...prev, newFavorite.docket_govid];
+              }
+              return prev;
+            });
+          } else if (payload.eventType === 'DELETE') {
+            const removedFavorite = payload.old as { docket_govid: string };
+            setFavorites(prev => prev.filter(id => id !== removedFavorite.docket_govid));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   return {
     favorites,
     loading,

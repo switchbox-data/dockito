@@ -50,6 +50,33 @@ const AppSidebar = () => {
     fetchTopFavorites();
   }, [user, favorites]);
 
+  // Listen for real-time changes to favorites
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('favorites-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'favorites',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Favorites changed:', payload);
+          // The favorites will be refetched by the useFavorites hook
+          // which will trigger the useEffect above to update topFavoriteDockets
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const navigationItems = [
     {
       icon: Search,
