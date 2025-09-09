@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Home, FolderOpen, Building, Search, Star, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -9,10 +9,12 @@ import { useSidebarNotification } from "@/contexts/SidebarNotificationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSidebar } from "@/components/ui/sidebar";
+import confetti from "canvas-confetti";
 
 const AppSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isNotificationExpanded, setIsNotificationExpanded] = useState(false);
+  const favoritesRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [topFavoriteDockets, setTopFavoriteDockets] = useState<Array<{govid: string, title: string}>>([]);
   const location = useLocation();
   const { open: openCommandK } = useCommandK();
@@ -21,17 +23,41 @@ const AppSidebar = () => {
   const { animatingFavorite } = useSidebarNotification();
   const isMobile = useIsMobile();
 
-  // Handle favorite notifications - temporarily expand sidebar for animation
+  // Handle favorite notifications - temporarily expand sidebar and show confetti
   useEffect(() => {
     if (animatingFavorite && !isMobile) {
       setIsNotificationExpanded(true);
+      
+      // Trigger confetti after a brief delay to let the sidebar expand
+      const confettiTimer = setTimeout(() => {
+        const favoriteElement = favoritesRefs.current[animatingFavorite];
+        if (favoriteElement) {
+          const rect = favoriteElement.getBoundingClientRect();
+          const x = (rect.left + rect.width / 2) / window.innerWidth;
+          const y = (rect.top + rect.height / 2) / window.innerHeight;
+          
+          confetti({
+            particleCount: 20,
+            spread: 45,
+            origin: { x, y },
+            colors: ['#fbbf24', '#f59e0b', '#d97706'], // Yellow/amber colors to match the star
+            scalar: 0.6,
+            gravity: 0.8,
+            drift: 0,
+            ticks: 100
+          });
+        }
+      }, 300);
       
       // Close notification expansion after animation completes
       const timer = setTimeout(() => {
         setIsNotificationExpanded(false);
       }, 2500);
       
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(confettiTimer);
+        clearTimeout(timer);
+      };
     }
   }, [animatingFavorite, isMobile]);
 
@@ -198,12 +224,15 @@ const AppSidebar = () => {
               <div className="ml-6 space-y-1 mt-2">
                 {topFavoriteDockets.map((docket) => (
                   <div
+                    ref={(el) => {
+                      if (el) favoritesRefs.current[docket.govid] = el;
+                    }}
                     key={docket.govid}
                     className={cn(
                       "flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-200 text-sm group/favorite relative",
                       "hover:bg-muted/90 focus-visible:outline-none",
                       isActive(`/docket/${docket.govid}`) && "bg-muted/90 text-primary font-medium",
-                      animatingFavorite === docket.govid && "animate-pulse bg-yellow-100 border-2 border-yellow-400"
+                      animatingFavorite === docket.govid && "bg-yellow-50 border border-yellow-200"
                     )}
                   >
                     <Link
@@ -212,7 +241,7 @@ const AppSidebar = () => {
                     >
                       <div className={cn(
                         "w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0 transition-all duration-300",
-                        animatingFavorite === docket.govid && "scale-150 bg-yellow-500"
+                        animatingFavorite === docket.govid && "bg-yellow-500"
                       )} />
                       <span className="truncate">
                         {docket.govid}
