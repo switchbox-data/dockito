@@ -3,11 +3,10 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight, ChevronUp, ChevronDown, Loader2, Calendar, User, FileText, Building, ChevronLeft, 
          Heart, DollarSign, Frown, Lock, Search, Flame, FileCheck, Gavel, Book, EyeOff, 
          FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, 
-         Lightbulb, HelpCircle, ZoomIn, ZoomOut, Sidebar, Maximize, Minimize, X } from "lucide-react";
+         Lightbulb, HelpCircle, ZoomIn, ZoomOut, Sidebar, Maximize, Minimize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Document, Page, pdfjs } from "react-pdf";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -52,9 +51,6 @@ const AttachmentPage = () => {
   const [probing, setProbing] = useState(false);
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [currentSearchIndex, setCurrentSearchIndex] = useState(-1);
 
   // Fetch attachment, docket, and filing data
   useEffect(() => {
@@ -190,49 +186,6 @@ const AttachmentPage = () => {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
-
-  // Search functionality
-  const searchInPDF = async () => {
-    if (!searchText.trim() || !attachment) return;
-    
-    // Clear previous results
-    setSearchResults([]);
-    setCurrentSearchIndex(-1);
-    
-    // This is a simplified search - in a full implementation, 
-    // you'd extract text from each page and search through it
-    // For now, we'll simulate search results
-    const mockResults = [
-      { pageNumber: 1, text: searchText, position: { x: 100, y: 200 } },
-    ];
-    setSearchResults(mockResults);
-    if (mockResults.length > 0) {
-      setCurrentSearchIndex(0);
-      scrollToPage(mockResults[0].pageNumber);
-    }
-  };
-
-  const clearSearch = () => {
-    setSearchText("");
-    setSearchResults([]);
-    setCurrentSearchIndex(-1);
-  };
-
-  const goToNextSearchResult = () => {
-    if (searchResults.length > 0) {
-      const nextIndex = (currentSearchIndex + 1) % searchResults.length;
-      setCurrentSearchIndex(nextIndex);
-      scrollToPage(searchResults[nextIndex].pageNumber);
-    }
-  };
-
-  const goToPrevSearchResult = () => {
-    if (searchResults.length > 0) {
-      const prevIndex = currentSearchIndex <= 0 ? searchResults.length - 1 : currentSearchIndex - 1;
-      setCurrentSearchIndex(prevIndex);
-      scrollToPage(searchResults[prevIndex].pageNumber);
-    }
-  };
 
   const buildFileUrl = (a: any, useOriginal = false) => {
     const hash = a?.blake2b_hash?.toString().trim();
@@ -470,7 +423,7 @@ const AttachmentPage = () => {
                   disabled={currentAttachmentIndex <= 0}
                 >
                   <ChevronLeft size={16} />
-                  <span className="hidden sm:inline ml-1">Prev Doc</span>
+                  <span className="hidden sm:inline ml-1">Prev</span>
                 </Button>
                 <span className="text-sm text-muted-foreground whitespace-nowrap">
                   Doc {currentAttachmentIndex + 1} / {allAttachments.length}
@@ -481,53 +434,8 @@ const AttachmentPage = () => {
                   onClick={goToNextAttachment}
                   disabled={currentAttachmentIndex >= allAttachments.length - 1}
                 >
-                  <span className="hidden sm:inline mr-1">Next Doc</span>
+                  <span className="hidden sm:inline mr-1">Next</span>
                   <ChevronRight size={16} />
-                </Button>
-              </div>
-
-              <div className="h-6 w-px bg-border" />
-
-              {/* Search */}
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Input
-                    placeholder="Search in document..."
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        searchInPDF();
-                      } else if (e.key === 'Escape') {
-                        clearSearch();
-                      }
-                    }}
-                    className="w-48 text-sm"
-                  />
-                  {searchText && (
-                    <button
-                      onClick={clearSearch}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-                {searchResults.length > 0 && (
-                  <>
-                    <Button variant="outline" size="sm" onClick={goToPrevSearchResult}>
-                      <ChevronUp size={16} />
-                    </Button>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
-                      {currentSearchIndex + 1} / {searchResults.length}
-                    </span>
-                    <Button variant="outline" size="sm" onClick={goToNextSearchResult}>
-                      <ChevronDown size={16} />
-                    </Button>
-                  </>
-                )}
-                <Button variant="outline" size="sm" onClick={searchInPDF} disabled={!searchText.trim()}>
-                  <Search size={16} />
                 </Button>
               </div>
 
