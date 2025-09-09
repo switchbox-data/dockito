@@ -849,7 +849,7 @@ export default function DocketsPage() {
           <p className="text-muted-foreground">Public Service Commission • State: NY • Explore and filter dockets</p>
         </header>
       )}
-      <div className="sticky top-0 z-30">
+      <div className="sticky top-14 z-30">
         <div className="relative border bg-card/65 backdrop-blur supports-[backdrop-filter]:bg-card/65 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
           <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
@@ -886,7 +886,7 @@ export default function DocketsPage() {
                     <ChevronDown size={14} />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[600px] p-0 z-50 bg-popover border max-h-[500px] overflow-y-auto" align="start">
+                <PopoverContent className="w-[600px] p-0 z-[60] bg-popover border max-h-[500px] overflow-y-auto" align="start">
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-sm font-semibold">Industries</h3>
@@ -947,7 +947,7 @@ export default function DocketsPage() {
                       <ChevronDown size={14} />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[500px] p-0 z-50 bg-popover border max-h-[500px]" align="start">
+                  <PopoverContent className="w-[500px] p-0 z-[60] bg-popover border max-h-[500px]" align="start">
                     <Command className="h-full">
                       <CommandInput placeholder="Search petitioners..." className="text-sm" />
                       <CommandList className="max-h-[420px]">
@@ -998,7 +998,7 @@ export default function DocketsPage() {
                     <ChevronDown size={14} />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[800px] p-0 z-50 bg-popover border max-h-[600px] overflow-y-auto" align="start">
+                <PopoverContent className="w-[800px] p-0 z-[60] bg-popover border max-h-[600px] overflow-y-auto" align="start">
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-sm font-semibold">Docket Types</h3>
@@ -1144,7 +1144,7 @@ export default function DocketsPage() {
                       <ChevronDown size={14} />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[300px] p-0 z-50 bg-popover border" align="start">
+                  <PopoverContent className="w-[300px] p-0 z-[60] bg-popover border" align="start">
                     <Command>
                       <CommandList>
                         <CommandGroup>

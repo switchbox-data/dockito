@@ -674,7 +674,7 @@ const isEndDateModified = useMemo(() => {
 
   return (
     <section ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="mt-6 outline-none">
-      <div className="sticky top-0 z-40">
+      <div className="sticky top-14 z-30">
         <div className="relative border bg-card/65 backdrop-blur supports-[backdrop-filter]:bg-card/65 shadow-[var(--shadow-elegant)] rounded-md mb-3">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
           <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
@@ -710,7 +710,7 @@ const isEndDateModified = useMemo(() => {
                       <ChevronDown size={14} />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[500px] p-0 z-50 bg-popover border max-h-[500px]" align="start">
+                  <PopoverContent className="w-[500px] p-0 z-[60] bg-popover border max-h-[500px]" align="start">
                     <Command className="h-full">
                       <CommandInput placeholder="Search organizations..." className="text-sm" />
                       <CommandList className="max-h-[420px]">
@@ -758,7 +758,7 @@ const isEndDateModified = useMemo(() => {
                       <ChevronDown size={14} />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[700px] p-0 z-50 bg-popover border max-h-[600px] overflow-y-auto" align="start">
+                  <PopoverContent className="w-[700px] p-0 z-[60] bg-popover border max-h-[600px] overflow-y-auto" align="start">
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-semibold">Filing Types</h3>
