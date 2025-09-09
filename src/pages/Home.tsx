@@ -28,7 +28,7 @@ const Home = () => {
     // For now, randomly select dockets for each category
     // Later this can be replaced with hand-selected curation
     const shuffled = [...MOCK_DOCKETS].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 2); // Show 2 dockets per section
+    return shuffled.slice(0, 12); // Show 12 dockets per section to simulate more content
   };
 
   const curatedSections = [
@@ -104,55 +104,69 @@ const Home = () => {
                   </div>
                 </div>
                 
-                {/* Dockets List */}
-                <div className="grid gap-4 md:grid-cols-2">
+                {/* Dockets Grid */}
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {section.dockets.map((docket) => (
-                    <Card key={docket.docket_govid} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <Link 
-                              to={`/dockets/${docket.docket_govid}`}
-                              className="hover:underline"
-                            >
-                              <CardTitle className="text-base leading-tight line-clamp-2">
-                                {docket.docket_title}
-                              </CardTitle>
-                            </Link>
-                            <div className="flex items-center gap-2 mt-2">
-                              <Badge variant="secondary" className="text-xs">
-                                {docket.docket_govid}
-                              </Badge>
-                              {docket.industry && (
-                                <Badge variant="outline" className="text-xs capitalize">
-                                  {docket.industry}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="space-y-2 text-sm text-muted-foreground">
-                          {docket.petitioner && (
-                            <div className="flex items-center gap-2">
-                              <User className="h-3 w-3" />
-                              <span className="truncate">{docket.petitioner}</span>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-3 w-3" />
-                            <span>Opened {formatDate(docket.opened_date)}</span>
+                    <Card key={docket.docket_govid} className="hover:shadow-md hover:scale-105 transition-all duration-200 hover-scale">
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
+                          {/* Docket ID Badge */}
+                          <div className="flex items-center justify-between">
+                            <Badge variant="secondary" className="text-xs font-mono">
+                              {docket.docket_govid}
+                            </Badge>
                             {docket.current_status && (
                               <Badge variant="outline" className="text-xs">
                                 {docket.current_status}
                               </Badge>
                             )}
                           </div>
+                          
+                          {/* Title */}
+                          <Link 
+                            to={`/dockets/${docket.docket_govid}`}
+                            className="story-link block"
+                          >
+                            <h4 className="text-sm font-medium leading-tight line-clamp-3 hover:text-primary transition-colors">
+                              {docket.docket_title}
+                            </h4>
+                          </Link>
+                          
+                          {/* Metadata */}
+                          <div className="space-y-1 text-xs text-muted-foreground">
+                            {docket.industry && (
+                              <div className="flex items-center gap-1">
+                                <Building className="h-3 w-3" />
+                                <span className="capitalize">{docket.industry}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              <span>{formatDate(docket.opened_date)}</span>
+                            </div>
+                            {docket.petitioner && (
+                              <div className="flex items-center gap-1">
+                                <User className="h-3 w-3" />
+                                <span className="truncate" title={docket.petitioner}>
+                                  {docket.petitioner}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
+                </div>
+                
+                {/* Show more link */}
+                <div className="text-center pt-2">
+                  <Link 
+                    to="/dockets" 
+                    className="text-sm text-primary hover:underline story-link"
+                  >
+                    View all {section.title.toLowerCase()} →
+                  </Link>
                 </div>
               </div>
             );
