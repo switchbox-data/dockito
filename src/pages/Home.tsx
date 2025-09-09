@@ -443,9 +443,8 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen pl-4 sm:pl-8 md:pl-16 lg:pl-20 xl:pl-24">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
-        <div className="max-w-4xl mx-auto space-y-16">
+    <div className="container mx-auto px-4 py-12">
+      <div className="max-w-4xl mx-auto space-y-16">
         {/* Cohesive Logo Header */}
         <div className="text-center space-y-12 pt-8">
           <div className="flex items-center justify-center gap-8">
@@ -596,7 +595,6 @@ const Home = () => {
               </div>
             );
           })}
-        </div>
         </div>
       </div>
     </div>

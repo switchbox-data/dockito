@@ -19,11 +19,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronRight, User, LogOut } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { ChevronRight, User, LogOut, Menu } from "lucide-react";
 import DockitoLogo from "@/components/DockitoLogo";
 import { AuthModal } from "@/components/AuthModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
+import AppSidebar from "./AppSidebar";
 
 const Navbar = () => {
   const location = useLocation();
@@ -31,6 +38,8 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const [attachmentTitle, setAttachmentTitle] = useState<string>("");
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
   
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -102,6 +111,20 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b border-gray-500 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="w-full h-14 flex items-center">
         <div className="flex items-center w-full pl-4">
+          {/* Mobile menu trigger */}
+          {isMobile && (
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="mr-2">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-64">
+                <AppSidebar />
+              </SheetContent>
+            </Sheet>
+          )}
+          
           {/* Hoverable Dockito Logo */}
           <div className="group flex items-center">
             <div className="flex items-center">

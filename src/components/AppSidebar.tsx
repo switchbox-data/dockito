@@ -6,6 +6,7 @@ import { useCommandK } from "@/components/CommandK";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFavorites } from "@/hooks/useFavorites";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const AppSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -14,6 +15,7 @@ const AppSidebar = () => {
   const { open: openCommandK } = useCommandK();
   const { user } = useAuth();
   const { favorites } = useFavorites();
+  const isMobile = useIsMobile();
 
   // Fetch top 5 favorite dockets
   useEffect(() => {
@@ -82,14 +84,16 @@ const AppSidebar = () => {
   return (
     <div
       className={cn(
-        "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75 border-r border-t border-gray-500 transition-all duration-300 ease-in-out z-40",
-        isExpanded ? "w-48" : "w-14"
+        isMobile 
+          ? "h-full bg-white border-r border-gray-500" 
+          : "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75 border-r border-t border-gray-500 transition-all duration-300 ease-in-out z-40",
+        !isMobile && (isExpanded ? "w-48" : "w-14")
       )}
     >
       <div
         className="h-full"
-        onMouseEnter={() => setIsExpanded(true)}
-        onMouseLeave={() => setIsExpanded(false)}
+        onMouseEnter={() => !isMobile && setIsExpanded(true)}
+        onMouseLeave={() => !isMobile && setIsExpanded(false)}
       >
       <nav className="p-2 space-y-2">
         {navigationItems.map((item, index) => {
@@ -110,7 +114,7 @@ const AppSidebar = () => {
                   <span 
                     className={cn(
                       "transition-opacity duration-300 whitespace-nowrap",
-                      isExpanded ? "opacity-100" : "opacity-0"
+                      (isMobile || isExpanded) ? "opacity-100" : "opacity-0"
                     )}
                   >
                     {item.label}
@@ -136,7 +140,7 @@ const AppSidebar = () => {
               <span 
                 className={cn(
                   "transition-opacity duration-300 whitespace-nowrap",
-                  isExpanded ? "opacity-100" : "opacity-0"
+                  (isMobile || isExpanded) ? "opacity-100" : "opacity-0"
                 )}
               >
                 {item.label}
@@ -161,7 +165,7 @@ const AppSidebar = () => {
               <span 
                 className={cn(
                   "transition-opacity duration-300 whitespace-nowrap",
-                  isExpanded ? "opacity-100" : "opacity-0"
+                  (isMobile || isExpanded) ? "opacity-100" : "opacity-0"
                 )}
               >
                 Favorites ({favorites.length})
@@ -169,7 +173,7 @@ const AppSidebar = () => {
             </Link>
             
             {/* Top 5 favorite dockets */}
-            {isExpanded && topFavoriteDockets.length > 0 && (
+            {(isMobile || isExpanded) && topFavoriteDockets.length > 0 && (
               <div className="ml-6 space-y-1 mt-2">
                 {topFavoriteDockets.map((docket) => (
                   <Link

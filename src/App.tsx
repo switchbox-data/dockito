@@ -18,6 +18,7 @@ import { CommandKProvider } from "@/components/CommandK";
 import Navbar from "@/components/Navbar";
 import AppSidebar from "@/components/AppSidebar";
 import NotFound from "./pages/NotFound";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,35 @@ const ScrollToTop = () => {
   return null;
 };
 
+const AppContent = () => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <SidebarProvider defaultOpen={!isMobile}>
+      <div className="min-h-screen flex w-full">
+        {!isMobile && <AppSidebar />}
+        <div className={`flex flex-col flex-1 ${!isMobile ? 'ml-14' : ''}`}>
+          <Navbar />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/dockets" element={<DocketsPage />} />
+              <Route path="/orgs" element={<OrganizationsPage />} />
+              <Route path="/docket/:docket_govid" element={<DocketPage />} />
+              <Route path="/docket/:docket_govid/attachment/:attachment_uuid" element={<AttachmentPage />} />
+              <Route path="/org/:orgName" element={<DocketsPage />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/favorites" element={<Favorites />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -46,28 +76,7 @@ const App = () => (
         <BrowserRouter>
           <CommandKProvider>
             <ScrollToTop />
-            <SidebarProvider>
-              <div className="min-h-screen flex w-full">
-                <AppSidebar />
-                <div className="flex flex-col flex-1">
-                  <Navbar />
-                  <main className="flex-1">
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/dockets" element={<DocketsPage />} />
-                      <Route path="/orgs" element={<OrganizationsPage />} />
-                      <Route path="/docket/:docket_govid" element={<DocketPage />} />
-                      <Route path="/docket/:docket_govid/attachment/:attachment_uuid" element={<AttachmentPage />} />
-                      <Route path="/org/:orgName" element={<DocketsPage />} />
-                      <Route path="/auth" element={<Auth />} />
-                      <Route path="/favorites" element={<Favorites />} />
-                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </main>
-                </div>
-              </div>
-            </SidebarProvider>
+            <AppContent />
           </CommandKProvider>
         </BrowserRouter>
       </AuthProvider>
