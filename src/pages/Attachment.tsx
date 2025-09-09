@@ -497,52 +497,52 @@ const AttachmentPage = () => {
               </div>
             )}
             
-            <div className="flex items-center gap-4">
-              <div className="bg-muted rounded-lg p-3">
-                <FileText className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="bg-muted rounded-lg p-3">
+                  <FileText className="h-8 w-8 text-muted-foreground" />
+                </div>
                 <CardTitle className="text-2xl font-bold leading-tight">
                   {attachment.attachment_title || 'Document'}
                 </CardTitle>
-                
-                {/* Separator below title */}
-                <div className="h-px bg-border mt-4 mb-4" />
-                
-                {/* Metadata items - bigger and reorganized */}
-                <div className="space-y-3 text-base">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-muted-foreground" />
-                    <span>Docket </span>
-                    <button 
-                      onClick={() => navigate(`/docket/${safeDocket}`)}
-                      className="text-primary hover:underline font-medium"
-                    >
-                      {safeDocket}
-                    </button>
-                  </div>
-                  
-                  {filing && (
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-muted-foreground" />
-                      <span>Filed on {formatDate(filing.filed_date)}</span>
-                    </div>
-                  )}
-                  
-                  {filing?.organization_author_strings?.[0] && (
-                    <div className="flex items-center gap-2">
-                      <Building className="h-5 w-5 text-muted-foreground" />
-                      <span>Filed by</span>
-                      <Badge 
-                        variant="outline" 
-                        className="bg-background border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/org/${encodeURIComponent(filing.organization_author_strings[0])}`)}
-                      >
-                        {filing.organization_author_strings[0]}
-                      </Badge>
-                    </div>
-                  )}
+              </div>
+              
+              {/* Separator below title */}
+              <div className="h-px bg-border mb-4" />
+              
+              {/* Metadata items - bigger and reorganized */}
+              <div className="space-y-3 text-base">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-muted-foreground" />
+                  <span>Docket </span>
+                  <button 
+                    onClick={() => navigate(`/docket/${safeDocket}`)}
+                    className="text-primary hover:underline font-medium"
+                  >
+                    {safeDocket}
+                  </button>
                 </div>
+                
+                {filing && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-muted-foreground" />
+                    <span>Filed on {formatDate(filing.filed_date)}</span>
+                  </div>
+                )}
+                
+                {filing?.organization_author_strings?.[0] && (
+                  <div className="flex items-center gap-2">
+                    <Building className="h-5 w-5 text-muted-foreground" />
+                    <span>Filed by</span>
+                    <Badge 
+                      variant="outline" 
+                      className="bg-background border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/org/${encodeURIComponent(filing.organization_author_strings[0])}`)}
+                    >
+                      {filing.organization_author_strings[0]}
+                    </Badge>
+                  </div>
+                )}
               </div>
             </div>
           </CardHeader>
