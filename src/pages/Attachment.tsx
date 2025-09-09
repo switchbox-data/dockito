@@ -364,8 +364,8 @@ const AttachmentPage = () => {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-4">
-              <div className="bg-primary rounded-lg p-3">
-                <FileText className="h-8 w-8 text-primary-foreground" />
+              <div className="bg-muted rounded-lg p-3">
+                <FileText className="h-8 w-8 text-muted-foreground" />
               </div>
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-2xl font-bold leading-tight">
