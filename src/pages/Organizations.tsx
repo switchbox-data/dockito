@@ -310,12 +310,11 @@ export default function OrganizationsPage() {
                   <Card className={cn("transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background bg-white/95", isSelected ? "bg-muted" : "")}
                   >
                     <CardContent className="p-4 space-y-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <Building2 size={20} className="text-muted-foreground shrink-0" />
-                          <h3 className="font-medium leading-snug text-foreground">{org.name}</h3>
-                        </div>
-                      </div>
+                       <div className="flex items-start justify-between gap-3">
+                         <div className="flex items-center gap-2">
+                           <h3 className="font-medium leading-snug text-foreground">{org.name}</h3>
+                         </div>
+                       </div>
                       
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Users size={14} />
