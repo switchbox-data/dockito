@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ChevronDown, Check, Calendar as CalendarIcon, Factory, Shapes, Users, ArrowUpDown, Link2,
-  Heart, DollarSign, Frown, FileCheck, Search, Folder,
+  Heart, DollarSign, Frown, FileCheck, Search, FolderOpen,
   BarChart3, Gavel, Flame, Lock, HelpCircle, Book, EyeOff, 
   FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, UserCheck } from "lucide-react";
 import { format, addMonths, startOfMonth, endOfMonth, startOfDay, endOfDay, isSameMonth } from "date-fns";
@@ -846,7 +846,7 @@ export default function DocketsPage() {
       ) : (
         <header className="space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
-            <Folder className="h-8 w-8 text-muted-foreground" />
+            <FolderOpen className="h-8 w-8 text-muted-foreground" />
             Dockets
           </h1>
           <p className="text-muted-foreground">New York Public Service Commission</p>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, Users, Search } from "lucide-react";
+import { Building2, Users, Search, FolderOpen } from "lucide-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -201,8 +201,11 @@ export default function OrganizationsPage() {
   return (
     <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-6 space-y-6">
       <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Organizations</h1>
-        <p className="text-muted-foreground">Organizations that petition the New York PSC</p>
+        <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
+          <FolderOpen className="h-8 w-8 text-muted-foreground" />
+          Organizations
+        </h1>
+        <p className="text-muted-foreground">New York Public Service Commission</p>
       </header>
 
       <div className="sticky top-14 z-30">
