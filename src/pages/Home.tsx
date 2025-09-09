@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { Search, TrendingUp, Zap, Building } from "lucide-react";
+import { Search, TrendingUp, Zap, Building, FileText, Calendar, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { useNavigate, Link } from "react-router-dom";
+import { MOCK_DOCKETS, type Docket } from "@/data/mock";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -21,29 +23,42 @@ const Home = () => {
   };
 
 
-  const featuredSections = [
+  // Helper function to get curated dockets for each section
+  const getCuratedDockets = (category: string): Docket[] => {
+    // For now, randomly select dockets for each category
+    // Later this can be replaced with hand-selected curation
+    const shuffled = [...MOCK_DOCKETS].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 2); // Show 2 dockets per section
+  };
+
+  const curatedSections = [
     {
-      title: "Rate Cases",
-      description: "Utility rate adjustment proceedings and tariff filings",
+      title: "Recent Rate Cases",
+      description: "Latest utility rate adjustment proceedings",
       icon: TrendingUp,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      dockets: getCuratedDockets("rate"),
     },
     {
-      title: "Policy Dockets",
-      description: "Regulatory policy development and rulemaking proceedings",
+      title: "Policy Development",
+      description: "Active regulatory policy proceedings",
       icon: Building,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      dockets: getCuratedDockets("policy"),
     },
     {
-      title: "Clean Energy Siting",
-      description: "Renewable energy project siting and environmental reviews",
+      title: "Clean Energy Projects",
+      description: "Renewable energy siting and reviews",
       icon: Zap,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      dockets: getCuratedDockets("energy"),
     },
   ];
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -71,29 +86,77 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Featured Sections */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-center">Featured Docket Categories</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredSections.map((section) => {
-              const IconComponent = section.icon;
-              return (
-                <Card key={section.title} className="hover:shadow-lg transition-shadow cursor-pointer">
-                  <CardHeader className="text-center">
-                    <div className={`mx-auto w-12 h-12 rounded-full ${section.bgColor} flex items-center justify-center mb-4`}>
-                      <IconComponent className={`h-6 w-6 ${section.color}`} />
-                    </div>
-                    <CardTitle className="text-lg">{section.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-center">
-                      {section.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+        {/* Curated Docket Sections */}
+        <div className="space-y-8">
+          <h2 className="text-2xl font-semibold text-center">Curated Dockets</h2>
+          {curatedSections.map((section) => {
+            const IconComponent = section.icon;
+            return (
+              <div key={section.title} className="space-y-4">
+                {/* Section Header */}
+                <div className="flex items-center gap-3 border-b pb-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted">
+                    <IconComponent className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold">{section.title}</h3>
+                    <p className="text-sm text-muted-foreground">{section.description}</p>
+                  </div>
+                </div>
+                
+                {/* Dockets List */}
+                <div className="grid gap-4 md:grid-cols-2">
+                  {section.dockets.map((docket) => (
+                    <Card key={docket.docket_govid} className="hover:shadow-md transition-shadow">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <Link 
+                              to={`/dockets/${docket.docket_govid}`}
+                              className="hover:underline"
+                            >
+                              <CardTitle className="text-base leading-tight line-clamp-2">
+                                {docket.docket_title}
+                              </CardTitle>
+                            </Link>
+                            <div className="flex items-center gap-2 mt-2">
+                              <Badge variant="secondary" className="text-xs">
+                                {docket.docket_govid}
+                              </Badge>
+                              {docket.industry && (
+                                <Badge variant="outline" className="text-xs capitalize">
+                                  {docket.industry}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="space-y-2 text-sm text-muted-foreground">
+                          {docket.petitioner && (
+                            <div className="flex items-center gap-2">
+                              <User className="h-3 w-3" />
+                              <span className="truncate">{docket.petitioner}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-3 w-3" />
+                            <span>Opened {formatDate(docket.opened_date)}</span>
+                            {docket.current_status && (
+                              <Badge variant="outline" className="text-xs">
+                                {docket.current_status}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Quick Links */}
