@@ -25,10 +25,24 @@ const Home = () => {
 
   // Helper function to get curated dockets for each section
   const getCuratedDockets = (category: string): Docket[] => {
-    // For now, randomly select dockets for each category
-    // Later this can be replaced with hand-selected curation
-    const shuffled = [...MOCK_DOCKETS].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 12); // Show 12 dockets per section to simulate more content
+    // Create more mock data by duplicating and varying the existing dockets
+    const baseDockets = [...MOCK_DOCKETS];
+    const expandedDockets: Docket[] = [];
+    
+    // Generate variations of existing dockets to simulate more content
+    for (let i = 0; i < 4; i++) {
+      baseDockets.forEach((docket, index) => {
+        const variation = {
+          ...docket,
+          docket_govid: `${docket.docket_govid.slice(0, -2)}${String(index + i * 10).padStart(2, '0')}`,
+          docket_title: `${docket.docket_title} ${i > 0 ? `- Phase ${i + 1}` : ''}`,
+          opened_date: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().slice(0, 10),
+        };
+        expandedDockets.push(variation);
+      });
+    }
+    
+    return expandedDockets.slice(0, 4); // Show 4 dockets per section
   };
 
   const curatedSections = [
