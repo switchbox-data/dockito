@@ -105,7 +105,7 @@ const Home = () => {
           </div>
           
           <p className="text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Search and explore regulatory dockets, filings, and proceedings
+            Search and explore public utility commission dockets & documents
           </p>
         </div>
 
