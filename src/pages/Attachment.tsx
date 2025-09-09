@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight, ChevronUp, ChevronDown, Loader2, Calendar, User, FileText, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +26,8 @@ const LoadingGlyph = ({ size = 28 }: { size?: number }) => (
 const AttachmentPage = () => {
   const { docket_govid, attachment_uuid } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const safeDocket = docket_govid || location.pathname.split('/docket/')[1]?.split('/')[0] || "";
   
   const [attachment, setAttachment] = useState<any>(null);
   const [docket, setDocket] = useState<any>(null);
@@ -270,13 +272,13 @@ const AttachmentPage = () => {
           <span>State: New York</span>
           <ChevronRight className="h-4 w-4" />
           <button 
-            onClick={() => navigate(`/docket/${docket_govid}`)}
+            onClick={() => navigate(`/docket/${safeDocket}`)}
             className="hover:text-foreground transition-colors"
           >
-            Docket: {docket_govid}
+            Docket: {safeDocket}
           </button>
           <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground">Attachment: {attachment.attachment_title || 'Document'}</span>
+          <span className="text-foreground">Doc: {attachment.attachment_title || 'Document'}</span>
         </nav>
 
         {/* Attachment Info Card */}
