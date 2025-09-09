@@ -187,7 +187,7 @@ const AppSidebar = () => {
                   >
                     <div className="w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0" />
                     <span className="truncate">
-                      {docket.title.length > 25 ? `${docket.title.substring(0, 25)}...` : docket.title}
+                      {docket.govid}
                     </span>
                   </Link>
                 ))}
