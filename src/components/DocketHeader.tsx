@@ -193,7 +193,7 @@ export const DocketHeader = ({ docket }: Props) => {
   });
 
   return (
-    <header className="relative overflow-hidden rounded-xl border-gray-300 bg-white/95 p-6 shadow-[var(--shadow-elegant)]">
+    <header className="relative overflow-hidden rounded-xl border border-gray-300 bg-white/95 p-6 shadow-[var(--shadow-elegant)]">
       <div className="relative z-10 grid gap-4">
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-4">

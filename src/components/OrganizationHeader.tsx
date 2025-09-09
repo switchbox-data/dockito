@@ -21,7 +21,7 @@ export const OrganizationHeader = ({ orgName, docketCount, petitionedCount, file
   };
 
   return (
-    <header className="relative overflow-hidden rounded-xl border-gray-300 bg-white/95 p-6 shadow-[var(--shadow-elegant)] mb-6">
+    <header className="relative overflow-hidden rounded-xl border border-gray-300 bg-white/95 p-6 shadow-[var(--shadow-elegant)] mb-6">
       <div className="relative z-10 grid gap-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
