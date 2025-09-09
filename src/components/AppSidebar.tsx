@@ -53,10 +53,9 @@ const AppSidebar = () => {
       
       // Close notification expansion after animation completes
       const timer = setTimeout(() => {
-        console.log('🔄 Attempting to close sidebar - isNotificationExpanded:', isNotificationExpanded, 'isExpanded:', isExpanded);
+        console.log('🔄 Attempting to close sidebar');
         setIsNotificationExpanded(false);
         console.log('📋 Set isNotificationExpanded to false');
-        // Small delay to allow hover state to be checked before forcing collapse
         setTimeout(() => {
           console.log('🔒 Forcing isExpanded to false');
           setIsExpanded(false);
@@ -64,12 +63,23 @@ const AppSidebar = () => {
       }, 2000);
       
       return () => {
-        console.log('🧹 Cleaning up timers');
+        console.log('🧹 Cleaning up timers for:', animatingFavorite);
         clearTimeout(confettiTimer);
         clearTimeout(timer);
       };
     }
   }, [animatingFavorite, isMobile]);
+
+  // Handle closing sidebar when animation ends
+  useEffect(() => {
+    if (!animatingFavorite && isNotificationExpanded) {
+      console.log('🏁 Animation ended, closing sidebar');
+      setIsNotificationExpanded(false);
+      setTimeout(() => {
+        setIsExpanded(false);
+      }, 100);
+    }
+  }, [animatingFavorite, isNotificationExpanded]);
 
   // Fetch top 5 favorite dockets
   useEffect(() => {
