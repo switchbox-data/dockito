@@ -118,13 +118,15 @@ const DocketPage = () => {
   }
 
   return (
-    <main className="container py-8 space-y-6">
-      <DocketHeader 
-        docket={{ ...docket, petitioner_strings: petitioners ?? docket.petitioner_strings }} 
-        user={user}
-        isFavorited={docket_govid ? isFavorited(docket_govid) : false}
-        onToggleFavorite={() => docket_govid && toggleFavorite(docket_govid)}
-      />
+    <main className="container py-7">
+      <div className="mb-6">
+        <DocketHeader 
+          docket={{ ...docket, petitioner_strings: petitioners ?? docket.petitioner_strings }} 
+          user={user}
+          isFavorited={docket_govid ? isFavorited(docket_govid) : false}
+          onToggleFavorite={() => docket_govid && toggleFavorite(docket_govid)}
+        />
+      </div>
       {filingsLoading ? (
         <div className="text-muted-foreground">Loading filings…</div>
       ) : (

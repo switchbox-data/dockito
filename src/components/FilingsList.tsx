@@ -673,8 +673,8 @@ const isEndDateModified = useMemo(() => {
   };
 
   return (
-    <section ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="space-y-6 outline-none">
-      <div className="sticky top-14 z-30">
+    <section ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="outline-none">
+      <div className="sticky top-14 z-30 mb-4">
         <div className="relative border border-gray-300 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-[var(--shadow-elegant)] rounded-md mb-3">
           <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
             {/* Single flowing container - no justify-between so everything can be pushed */}
@@ -935,7 +935,7 @@ const isEndDateModified = useMemo(() => {
         </section>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         {filtered.map((f, idx) => {
           const isOpen = openIds.has(f.uuid);
           const isSelected = selectedIndex === idx;
