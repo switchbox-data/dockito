@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Search, TrendingUp, Zap, Building, FileText, Calendar, User, MapPin } from "lucide-react";
+import { Search, TrendingUp, Zap, Building, FileText, Calendar, User } from "lucide-react";
+import NYStateOutline from "@/components/NYStateOutline";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -79,32 +80,32 @@ const Home = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Cohesive Logo Header */}
-        <div className="text-center space-y-6">
-          <div className="flex items-center justify-center gap-4">
+        <div className="text-center space-y-8">
+          <div className="flex items-center justify-center gap-6">
             {/* Dockito Logo */}
-            <div className="flex items-center gap-3">
-              <div className="bg-primary rounded-lg p-2">
-                <FileText className="h-6 w-6 text-primary-foreground" />
+            <div className="flex items-center gap-4">
+              <div className="bg-primary rounded-xl p-3">
+                <FileText className="h-8 w-8 text-primary-foreground" />
               </div>
-              <span className="text-2xl font-bold text-foreground">dockito</span>
+              <span className="text-3xl font-bold text-foreground">dockito</span>
             </div>
             
             {/* Separator */}
-            <div className="w-px h-8 bg-border"></div>
+            <div className="w-px h-12 bg-border"></div>
             
             {/* New York PSC Branding */}
-            <div className="flex items-center gap-3">
-              <div className="bg-muted rounded-lg p-2">
-                <MapPin className="h-6 w-6 text-muted-foreground" />
+            <div className="flex items-center gap-4">
+              <div className="bg-muted rounded-xl p-3">
+                <NYStateOutline className="h-8 w-8 text-muted-foreground" />
               </div>
               <div className="text-left">
-                <div className="text-lg font-semibold text-foreground">New York</div>
-                <div className="text-sm text-muted-foreground">Public Service Commission</div>
+                <div className="text-xl font-bold text-foreground">New York</div>
+                <div className="text-base text-muted-foreground">Public Service Commission</div>
               </div>
             </div>
           </div>
           
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Search and explore regulatory dockets, filings, and proceedings
           </p>
         </div>
