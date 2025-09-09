@@ -117,9 +117,9 @@ const CommandKInner = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
           placeholder="Type a docket number, title, or organization..." 
           value={query} 
           onValueChange={setQuery}
-          className="border-0 px-0 shadow-none focus-visible:ring-0"
+          className="border-0 px-0 shadow-none focus-visible:ring-0 flex-1"
         />
-        <KeyboardShortcut keys={["mod", "k"]} className="ml-2 opacity-60" />
+        <KeyboardShortcut keys={["mod", "k"]} className="ml-3 opacity-60 shrink-0" />
       </div>
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
