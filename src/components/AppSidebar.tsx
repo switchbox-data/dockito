@@ -224,7 +224,7 @@ const AppSidebar = () => {
                         e.stopPropagation();
                         toggleFavorite(docket.govid);
                       }}
-                      className="opacity-0 group-hover/favorite:opacity-100 transition-opacity duration-200 p-1 hover:bg-red-100 rounded text-red-500 hover:text-red-700"
+                      className="opacity-0 group-hover/favorite:opacity-100 transition-opacity duration-200 p-1 hover:bg-muted rounded"
                       aria-label={`Remove ${docket.govid} from favorites`}
                     >
                       <X size={12} />
