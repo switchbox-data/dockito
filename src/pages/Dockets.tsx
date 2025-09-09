@@ -1473,7 +1473,7 @@ export default function DocketsPage() {
                                  {d.docket_type}
                                </Badge>
                              )}
-                           {d.docket_subtype && <Badge variant="outline" className="border-gray-300 bg-background group-hover:border-primary/30 transition-colors">{d.docket_subtype}</Badge>}
+                           {d.docket_subtype && d.docket_type !== "Commission Instituted New Case Proceeding" && <Badge variant="outline" className="border-gray-300 bg-background group-hover:border-primary/30 transition-colors">{d.docket_subtype}</Badge>}
                          </div>
                           <div className="flex flex-col items-end gap-1">
                             {d.industry && (
