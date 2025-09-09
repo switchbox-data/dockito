@@ -7,6 +7,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import DockitoLogo from "@/components/DockitoLogo";
 
 const Navbar = () => {
   const location = useLocation();
@@ -37,22 +38,35 @@ const Navbar = () => {
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 h-14 flex items-center justify-start">
-        <Breadcrumb>
-          <BreadcrumbList>
-            {breadcrumbItems.map((item, index) => (
-              <div key={index} className="flex items-center">
-                <BreadcrumbItem>
-                  {item.isLast ? (
-                    <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
-                  )}
-                </BreadcrumbItem>
-                {!item.isLast && <BreadcrumbSeparator />}
-              </div>
-            ))}
-          </BreadcrumbList>
-        </Breadcrumb>
+        <div className="flex items-center gap-4">
+          <DockitoLogo />
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">State:</span>
+            <span className="text-foreground font-medium">New York</span>
+            
+            {(location.pathname.startsWith("/org/") || location.pathname.startsWith("/docket/")) && (
+              <>
+                <BreadcrumbSeparator />
+                {location.pathname.startsWith("/org/") && (
+                  <>
+                    <span className="text-muted-foreground">Org:</span>
+                    <span className="text-foreground font-medium">
+                      {params.orgName ? decodeURIComponent(params.orgName) : "Organization"}
+                    </span>
+                  </>
+                )}
+                {location.pathname.startsWith("/docket/") && (
+                  <>
+                    <span className="text-muted-foreground">Docket:</span>
+                    <span className="text-foreground font-medium">
+                      {params.docket_govid || "Docket"}
+                    </span>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </nav>
   );
