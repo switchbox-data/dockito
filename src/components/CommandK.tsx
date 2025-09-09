@@ -1,34 +1,58 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { FolderOpen, Building, Home } from "lucide-react";
 
+// Create a context for Command K
+const CommandKContext = createContext<{
+  open: () => void;
+} | null>(null);
+
+export const useCommandK = () => {
+  const context = useContext(CommandKContext);
+  if (!context) {
+    throw new Error("useCommandK must be used within a CommandKProvider");
+  }
+  return context;
+};
+
+export const CommandKProvider = ({ children }: { children: React.ReactNode }) => {
+  const [open, setOpen] = useState(false);
+  
+  const openCommandK = () => setOpen(true);
+  
+  return (
+    <CommandKContext.Provider value={{ open: openCommandK }}>
+      {children}
+      <CommandKInner open={open} setOpen={setOpen} />
+    </CommandKContext.Provider>
+  );
+};
+
 const SEARCH_DELAY = 300;
 const sanitizeQuery = (s: string) => s.replace(/[,%]/g, " ").trim();
 
-const useModK = () => {
-  const [open, setOpen] = useState(false);
+const useModK = (open: boolean, setOpen: (open: boolean) => void) => {
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen(prev => !prev);
+        setOpen(!open);
       }
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
-  return { open, setOpen };
+  }, [open, setOpen]);
 };
 
-export const CommandK = () => {
-  const { open, setOpen } = useModK();
+const CommandKInner = ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) => {
   const [query, setQuery] = useState("");
   const [docketResults, setDocketResults] = useState<Array<{ docket_govid: string; docket_title: string | null }>>([]);
   const [orgResults, setOrgResults] = useState<Array<{ name: string; description: string | null }>>([]);
   const navigate = useNavigate();
+  useModK(open, setOpen);
 
   useEffect(() => {
     const q = sanitizeQuery(query);

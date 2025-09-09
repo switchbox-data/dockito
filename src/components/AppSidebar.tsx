@@ -1,13 +1,21 @@
 import { useState } from "react";
-import { Home, FolderOpen, Building } from "lucide-react";
+import { Home, FolderOpen, Building, Search } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useCommandK } from "@/components/CommandK";
 
 const AppSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const location = useLocation();
+  const { open: openCommandK } = useCommandK();
 
   const navigationItems = [
+    {
+      icon: Search,
+      label: "Search",
+      action: () => openCommandK(),
+      isButton: true,
+    },
     {
       icon: Home,
       label: "Home",
@@ -45,14 +53,37 @@ const AppSidebar = () => {
         onMouseLeave={() => setIsExpanded(false)}
       >
       <nav className="p-2 space-y-2">
-        {navigationItems.map((item) => {
+        {navigationItems.map((item, index) => {
           const IconComponent = item.icon;
-          const active = isActive(item.path);
+          const active = item.path ? isActive(item.path) : false;
+          
+          if (item.isButton) {
+            return (
+              <button
+                key={index}
+                onClick={item.action}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 w-full text-left",
+                  "hover:bg-muted/90 focus-visible:outline-none"
+                )}
+              >
+                <IconComponent className="h-5 w-5 flex-shrink-0" />
+                <span 
+                  className={cn(
+                    "transition-opacity duration-300 whitespace-nowrap",
+                    isExpanded ? "opacity-100" : "opacity-0"
+                  )}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          }
           
           return (
             <Link
               key={item.path}
-              to={item.path}
+              to={item.path!}
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",
