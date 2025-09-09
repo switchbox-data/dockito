@@ -1,17 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Home, FolderOpen, Building, Search, Star } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCommandK } from "@/components/CommandK";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFavorites } from "@/hooks/useFavorites";
+import { supabase } from "@/integrations/supabase/client";
 
 const AppSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [topFavoriteDockets, setTopFavoriteDockets] = useState<Array<{govid: string, title: string}>>([]);
   const location = useLocation();
   const { open: openCommandK } = useCommandK();
   const { user } = useAuth();
   const { favorites } = useFavorites();
+
+  // Fetch top 5 favorite dockets
+  useEffect(() => {
+    const fetchTopFavorites = async () => {
+      if (!user || favorites.length === 0) {
+        setTopFavoriteDockets([]);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('dockets')
+          .select('docket_govid, docket_title')
+          .in('docket_govid', favorites.slice(0, 5));
+
+        if (error) {
+          console.error('Error fetching favorite dockets:', error);
+          return;
+        }
+
+        const formattedDockets = (data || []).map(d => ({
+          govid: d.docket_govid,
+          title: d.docket_title || `Docket ${d.docket_govid}`
+        }));
+
+        setTopFavoriteDockets(formattedDockets);
+      } catch (err) {
+        console.error('Error fetching favorite dockets:', err);
+      }
+    };
+
+    fetchTopFavorites();
+  }, [user, favorites]);
 
   const navigationItems = [
     {
@@ -129,6 +164,33 @@ const AppSidebar = () => {
                 Favorites ({favorites.length})
               </span>
             </Link>
+            
+            {/* Top 5 favorite dockets */}
+            {isExpanded && topFavoriteDockets.length > 0 && (
+              <div className="ml-6 space-y-1 mt-2">
+                {topFavoriteDockets.map((docket) => (
+                  <Link
+                    key={docket.govid}
+                    to={`/docket/${docket.govid}`}
+                    className={cn(
+                      "flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-200 text-sm",
+                      "hover:bg-muted/90 focus-visible:outline-none",
+                      isActive(`/docket/${docket.govid}`) && "bg-muted/90 text-primary font-medium"
+                    )}
+                  >
+                    <div className="w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0" />
+                    <span className="truncate">
+                      {docket.title.length > 25 ? `${docket.title.substring(0, 25)}...` : docket.title}
+                    </span>
+                  </Link>
+                ))}
+                {favorites.length > 5 && (
+                  <div className="px-2 py-1 text-xs text-muted-foreground">
+                    +{favorites.length - 5} more
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
       </nav>
