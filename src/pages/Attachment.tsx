@@ -508,10 +508,28 @@ const AttachmentPage = () => {
         </div>
 
         {/* PDF Viewer with Sidebar */}
-        <div id="pdf-container" className="relative rounded-lg border bg-background flex">{/* Added id for fullscreen */}
+        <div 
+          id="pdf-container" 
+          className={`relative rounded-lg border bg-background flex ${
+            isFullscreen ? 'fullscreen-pdf-container' : ''
+          }`}
+          style={isFullscreen ? {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 9999,
+            borderRadius: 0,
+            border: 'none'
+          } : {}}
+        >
           {/* Thumbnail Sidebar */}
           {showThumbnails && (
-            <aside className="w-40 shrink-0 border-r bg-muted overflow-auto p-2" style={{ height: '800px' }}>
+            <aside 
+              className="w-40 shrink-0 border-r bg-muted overflow-auto p-2" 
+              style={{ height: isFullscreen ? '100vh' : '800px' }}
+            >
               {attachment && (
                 <Document 
                   key={attachment.uuid} 
@@ -540,8 +558,17 @@ const AttachmentPage = () => {
           )}
 
           {/* Main PDF Viewer */}
-          <div className="flex-1">
-            <div ref={viewerRef} className="h-[800px] overflow-auto p-4">
+          <div className="flex-1 flex flex-col">
+            <div 
+              ref={viewerRef} 
+              className={`overflow-auto p-4 flex-1 ${
+                isFullscreen ? 'flex items-center justify-center' : ''
+              }`}
+              style={{ 
+                height: isFullscreen ? '100vh' : '800px',
+                maxWidth: isFullscreen ? '100%' : undefined
+              }}
+            >
               {attachment && (
                 loadErr ? (
                   <div className="p-6 text-center">
@@ -555,18 +582,22 @@ const AttachmentPage = () => {
                     onLoadError={() => setLoadErr('Failed to load PDF')}
                     onSourceError={() => setLoadErr('Failed to load PDF')}
                     loading={<LoadingGlyph size={48} />}
-                    className="flex flex-col items-center"
+                    className={`flex flex-col items-center ${
+                      isFullscreen ? 'w-full max-w-5xl mx-auto' : ''
+                    }`}
                   >
                     {pagesArr.map((p) => (
                       <div
                         key={p}
                         ref={(el) => { pageRefs.current[p] = el; }}
                         data-page={p}
-                        className="mb-6 shadow-md"
+                        className={`mb-6 shadow-md ${
+                          isFullscreen ? 'max-w-none' : ''
+                        }`}
                       >
                         <Page 
                           pageNumber={p} 
-                          scale={scale} 
+                          scale={isFullscreen ? Math.max(scale, 1.2) : scale} 
                           renderTextLayer={false} 
                           renderAnnotationLayer={false}
                           className="border"
