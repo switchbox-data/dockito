@@ -270,6 +270,19 @@ const Home = () => {
           opened_date: "2024-11-27",
           current_status: "",
           petitioner: "Liberty Utilities (St. Lawrence Gas)"
+        },
+        {
+          uuid: "28b7d69c-5396-4155-81e9-986e656e8dc4",
+          docket_govid: "24-G-0462",
+          docket_title: "Proceeding on Motion of the Commission as to the Rates, Charges, Rules and Regulations of Central Hudson Gas & Electric Corporation for Gas Service.",
+          docket_description: null,
+          industry: "Gas",
+          docket_type: "Tariff",
+          docket_subtype: "Major rate",
+          petitioner_strings: ["Central Hudson Gas & Electric"],
+          opened_date: "2024-08-01",
+          current_status: "",
+          petitioner: "Central Hudson Gas & Electric"
         }
       ],
     },
@@ -403,6 +416,19 @@ const Home = () => {
           opened_date: "2024-11-27",
           current_status: "",
           petitioner: "Terra-Gen"
+        },
+        {
+          uuid: "2d2f4115-a64e-4dae-a7bd-9991a3896909",
+          docket_govid: "24-03065",
+          docket_title: "Application of Northland Power U.S. Projects, Inc. for a Permit Pursuant to Article VIII of the New York State Public Service Law to construct and operate the Gunn¿s Corners Solar Project, a 140 MW Major Renewable Solar Energy Facility to be located in the Towns of Brownville and Clayton, Jefferson County, New York.",
+          docket_description: null,
+          industry: "Facility Gen.",
+          docket_type: "Petition",
+          docket_subtype: "Article VIII Permit",
+          petitioner_strings: ["Northland Power U.S. Projects"],
+          opened_date: "2024-10-31",
+          current_status: "",
+          petitioner: "Northland Power U.S. Projects"
         }
       ],
     },
