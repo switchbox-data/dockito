@@ -53,19 +53,17 @@ export function useResponsiveLabels({
           : 0
         : 0;
 
-    // If Sort is currently hidden, we need extra space equal to the label width + margin
+    // Calculate space needed for labels without using current state
     const needForSort = sortLabelW + ml;
-    const extraIfSortHidden = showSortLabel ? 0 : needForSort;
+    const needForFilter = filterLabelW + ml;
 
-    // Showing Filter pushes everything to the right as well, so require the combined space
-    const needForBoth = extraIfSortHidden + filterLabelW + ml;
+    // Determine if we can show labels based on available space
+    const canShowSort = sortFullyVisible && availableRight >= needForSort;
+    const canShowFilter = canShowSort && availableRight >= (needForSort + needForFilter);
 
-    const nextShowSort = sortFullyVisible && availableRight >= extraIfSortHidden;
-    const nextShowFilter = nextShowSort && availableRight >= needForBoth;
-
-    setShowSortLabel(nextShowSort);
-    setShowFilterLabel(nextShowFilter);
-  }, [containerRef, sortButtonRef, showSortLabel]);
+    setShowSortLabel(canShowSort);
+    setShowFilterLabel(canShowFilter);
+  }, [containerRef, sortButtonRef]);
 
   useLayoutEffect(() => {
     // Initial computation after first paint
