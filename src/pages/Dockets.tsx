@@ -855,7 +855,7 @@ export default function DocketsPage() {
   };
 
   return (
-    <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-8 md:py-10 space-y-10 md:space-y-12">
+    <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-7 space-y-7">
       {lockedOrg ? (
         <OrganizationHeader 
           orgName={lockedOrg} 
@@ -866,7 +866,7 @@ export default function DocketsPage() {
           isLoading={isOrgStatsLoading}
         />
       ) : (
-        <header className="mt-6 md:mt-8 space-y-2 md:space-y-3">
+        <header className="space-y-3">
           <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
             <FolderOpen className="h-8 w-8 text-muted-foreground" />
             Dockets
