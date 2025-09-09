@@ -38,7 +38,7 @@ const Navbar = () => {
 
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 h-14 flex items-center justify-start">
+      <div className="w-full px-4 h-14 flex items-center justify-start">
         <div className="flex items-center gap-4">
           <DockitoLogo />
           <div className="flex items-center gap-2 text-sm">
