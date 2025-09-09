@@ -199,8 +199,8 @@ export default function OrganizationsPage() {
   };
 
   return (
-    <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-7 space-y-7">
-      <header className="space-y-3">
+    <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-7">
+      <header className="space-y-3 mb-6">
         <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
           <Building className="h-8 w-8 text-muted-foreground" />
           Organizations
@@ -208,7 +208,7 @@ export default function OrganizationsPage() {
         <p className="text-muted-foreground">New York Public Service Commission</p>
       </header>
 
-      <div className="sticky top-14 z-30">
+      <div className="sticky top-14 z-30 mb-4">
         <div className="relative border border-gray-300 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3">
             {/* Search */}
