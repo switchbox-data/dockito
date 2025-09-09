@@ -855,7 +855,7 @@ export default function DocketsPage() {
   };
 
   return (
-    <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-7 space-y-7">
+    <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-7">
       {lockedOrg ? (
         <OrganizationHeader 
           orgName={lockedOrg} 
@@ -866,7 +866,7 @@ export default function DocketsPage() {
           isLoading={isOrgStatsLoading}
         />
       ) : (
-        <header className="space-y-3">
+        <header className="space-y-3 mb-6">
           <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
             <FolderOpen className="h-8 w-8 text-muted-foreground" />
             Dockets
@@ -874,7 +874,7 @@ export default function DocketsPage() {
           <p className="text-muted-foreground">New York Public Service Commission</p>
         </header>
       )}
-      <div className="sticky top-14 z-30">
+      <div className="sticky top-14 z-30 mb-4">
         <div className="relative border border-gray-300 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-[var(--shadow-elegant)] rounded-md">
           <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
             {/* Single flowing container - no justify-between so everything can be pushed */}
@@ -1436,7 +1436,7 @@ export default function DocketsPage() {
         </div>
       </section>
 
-      <section aria-label="Results" className="space-y-4 mt-4">
+      <section aria-label="Results" className="space-y-4">
         {showCardSkeletons ? (
           <div className="grid gap-4 md:grid-cols-2">
             {Array.from({ length: 6 }).map((_, i) => (
