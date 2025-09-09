@@ -7,6 +7,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import { ChevronRight } from "lucide-react";
 import DockitoLogo from "@/components/DockitoLogo";
 
 const Navbar = () => {
@@ -46,7 +47,7 @@ const Navbar = () => {
             
             {(location.pathname.startsWith("/org/") || location.pathname.startsWith("/docket/")) && (
               <>
-                <span className="text-muted-foreground mx-2">•</span>
+                <ChevronRight className="h-4 w-4 text-muted-foreground mx-2" />
                 {location.pathname.startsWith("/org/") && (
                   <>
                     <span className="text-muted-foreground">Org:</span>
