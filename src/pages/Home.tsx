@@ -274,66 +274,6 @@ const Home = () => {
       ],
     },
     {
-      title: "Energy Facility Siting",
-      description: "Utility-scale generation and transmission applications",
-      icon: Zap,
-      viewAllPath: "/dockets?types=Petition&industries=Facility Gen.",
-      dockets: [
-        {
-          uuid: "970cc0e8-2f8f-4061-9de8-6def191f6a79",
-          docket_govid: "25-00726",
-          docket_title: "Application of Wild Rose Solar, LLC, for a Major Renewable Energy Facility Siting Permit, Pursuant to Article VIII of the New York State Public Service Law, to Develop, Design, Construct, Operate, Maintain, and Decommission a 100-Megawatt Solar Energy Facility Located in the Towns of Sullivan and Lenox, Madison County.",
-          docket_description: null,
-          industry: "Facility Gen.",
-          docket_type: "Petition",
-          docket_subtype: "Article VIII Permit",
-          petitioner_strings: ["Wild Rose Solar"],
-          opened_date: "2025-04-14",
-          current_status: "",
-          petitioner: "Wild Rose Solar"
-        },
-        {
-          uuid: "93914175-3252-497a-87bf-508deaf4533d",
-          docket_govid: "25-00560",
-          docket_title: "Application of Westerlo Solar LLC for a Major Renewable Energy Facility Siting Permit, Pursuant to Article VIII of the New York State Public Service Law, to Develop, Design, Construct, Operate, Maintain, and Decommission a 40-Megawatt Solar Energy Facility with a 10-Megawatt Co-Located BESS Located in the Town of Westerlo, Albany County.",
-          docket_description: null,
-          industry: "Facility Gen.",
-          docket_type: "Petition",
-          docket_subtype: "Article VIII Permit",
-          petitioner_strings: ["Westerlo Solar"],
-          opened_date: "2025-03-19",
-          current_status: "",
-          petitioner: "Westerlo Solar"
-        },
-        {
-          uuid: "9f745fcc-f0f1-472e-8129-e49adda1d088",
-          docket_govid: "25-00327",
-          docket_title: "Application of AES Clean Energy Development, LLC for a Permit, Pursuant to Article VIII of the New York State Public Service Law, to Construct and Operate the Gillie Brook Solar Project, a 60 MW Major Renewable Energy Facility, to be Located in the Towns of Camillus and Elbridge, Onondaga County.",
-          docket_description: null,
-          industry: "Facility Gen.",
-          docket_type: "Petition",
-          docket_subtype: "Article VIII Permit",
-          petitioner_strings: ["AES Clean Energy Development"],
-          opened_date: "2025-02-14",
-          current_status: "",
-          petitioner: "AES Clean Energy Development"
-        },
-        {
-          uuid: "233e1304-2393-4355-8ceb-f95b647e9964",
-          docket_govid: "24-03066",
-          docket_title: "Application of Terra-Gen LLC for a Permit Pursuant to Article VIII of the New York State Executive Law to construct and operate a 250 MW Major Renewable Energy Facility to be located in the Towns of Warren, Stark, German Flatts, Little Falls, and Danube, Herkimer County, and the Town of Springfield, Otsego County, New York.",
-          docket_description: null,
-          industry: "Facility Gen.",
-          docket_type: "Petition",
-          docket_subtype: "Article VIII Permit",
-          petitioner_strings: ["Terra-Gen"],
-          opened_date: "2024-11-27",
-          current_status: "",
-          petitioner: "Terra-Gen"
-        }
-      ],
-    },
-    {
       title: "Telecommunications & Policy",
       description: "Communications industry regulations and policies",
       icon: Building,
@@ -390,6 +330,66 @@ const Home = () => {
           docket_subtype: null,
           current_status: "",
           petitioner: "New York State Department of Public Service"
+        }
+      ],
+    },
+    {
+      title: "Energy Facility Siting",
+      description: "Utility-scale generation and transmission applications",
+      icon: Zap,
+      viewAllPath: "/dockets?types=Petition&industries=Facility Gen.",
+      dockets: [
+        {
+          uuid: "970cc0e8-2f8f-4061-9de8-6def191f6a79",
+          docket_govid: "25-00726",
+          docket_title: "Application of Wild Rose Solar, LLC, for a Major Renewable Energy Facility Siting Permit, Pursuant to Article VIII of the New York State Public Service Law, to Develop, Design, Construct, Operate, Maintain, and Decommission a 100-Megawatt Solar Energy Facility Located in the Towns of Sullivan and Lenox, Madison County.",
+          docket_description: null,
+          industry: "Facility Gen.",
+          docket_type: "Petition",
+          docket_subtype: "Article VIII Permit",
+          petitioner_strings: ["Wild Rose Solar"],
+          opened_date: "2025-04-14",
+          current_status: "",
+          petitioner: "Wild Rose Solar"
+        },
+        {
+          uuid: "93914175-3252-497a-87bf-508deaf4533d",
+          docket_govid: "25-00560",
+          docket_title: "Application of Westerlo Solar LLC for a Major Renewable Energy Facility Siting Permit, Pursuant to Article VIII of the New York State Public Service Law, to Develop, Design, Construct, Operate, Maintain, and Decommission a 40-Megawatt Solar Energy Facility with a 10-Megawatt Co-Located BESS Located in the Town of Westerlo, Albany County.",
+          docket_description: null,
+          industry: "Facility Gen.",
+          docket_type: "Petition",
+          docket_subtype: "Article VIII Permit",
+          petitioner_strings: ["Westerlo Solar"],
+          opened_date: "2025-03-19",
+          current_status: "",
+          petitioner: "Westerlo Solar"
+        },
+        {
+          uuid: "9f745fcc-f0f1-472e-8129-e49adda1d088",
+          docket_govid: "25-00327",
+          docket_title: "Application of AES Clean Energy Development, LLC for a Permit, Pursuant to Article VIII of the New York State Public Service Law, to Construct and Operate the Gillie Brook Solar Project, a 60 MW Major Renewable Energy Facility, to be Located in the Towns of Camillus and Elbridge, Onondaga County.",
+          docket_description: null,
+          industry: "Facility Gen.",
+          docket_type: "Petition",
+          docket_subtype: "Article VIII Permit",
+          petitioner_strings: ["AES Clean Energy Development"],
+          opened_date: "2025-02-14",
+          current_status: "",
+          petitioner: "AES Clean Energy Development"
+        },
+        {
+          uuid: "233e1304-2393-4355-8ceb-f95b647e9964",
+          docket_govid: "24-03066",
+          docket_title: "Application of Terra-Gen LLC for a Permit Pursuant to Article VIII of the New York State Executive Law to construct and operate a 250 MW Major Renewable Energy Facility to be located in the Towns of Warren, Stark, German Flatts, Little Falls, and Danube, Herkimer County, and the Town of Springfield, Otsego County, New York.",
+          docket_description: null,
+          industry: "Facility Gen.",
+          docket_type: "Petition",
+          docket_subtype: "Article VIII Permit",
+          petitioner_strings: ["Terra-Gen"],
+          opened_date: "2024-11-27",
+          current_status: "",
+          petitioner: "Terra-Gen"
         }
       ],
     },
@@ -462,8 +462,8 @@ const Home = () => {
                   <div className={cn(
                     "flex items-center justify-center w-8 h-8 rounded-full",
                     section.title === "Recent Rate Cases" && "bg-green-100 text-green-700",
-                    section.title === "Energy Facility Siting" && "bg-yellow-100 text-yellow-700", 
-                    section.title === "Telecommunications & Policy" && "bg-blue-100 text-blue-700"
+                    section.title === "Telecommunications & Policy" && "bg-blue-100 text-blue-700",
+                    section.title === "Energy Facility Siting" && "bg-yellow-100 text-yellow-700"
                   )}>
                     <IconComponent className="h-4 w-4" />
                   </div>
