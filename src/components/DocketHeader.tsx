@@ -227,9 +227,30 @@ export const DocketHeader = ({ docket, user, isFavorited = false, onToggleFavori
             <div className="border-t border-border/50 pt-4">
             <div className="flex items-start gap-3">
               <FolderOpen size={28} className="text-foreground/50 mt-0.5 shrink-0" />
-              <div>
+              <div className="flex-1">
                 <p className="text-xs text-muted-foreground leading-tight">Docket</p>
-                <h2 className="text-lg md:text-xl font-semibold leading-tight">{docket.docket_govid}</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg md:text-xl font-semibold leading-tight">{docket.docket_govid}</h2>
+                  {/* Favorite button - only show when logged in */}
+                  {user && onToggleFavorite && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={onToggleFavorite}
+                      className="h-9 w-9 p-0 hover:bg-yellow-50"
+                    >
+                      <Star
+                        size={20}
+                        className={cn(
+                          "transition-colors",
+                          isFavorited
+                            ? "text-yellow-500 fill-current"
+                            : "text-muted-foreground hover:text-yellow-500"
+                        )}
+                      />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
             </div>
@@ -244,25 +265,6 @@ export const DocketHeader = ({ docket, user, isFavorited = false, onToggleFavori
             </Badge>
             {docket.current_status && (
               <span className="px-3 py-1 rounded-full bg-accent/10 text-foreground text-xs border border-gray-300">{docket.current_status}</span>
-            )}
-            {/* Favorite button - only show when logged in */}
-            {user && onToggleFavorite && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onToggleFavorite}
-                className="h-9 w-9 p-0 hover:bg-yellow-50"
-              >
-                <Star
-                  size={20}
-                  className={cn(
-                    "transition-colors",
-                    isFavorited
-                      ? "text-yellow-500 fill-current"
-                      : "text-muted-foreground hover:text-yellow-500"
-                  )}
-                />
-              </Button>
             )}
           </div>
         </div>
