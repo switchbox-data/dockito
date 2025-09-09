@@ -171,6 +171,27 @@ export type Database = {
         }
         Relationships: []
       }
+      favorites: {
+        Row: {
+          created_at: string
+          docket_govid: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          docket_govid: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          docket_govid?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       fillings: {
         Row: {
           created_at: string
@@ -329,6 +350,30 @@ export type Database = {
           org_suffix?: string
           updated_at?: string
           uuid?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
         }
         Relationships: []
       }
