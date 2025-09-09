@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Home, FileText, Building } from "lucide-react";
+import { Home, FolderOpen, Building } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ const AppSidebar = () => {
       path: "/",
     },
     {
-      icon: FileText,
+      icon: FolderOpen,
       label: "Dockets",
       path: "/dockets",
     },
