@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight, ChevronUp, ChevronDown, Loader2, Calendar, User, FileText, Building, ChevronLeft, 
          Heart, DollarSign, Frown, Lock, Search, Flame, FileCheck, Gavel, Book, EyeOff, 
          FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, 
-         Lightbulb, HelpCircle, ZoomIn, ZoomOut, Sidebar } from "lucide-react";
+         Lightbulb, HelpCircle, ZoomIn, ZoomOut, Sidebar, Maximize, Minimize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +50,7 @@ const AttachmentPage = () => {
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [probing, setProbing] = useState(false);
   const [showThumbnails, setShowThumbnails] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Fetch attachment, docket, and filing data
   useEffect(() => {
@@ -153,6 +154,38 @@ const AttachmentPage = () => {
       navigate(`/docket/${safeDocket}/attachment/${nextAttachment.uuid}`);
     }
   };
+
+  // Fullscreen functionality
+  const toggleFullscreen = async () => {
+    if (!isFullscreen) {
+      try {
+        const pdfContainer = document.getElementById('pdf-container');
+        if (pdfContainer) {
+          await pdfContainer.requestFullscreen();
+          setIsFullscreen(true);
+        }
+      } catch (err) {
+        console.error('Failed to enter fullscreen:', err);
+      }
+    } else {
+      try {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      } catch (err) {
+        console.error('Failed to exit fullscreen:', err);
+      }
+    }
+  };
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   const buildFileUrl = (a: any, useOriginal = false) => {
     const hash = a?.blake2b_hash?.toString().trim();
@@ -456,12 +489,26 @@ const AttachmentPage = () => {
                 <Sidebar size={16} />
                 <span className="hidden sm:inline ml-1">Thumbnails</span>
               </Button>
+
+              <div className="h-6 w-px bg-border" />
+
+              {/* Fullscreen Toggle */}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggleFullscreen}
+              >
+                {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+                <span className="hidden sm:inline ml-1">
+                  {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                </span>
+              </Button>
             </div>
           </div>
         </div>
 
         {/* PDF Viewer with Sidebar */}
-        <div className="relative rounded-lg border bg-background flex">
+        <div id="pdf-container" className="relative rounded-lg border bg-background flex">{/* Added id for fullscreen */}
           {/* Thumbnail Sidebar */}
           {showThumbnails && (
             <aside className="w-40 shrink-0 border-r bg-muted overflow-auto p-2" style={{ height: '800px' }}>
