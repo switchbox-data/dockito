@@ -4,6 +4,7 @@ import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, C
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { FolderOpen, Building, Home } from "lucide-react";
+import KeyboardShortcut from "@/components/KeyboardShortcut";
 
 // Create a context for Command K
 const CommandKContext = createContext<{
@@ -111,7 +112,15 @@ const CommandKInner = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Type a docket number, title, or organization… (Cmd/Ctrl + K)" value={query} onValueChange={setQuery} />
+      <div className="flex items-center border-b px-4 py-2">
+        <CommandInput 
+          placeholder="Type a docket number, title, or organization..." 
+          value={query} 
+          onValueChange={setQuery}
+          className="border-0 px-0 shadow-none focus-visible:ring-0"
+        />
+        <KeyboardShortcut keys={["mod", "k"]} className="ml-2 opacity-60" />
+      </div>
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
         <CommandGroup heading="Commands">

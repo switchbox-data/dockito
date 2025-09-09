@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate, Link } from "react-router-dom";
 import { MOCK_DOCKETS, type Docket } from "@/data/mock";
+import KeyboardShortcut from "@/components/KeyboardShortcut";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -94,9 +95,10 @@ const Home = () => {
             onClick={openCommandK}
           >
             <Search className="mr-3 h-5 w-5 shrink-0 opacity-50" />
-            <span className="text-base text-muted-foreground">
-              Type a docket number, title, or organization... (Cmd/Ctrl + K)
+            <span className="text-base text-muted-foreground flex-1">
+              Type a docket number, title, or organization...
             </span>
+            <KeyboardShortcut keys={["mod", "k"]} className="ml-auto" />
           </div>
         </div>
 
