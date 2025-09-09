@@ -1436,7 +1436,7 @@ export default function DocketsPage() {
         </div>
       </section>
 
-      <section aria-label="Results" className="space-y-4">
+      <section aria-label="Results" className="space-y-4 mt-4">
         {showCardSkeletons ? (
           <div className="grid gap-4 md:grid-cols-2">
             {Array.from({ length: 6 }).map((_, i) => (
