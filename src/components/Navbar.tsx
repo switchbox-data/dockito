@@ -40,8 +40,15 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b border-gray-500 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="w-full px-4 h-14 flex items-center justify-start">
         <div className="flex items-center gap-4">
-          <DockitoLogo />
-          <div className="flex items-center gap-2 text-sm">
+          {/* Hoverable Dockito Logo */}
+          <div className="group flex items-center">
+            <DockitoLogo />
+            <span className="ml-2 text-foreground font-semibold opacity-0 w-0 overflow-hidden transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:w-auto group-hover:ml-2">
+              dockito
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out">
             <span className="text-muted-foreground">State:</span>
             <span className="text-foreground font-medium">New York</span>
             
