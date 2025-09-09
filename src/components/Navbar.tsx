@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronRight, User, LogOut } from "lucide-react";
 import DockitoLogo from "@/components/DockitoLogo";
+import { AuthModal } from "@/components/AuthModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -29,6 +30,7 @@ const Navbar = () => {
   const params = useParams();
   const { user, signOut } = useAuth();
   const [attachmentTitle, setAttachmentTitle] = useState<string>("");
+  const [showAuthModal, setShowAuthModal] = useState(false);
   
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -185,7 +187,7 @@ const Navbar = () => {
               <Button 
                 variant="default" 
                 size="sm" 
-                onClick={() => window.location.href = '/auth'}
+                onClick={() => setShowAuthModal(true)}
               >
                 Sign In
               </Button>
@@ -193,6 +195,12 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+      
+      {/* Auth Modal */}
+      <AuthModal 
+        open={showAuthModal} 
+        onOpenChange={setShowAuthModal} 
+      />
     </nav>
   );
 };
