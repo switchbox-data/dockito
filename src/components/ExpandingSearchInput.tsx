@@ -31,7 +31,7 @@ export const ExpandingSearchInput = forwardRef<HTMLInputElement, ExpandingSearch
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "transition-all duration-300 ease-in-out hover:border-primary/30",
+          "transition-all duration-300 ease-in-out border-gray-300 hover:border-gray-300 bg-white hover:bg-white",
           isFocused 
             ? "w-[min(40rem,75%)] min-w-[8rem] flex-shrink-0" 
             : "w-[10rem] md:w-[16rem] min-w-[8rem] flex-shrink",
