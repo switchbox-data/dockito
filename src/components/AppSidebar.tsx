@@ -86,7 +86,7 @@ const AppSidebar = () => {
       className={cn(
         isMobile 
           ? "h-full bg-white border-r border-gray-500" 
-          : "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75 border-r border-t border-gray-500 transition-all duration-300 ease-in-out z-40",
+          : "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75 border-r border-t border-gray-500 transition-all duration-150 ease-in-out z-40",
         !isMobile && (isExpanded ? "w-48" : "w-14")
       )}
     >
@@ -113,7 +113,7 @@ const AppSidebar = () => {
                   <IconComponent className="h-5 w-5 flex-shrink-0" />
                   <span 
                     className={cn(
-                      "transition-opacity duration-300 whitespace-nowrap",
+                      "transition-opacity duration-150 whitespace-nowrap",
                       (isMobile || isExpanded) ? "opacity-100" : "opacity-0"
                     )}
                   >
@@ -139,7 +139,7 @@ const AppSidebar = () => {
               <IconComponent className="h-5 w-5 flex-shrink-0" />
               <span 
                 className={cn(
-                  "transition-opacity duration-300 whitespace-nowrap",
+                  "transition-opacity duration-150 whitespace-nowrap",
                   (isMobile || isExpanded) ? "opacity-100" : "opacity-0"
                 )}
               >
@@ -164,7 +164,7 @@ const AppSidebar = () => {
               <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />
               <span 
                 className={cn(
-                  "transition-opacity duration-300 whitespace-nowrap",
+                  "transition-opacity duration-150 whitespace-nowrap",
                   (isMobile || isExpanded) ? "opacity-100" : "opacity-0"
                 )}
               >
