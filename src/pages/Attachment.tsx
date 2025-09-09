@@ -239,7 +239,7 @@ const AttachmentPage = () => {
         const available = viewerRef.current.clientWidth || 0;
         if (viewport?.width && available > 0) {
           const autoFitScale = Math.max(0.5, Math.min(2, available / viewport.width));
-          setScale(autoFitScale * 0.9); // Slightly smaller for margins
+          setScale(autoFitScale * 0.6); // More zoomed out - reduced from 0.9 to 0.6
         }
       }
     } catch (e) {
