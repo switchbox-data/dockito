@@ -122,7 +122,7 @@ const CommandKInner = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
           onValueChange={setQuery}
           className="flex h-12 w-full rounded-md bg-transparent py-3 text-base outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
         />
-        <KeyboardShortcut keys={["mod", "k"]} className="ml-3 opacity-60 shrink-0" />
+        <KeyboardShortcut keys={["mod", "k"]} className="ml-auto mr-8 opacity-60 shrink-0" />
       </div>
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
