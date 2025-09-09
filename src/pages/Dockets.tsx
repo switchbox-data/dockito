@@ -850,7 +850,7 @@ export default function DocketsPage() {
         </header>
       )}
       <div className="sticky top-14 z-30">
-        <div className="relative border bg-card/75 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-[var(--shadow-elegant)] rounded-md">
+        <div className="relative border bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75 shadow-[var(--shadow-elegant)] rounded-md">
           <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: "var(--gradient-subtle)" }} />
           <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
             {/* Single flowing container - no justify-between so everything can be pushed */}
