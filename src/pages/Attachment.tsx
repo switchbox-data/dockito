@@ -392,6 +392,9 @@ const AttachmentPage = () => {
                   <ChevronLeft size={16} />
                   <span className="hidden sm:inline ml-1">Prev Doc</span>
                 </Button>
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                  Doc {currentAttachmentIndex + 1} / {allAttachments.length}
+                </span>
                 <Button 
                   variant="outline" 
                   size="sm" 
