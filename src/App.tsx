@@ -10,6 +10,7 @@ import DocketPage from "./pages/Docket";
 import DocketsPage from "./pages/Dockets";
 import OrganizationsPage from "./pages/Organizations";
 import { CommandK } from "@/components/CommandK";
+import Navbar from "@/components/Navbar";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -37,15 +38,18 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <CommandK />
-        <Routes>
-          <Route path="/" element={<Navigate to="/dockets" replace />} />
-          <Route path="/dockets" element={<DocketsPage />} />
-          <Route path="/orgs" element={<OrganizationsPage />} />
-          <Route path="/docket/:docket_govid" element={<DocketPage />} />
-          <Route path="/org/:orgName" element={<DocketsPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <div className="min-h-screen">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Navigate to="/dockets" replace />} />
+            <Route path="/dockets" element={<DocketsPage />} />
+            <Route path="/orgs" element={<OrganizationsPage />} />
+            <Route path="/docket/:docket_govid" element={<DocketPage />} />
+            <Route path="/org/:orgName" element={<DocketsPage />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
