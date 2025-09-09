@@ -76,10 +76,10 @@ const Home = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="container mx-auto px-4 py-12">
+      <div className="max-w-4xl mx-auto space-y-16">
         {/* Cohesive Logo Header */}
-        <div className="text-center space-y-10">
+        <div className="text-center space-y-12 pt-8">
           <div className="flex items-center justify-center gap-8">
             {/* Dockito Logo */}
             <div className="flex items-center gap-5">
