@@ -41,7 +41,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className={cn("shrink-0 justify-between border-gray-300 hover:border-gray-300 bg-white hover:bg-white", className)}
+          className={cn("shrink-0 justify-between border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50", className)}
           disabled={disabled || months.length <= 1}
         >
           <span className="inline-flex items-center gap-2">
