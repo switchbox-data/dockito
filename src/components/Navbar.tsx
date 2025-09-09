@@ -94,17 +94,17 @@ const Navbar = () => {
           <ChevronRight className="h-4 w-4 text-muted-foreground mx-4" />
           
           {/* Breadcrumb content that aligns with main content */}
-          <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out min-w-0 flex-1">
-            <span className="text-muted-foreground">State:</span>
-            <span className="text-foreground font-medium">New York</span>
+          <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out min-w-0 flex-1 whitespace-nowrap overflow-hidden">
+            <span className="text-muted-foreground whitespace-nowrap">State:</span>
+            <span className="text-foreground font-medium whitespace-nowrap">New York</span>
             
             {(location.pathname.startsWith("/org/") || location.pathname.startsWith("/docket/")) && (
               <>
                 <ChevronRight className="h-4 w-4 text-muted-foreground mx-4 flex-shrink-0" />
                 {location.pathname.startsWith("/org/") && (
                   <>
-                    <span className="text-muted-foreground">Org:</span>
-                    <span className="text-foreground font-medium truncate">
+                    <span className="text-muted-foreground whitespace-nowrap">Org:</span>
+                    <span className="text-foreground font-medium truncate whitespace-nowrap">
                       {params.orgName ? decodeURIComponent(params.orgName) : 
                        location.pathname.split('/org/')[1] ? decodeURIComponent(location.pathname.split('/org/')[1]) : "Organization"}
                     </span>
@@ -112,19 +112,19 @@ const Navbar = () => {
                 )}
                 {location.pathname.includes("/attachment/") && (
                   <>
-                    <span className="text-muted-foreground">Docket:</span>
-                    <span className="text-foreground font-medium">
+                    <span className="text-muted-foreground whitespace-nowrap">Docket:</span>
+                    <span className="text-foreground font-medium whitespace-nowrap">
                       {location.pathname.split('/docket/')[1]?.split('/')[0] || "Unknown"}
                     </span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground mx-4 flex-shrink-0" />
-                    <span className="text-muted-foreground">Doc:</span>
-                    <span className="text-foreground font-medium relative max-w-[calc(100%-11ch)] truncate min-w-0 inline-block">{attachmentTitle || 'Document'}</span>
+                    <span className="text-muted-foreground whitespace-nowrap">Doc:</span>
+                    <span className="text-foreground font-medium whitespace-nowrap max-w-[200px] truncate inline-block">{attachmentTitle || 'Document'}</span>
                   </>
                 )}
                 {location.pathname.startsWith("/docket/") && !location.pathname.includes("/attachment/") && (
                   <>
-                    <span className="text-muted-foreground">Docket:</span>
-                    <span className="text-foreground font-medium">
+                    <span className="text-muted-foreground whitespace-nowrap">Docket:</span>
+                    <span className="text-foreground font-medium whitespace-nowrap">
                       {params.docket_govid ? params.docket_govid : 
                        location.pathname.split('/docket/')[1] ? location.pathname.split('/docket/')[1] : "Docket"}
                     </span>
