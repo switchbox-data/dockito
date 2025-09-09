@@ -54,9 +54,9 @@ const AppSidebar = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md transition-colors duration-200",
-                "hover:bg-muted",
-                active && "bg-muted text-primary font-medium"
+                "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200",
+                "hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40",
+                active && "bg-muted/90 text-primary font-medium ring-1 ring-ring/30"
               )}
             >
               <IconComponent className="h-5 w-5 flex-shrink-0" />
