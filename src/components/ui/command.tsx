@@ -26,7 +26,7 @@ interface CommandDialogProps extends DialogProps {}
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0 shadow-lg max-w-4xl w-[95vw]">
+      <DialogContent className="overflow-hidden p-0 shadow-lg max-w-3xl w-[90vw]">
         <DialogTitle className="sr-only">Command Palette</DialogTitle>
         <DialogDescription className="sr-only">Search dockets by ID or title</DialogDescription>
         <Command className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-3 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-14 [&_[cmdk-item]]:px-4 [&_[cmdk-item]]:py-4 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
