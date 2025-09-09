@@ -1492,7 +1492,7 @@ export default function DocketsPage() {
                            <div className="space-y-2 pb-2">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
+                                <div className="font-medium text-foreground">{d.docket_govid}</div>
                                 {/* Favorite button - only show when logged in */}
                                 {user && (
                                   <Button
