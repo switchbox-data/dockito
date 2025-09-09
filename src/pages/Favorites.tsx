@@ -214,105 +214,96 @@ const FavoritesPage = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid gap-4 md:gap-6">
+          <div className="grid gap-4 md:grid-cols-2">
             {dockets.map((d) => (
-              <Card
+              <NavLink
                 key={d.uuid}
-                className={cn(
-                  "transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background group bg-white/95"
-                )}
+                to={`/docket/${d.docket_govid}`}
+                aria-label={`Open docket ${d.docket_govid}`}
+                className="group block focus-visible:outline-none"
               >
-                <CardContent className="p-4 space-y-1">
-                  <div className="flex items-start justify-between gap-3 mb-1 pb-2">
-                    <div className="flex flex-wrap gap-1">
-                      {d.docket_type && (
-                        <Badge
-                          variant="outline"
-                          className={`inline-flex items-center gap-1.5 transition-colors ${getDocketTypeBadgeColors(d.docket_type)} ${getDocketTypeHoverBorderColors(d.docket_type)}`}
-                        >
-                          {(() => {
-                            const TypeIcon = getDocketTypeIcon(d.docket_type);
-                            const typeColor = getDocketTypeColor(d.docket_type);
-                            return <TypeIcon size={12} className={typeColor} />;
-                          })()}
-                          {d.docket_type}
-                        </Badge>
-                      )}
-                      {d.docket_subtype && (
-                        <Badge variant="outline" className="border-gray-300 bg-background group-hover:border-primary/30 transition-colors">
-                          {d.docket_subtype}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex flex-col items-end gap-1">
-                      {d.industry && (
-                        <Badge variant="outline" className="inline-flex items-center gap-1.5 border-gray-300 bg-background group-hover:border-primary/30 transition-colors">
-                          {(() => {
-                            const IndustryIcon = getIndustryIcon(d.industry);
-                            return <IndustryIcon size={12} className="text-muted-foreground" />;
-                          })()}
-                          {d.industry}
-                        </Badge>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          toggleFavorite(d.docket_govid);
-                        }}
-                        className="h-8 w-8 p-0 hover:bg-yellow-50"
-                      >
-                        <Star
-                          size={16}
-                          className={cn(
-                            "transition-colors",
-                            isFavorited(d.docket_govid)
-                              ? "text-yellow-500 fill-current"
-                              : "text-muted-foreground hover:text-yellow-500"
-                          )}
-                        />
-                      </Button>
-                    </div>
-                  </div>
-
-                  <NavLink to={`/docket/${d.docket_govid}`} className="block">
-                    <div className="space-y-2">
-                      <h3 className="font-semibold text-lg leading-tight group-hover:text-primary transition-colors">
-                        Docket {d.docket_govid}
-                      </h3>
-                      <p className="text-sm font-medium text-muted-foreground line-clamp-1">
-                        {d.docket_title}
-                      </p>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {d.docket_description}
-                      </p>
-
-                      <div className="flex items-center justify-between pt-2">
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar size={14} />
-                            <span>Opened {formatDate(d.opened_date)}</span>
-                          </div>
-                          {d.petitioner_strings && d.petitioner_strings.length > 0 && (
-                            <div className="flex items-center gap-1">
-                              <User size={14} />
-                              <span>{d.petitioner_strings[0]}</span>
-                              {d.petitioner_strings.length > 1 && (
-                                <span className="text-xs">+{d.petitioner_strings.length - 1} more</span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {d.current_status}
-                        </Badge>
+                <Card className="transition-colors hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background group bg-white/95">
+                  <CardContent className="p-4 space-y-1">
+                    <div className="flex items-start justify-between gap-3 mb-1 pb-2">
+                      <div className="flex flex-wrap gap-1">
+                        {d.docket_type && (
+                          <Badge variant="outline" className={`inline-flex items-center gap-1.5 transition-colors ${getDocketTypeBadgeColors(d.docket_type)} ${getDocketTypeHoverBorderColors(d.docket_type)}`}>
+                            {(() => {
+                              const TypeIcon = getDocketTypeIcon(d.docket_type);
+                              const typeColor = getDocketTypeColor(d.docket_type);
+                              return <TypeIcon size={12} className={typeColor} />;
+                            })()}
+                            {d.docket_type}
+                          </Badge>
+                        )}
+                        {d.docket_subtype && d.docket_type !== "Commission Instituted New Case Proceeding" && <Badge variant="outline" className="border-gray-300 bg-background group-hover:border-primary/30 transition-colors">{d.docket_subtype}</Badge>}
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        {d.industry && (
+                          <Badge variant="outline" className="inline-flex items-center gap-1.5 border-gray-300 bg-background group-hover:border-primary/30 transition-colors">
+                            {(() => {
+                              const IndustryIcon = getIndustryIcon(d.industry);
+                              return <IndustryIcon size={12} className="text-muted-foreground" />;
+                            })()}
+                            {d.industry}
+                          </Badge>
+                        )}
                       </div>
                     </div>
-                  </NavLink>
-                </CardContent>
-              </Card>
+                    
+                    <div className="border-t border-border/50 pt-3">
+                      <div className="space-y-2 pb-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="text-sm text-foreground font-semibold">{d.docket_govid}</div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFavorite(d.docket_govid);
+                              }}
+                              className="h-8 w-8 p-0 hover:bg-yellow-50"
+                            >
+                              <Star
+                                size={16}
+                                className={cn(
+                                  "transition-colors",
+                                  isFavorited(d.docket_govid)
+                                    ? "text-yellow-500 fill-current"
+                                    : "text-muted-foreground hover:text-yellow-500"
+                                )}
+                              />
+                            </Button>
+                          </div>
+                          <span className="text-xs text-muted-foreground">Opened: {formatDate(d.opened_date)}</span>
+                        </div>
+                        <h3 className="text-sm font-normal leading-snug text-foreground">{d.docket_title ?? "Untitled docket"}</h3>
+                      </div>
+                      
+                      <div className="border-t border-border/50 pt-3">
+                        <div className="flex flex-wrap gap-2">
+                          {d.petitioner_strings?.slice(0, 2).map(p => (
+                            <Badge
+                              key={p}
+                              variant="outline"
+                              className="text-xs cursor-pointer bg-background border-gray-300 hover:border-gray-400 transition-colors"
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/org/${encodeURIComponent(p)}`); }}
+                            >
+                              {p}
+                            </Badge>
+                          ))}
+                          {d.petitioner_strings && d.petitioner_strings.length > 2 && (
+                            <Badge variant="secondary" className="text-xs">+{d.petitioner_strings.length - 2} more</Badge>
+                          )}
+                          {d.current_status && <Badge variant="secondary">{d.current_status}</Badge>}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </NavLink>
             ))}
           </div>
         )}
