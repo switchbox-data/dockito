@@ -379,7 +379,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      safe_profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: never
+          full_name?: never
+          id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: never
+          full_name?: never
+          id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_profile: {
@@ -391,6 +414,10 @@ export type Database = {
           id: string
           updated_at: string
         }[]
+      }
+      is_profile_owner: {
+        Args: { profile_id: string }
+        Returns: boolean
       }
     }
     Enums: {
