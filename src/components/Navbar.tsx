@@ -53,16 +53,16 @@ const Navbar = () => {
           </div>
           
           {/* Breadcrumb arrow separator */}
-          <ChevronRight className="h-4 w-4 text-muted-foreground mx-2" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground mx-3" />
           
           {/* Breadcrumb content that aligns with main content */}
-          <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out pl-3">
+          <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out">
             <span className="text-muted-foreground">State:</span>
             <span className="text-foreground font-medium">New York</span>
             
             {(location.pathname.startsWith("/org/") || location.pathname.startsWith("/docket/")) && (
               <>
-                <ChevronRight className="h-4 w-4 text-muted-foreground mx-2" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground mx-3" />
                 {location.pathname.startsWith("/org/") && (
                   <>
                     <span className="text-muted-foreground">Org:</span>
