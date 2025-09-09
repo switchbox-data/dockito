@@ -98,7 +98,7 @@ export const CommandK = () => {
             }}
           >
             <FolderOpen className="mr-2 h-4 w-4" />
-            <span>View Dockets</span>
+            <span className="text-base font-semibold">View Dockets</span>
           </CommandItem>
           <CommandItem
             onSelect={() => {
@@ -107,7 +107,7 @@ export const CommandK = () => {
             }}
           >
             <Building2 className="mr-2 h-4 w-4" />
-            <span>View Organizations</span>
+            <span className="text-base font-semibold">View Organizations</span>
           </CommandItem>
         </CommandGroup>
         {orgResults.length > 0 && (
