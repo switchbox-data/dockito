@@ -52,7 +52,10 @@ const AppSidebar = () => {
       // Close notification expansion after animation completes
       const timer = setTimeout(() => {
         setIsNotificationExpanded(false);
-        setIsExpanded(false); // force collapse after celebration
+        // Small delay to allow hover state to be checked before forcing collapse
+        setTimeout(() => {
+          setIsExpanded(false);
+        }, 100);
       }, 2000);
       
       return () => {
