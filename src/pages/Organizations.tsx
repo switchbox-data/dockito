@@ -202,7 +202,7 @@ export default function OrganizationsPage() {
     <main ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown} className="container py-6 space-y-6">
       <header className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
-          <FolderOpen className="h-8 w-8 text-muted-foreground" />
+          <Building2 className="h-8 w-8 text-muted-foreground" />
           Organizations
         </h1>
         <p className="text-muted-foreground">New York Public Service Commission</p>
