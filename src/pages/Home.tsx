@@ -102,7 +102,6 @@ const Home = () => {
 
         {/* Curated Docket Sections */}
         <div className="space-y-8">
-          <h2 className="text-2xl font-semibold text-center">Curated Dockets</h2>
           {curatedSections.map((section) => {
             const IconComponent = section.icon;
             return (
