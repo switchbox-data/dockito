@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ChevronRight, ChevronUp, ChevronDown, Loader2, Calendar, User, FileText, Building } from "lucide-react";
+import { ChevronRight, ChevronUp, ChevronDown, Loader2, Calendar, User, FileText, Building, ChevronLeft, 
+         Heart, DollarSign, Frown, Lock, Search, Flame, FileCheck, Gavel, Book, EyeOff, 
+         FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, 
+         Lightbulb, HelpCircle, ZoomIn, ZoomOut, Sidebar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +47,7 @@ const AttachmentPage = () => {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [probing, setProbing] = useState(false);
+  const [showThumbnails, setShowThumbnails] = useState(false);
 
   // Fetch attachment, docket, and filing data
   useEffect(() => {
@@ -93,6 +97,31 @@ const AttachmentPage = () => {
     
     fetchData();
   }, [attachment_uuid, docket_govid]);
+
+  // Helper function to get icon for filing types
+  const getFilingTypeIcon = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'petition': return Heart;
+      case 'tariff': return DollarSign;
+      case 'complaint': return Frown;
+      case 'contract': return Lock;
+      case 'audit': return Search;
+      case 'incident': return Flame;
+      case 'compliance': return FileCheck;
+      case 'commission instituted new case proceeding': return Gavel;
+      case 'rulemaking': return Book;
+      case 'exception from disclosure': return EyeOff;
+      case 'company workpapers': return FileSpreadsheet;
+      case 'analysis': return TrendingUp;
+      case 'investigation': return Microscope;
+      case 'office policy and procedures': return Clipboard;
+      case 'authorization': return CheckCircle;
+      case 'complaint and inquiry': return MessageCircle;
+      case 'policy initiative': return Lightbulb;
+      default: return HelpCircle;
+    }
+  };
 
   const buildFileUrl = (a: any, useOriginal = false) => {
     const hash = a?.blake2b_hash?.toString().trim();
@@ -267,138 +296,189 @@ const AttachmentPage = () => {
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Attachment Info Card */}
+        {/* Attachment Info Card - Non-sticky */}
         <Card>
           <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="space-y-2">
-                <CardTitle className="text-xl">
+            <div className="flex items-center gap-4">
+              <div className="bg-primary rounded-lg p-3">
+                <FileText className="h-8 w-8 text-primary-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <CardTitle className="text-2xl font-bold leading-tight">
                   {attachment.attachment_title || 'Document'}
                 </CardTitle>
-                <CardDescription className="text-base">
-                  {docket.docket_title}
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => scrollToPage(page - 1)} disabled={page <= 1}>
-                  <ChevronUp size={16} />
-                </Button>
-                <span className="text-sm text-muted-foreground whitespace-nowrap">
-                  Page {page} / {numPages || 1}
-                </span>
-                <Button variant="outline" size="sm" onClick={() => scrollToPage(page + 1)} disabled={page >= numPages}>
-                  <ChevronDown size={16} />
-                </Button>
+                <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground flex-wrap">
+                  {filing?.organization_author_strings?.[0] && (
+                    <div className="flex items-center gap-1">
+                      <Building className="h-4 w-4" />
+                      <span>Filed by {filing.organization_author_strings[0]}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <span>in Docket {safeDocket}</span>
+                  </div>
+                  {filing && (
+                    <>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>on {formatDate(filing.filed_date)}</span>
+                      </div>
+                      {filing.filling_type && (
+                        <div className="flex items-center gap-1">
+                          {(() => {
+                            const IconComponent = getFilingTypeIcon(filing.filling_type);
+                            return <IconComponent className="h-4 w-4" />;
+                          })()}
+                          <span>{filing.filling_type}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {filing && (
-                <>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <div className="text-sm font-medium">Filed Date</div>
-                      <div className="text-sm text-muted-foreground">
-                        {formatDate(filing.filed_date)}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {filing.organization_author_strings?.[0] && (
-                    <div className="flex items-center gap-2">
-                      <Building className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <div className="text-sm font-medium">Filed By</div>
-                        <div className="text-sm text-muted-foreground">
-                          {filing.organization_author_strings[0]}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {filing.filling_type && (
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <div className="text-sm font-medium">Filing Type</div>
-                        <div className="text-sm text-muted-foreground">
-                          {filing.filling_type}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-              
-              {docket.industry && (
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary">{docket.industry}</Badge>
-                </div>
-              )}
-            </div>
-          </CardContent>
         </Card>
 
-        {/* PDF Viewer */}
-        <div className="relative rounded-lg border bg-background">
-          <div ref={viewerRef} className="h-[800px] overflow-auto p-4">
-            {attachment && (
-              loadErr ? (
-                <div className="p-6 text-center">
-                  <div className="text-muted-foreground">Unable to display this document.</div>
-                </div>
-              ) : (
-                <Document
-                  key={attachment.uuid}
-                  file={blobUrl ?? buildFileUrl(attachment)}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  onLoadError={() => setLoadErr('Failed to load PDF')}
-                  onSourceError={() => setLoadErr('Failed to load PDF')}
-                  loading={<LoadingGlyph size={48} />}
-                  className="flex flex-col items-center"
+        {/* Sticky Filter Bar */}
+        <div className="sticky top-14 z-30">
+          <div className="relative border border-gray-300 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-[var(--shadow-elegant)] rounded-md">
+            <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3">
+              {/* Document Navigation */}
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
+                  <ChevronLeft size={16} />
+                  <span className="hidden sm:inline ml-1">Prev Doc</span>
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
+                  <span className="hidden sm:inline mr-1">Next Doc</span>
+                  <ChevronRight size={16} />
+                </Button>
+              </div>
+
+              <div className="h-6 w-px bg-border" />
+
+              {/* Page Navigation */}
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => scrollToPage(page - 1)} disabled={page <= 1}>
+                  <ChevronUp size={16} />
+                  <span className="hidden sm:inline ml-1">Prev</span>
+                </Button>
+                <span className="text-sm text-muted-foreground whitespace-nowrap px-2">
+                  Page {page} / {numPages || 1}
+                </span>
+                <Button variant="outline" size="sm" onClick={() => scrollToPage(page + 1)} disabled={page >= numPages}>
+                  <span className="hidden sm:inline mr-1">Next</span>
+                  <ChevronDown size={16} />
+                </Button>
+              </div>
+
+              <div className="h-6 w-px bg-border" />
+
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setScale(s => Math.max(0.3, s - 0.1))}
+                >
+                  <ZoomOut size={16} />
+                  <span className="hidden sm:inline ml-1">Out</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setScale(s => Math.min(3, s + 0.1))}
+                >
+                  <ZoomIn size={16} />
+                  <span className="hidden sm:inline ml-1">In</span>
+                </Button>
+              </div>
+
+              <div className="h-6 w-px bg-border" />
+
+              {/* Thumbnail Sidebar Toggle */}
+              <Button 
+                variant={showThumbnails ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => setShowThumbnails(!showThumbnails)}
+              >
+                <Sidebar size={16} />
+                <span className="hidden sm:inline ml-1">Thumbnails</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* PDF Viewer with Sidebar */}
+        <div className="relative rounded-lg border bg-background flex">
+          {/* Thumbnail Sidebar */}
+          {showThumbnails && (
+            <aside className="w-40 shrink-0 border-r bg-muted overflow-auto p-2" style={{ height: '800px' }}>
+              {attachment && (
+                <Document 
+                  key={attachment.uuid} 
+                  file={blobUrl ?? buildFileUrl(attachment)} 
+                  loading={<LoadingGlyph size={24} />}
+                  onLoadError={() => {}} 
+                  onSourceError={() => {}}
+                  error={<></>}
                 >
                   {pagesArr.map((p) => (
-                    <div
-                      key={p}
-                      ref={(el) => { pageRefs.current[p] = el; }}
-                      data-page={p}
-                      className="mb-6 shadow-md"
-                    >
-                      <Page 
-                        pageNumber={p} 
-                        scale={scale} 
-                        renderTextLayer={false} 
-                        renderAnnotationLayer={false}
-                        className="border"
-                      />
+                    <div key={p} className="mb-3 text-center">
+                      <button
+                        onClick={() => scrollToPage(p)}
+                        className={`inline-block rounded border overflow-hidden ${p === page ? 'ring-2 ring-primary' : ''}`}
+                      >
+                        <div className="flex justify-center bg-background">
+                          <Page pageNumber={p} width={120} renderTextLayer={false} renderAnnotationLayer={false} />
+                        </div>
+                      </button>
+                      <div className="text-xs text-muted-foreground mt-1">{p}</div>
                     </div>
                   ))}
                 </Document>
-              )
-            )}
-          </div>
-          
-          {/* Zoom Controls */}
-          <div className="absolute bottom-4 right-4">
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setScale(s => Math.max(0.3, s - 0.1))}
-                aria-label="Zoom out"
-              >
-                -
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setScale(s => Math.min(3, s + 0.1))}
-                aria-label="Zoom in"
-              >
-                +
-              </Button>
+              )}
+            </aside>
+          )}
+
+          {/* Main PDF Viewer */}
+          <div className="flex-1">
+            <div ref={viewerRef} className="h-[800px] overflow-auto p-4">
+              {attachment && (
+                loadErr ? (
+                  <div className="p-6 text-center">
+                    <div className="text-muted-foreground">Unable to display this document.</div>
+                  </div>
+                ) : (
+                  <Document
+                    key={attachment.uuid}
+                    file={blobUrl ?? buildFileUrl(attachment)}
+                    onLoadSuccess={onDocumentLoadSuccess}
+                    onLoadError={() => setLoadErr('Failed to load PDF')}
+                    onSourceError={() => setLoadErr('Failed to load PDF')}
+                    loading={<LoadingGlyph size={48} />}
+                    className="flex flex-col items-center"
+                  >
+                    {pagesArr.map((p) => (
+                      <div
+                        key={p}
+                        ref={(el) => { pageRefs.current[p] = el; }}
+                        data-page={p}
+                        className="mb-6 shadow-md"
+                      >
+                        <Page 
+                          pageNumber={p} 
+                          scale={scale} 
+                          renderTextLayer={false} 
+                          renderAnnotationLayer={false}
+                          className="border"
+                        />
+                      </div>
+                    ))}
+                  </Document>
+                )
+              )}
             </div>
           </div>
         </div>
