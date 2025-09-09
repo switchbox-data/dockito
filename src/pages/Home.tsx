@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Search, TrendingUp, Zap, Building, FileText, Calendar, User, MapPin } from "lucide-react";
+import { Search, TrendingUp, Zap, Building, FileText, Calendar, User, MapPin, Heart, DollarSign, Frown, Lock, FileCheck, Flame, Gavel, Book, EyeOff, FileSpreadsheet, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, HelpCircle } from "lucide-react";
+import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
 
 type Docket = {
   uuid: string;
@@ -34,6 +35,178 @@ const Home = () => {
       bubbles: true,
     });
     document.dispatchEvent(event);
+  };
+
+  // Helper function to get appropriate icon for docket types (copied from Dockets page)
+  const getDocketTypeIcon = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'petition':
+        return Heart;
+      case 'tariff':
+        return DollarSign;
+      case 'complaint':
+        return Frown;
+      case 'contract':
+        return Lock;
+      case 'audit':
+        return Search;
+      case 'incident':
+        return Flame;
+      case 'compliance':
+        return FileCheck;
+      case 'commission instituted new case proceeding':
+        return Gavel;
+      case 'rulemaking':
+        return Book;
+      case 'exception from disclosure':
+        return EyeOff;
+      case 'company workpapers':
+        return FileSpreadsheet;
+      case 'analysis':
+        return TrendingUp;
+      case 'investigation':
+        return Microscope;
+      case 'office policy and procedures':
+        return Clipboard;
+      case 'authorization':
+        return CheckCircle;
+      case 'complaint and inquiry':
+        return MessageCircle;
+      case 'policy initiative':
+        return Lightbulb;
+      default:
+        return HelpCircle;
+    }
+  };
+
+  // Helper function to get semantic colors for docket types (copied from Dockets page)
+  const getDocketTypeColor = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'petition':
+        return 'text-blue-600';
+      case 'tariff':
+        return 'text-green-600';
+      case 'complaint':
+        return 'text-red-600';
+      case 'contract':
+        return 'text-purple-600';
+      case 'audit':
+        return 'text-orange-600';
+      case 'incident':
+        return 'text-red-500';
+      case 'compliance':
+        return 'text-emerald-600';
+      case 'commission instituted new case proceeding':
+        return 'text-indigo-600';
+      case 'rulemaking':
+        return 'text-slate-600';
+      case 'exception from disclosure':
+        return 'text-gray-600';
+      case 'company workpapers':
+        return 'text-amber-600';
+      case 'analysis':
+        return 'text-cyan-600';
+      case 'investigation':
+        return 'text-pink-600';
+      case 'office policy and procedures':
+        return 'text-teal-600';
+      case 'authorization':
+        return 'text-lime-600';
+      case 'complaint and inquiry':
+        return 'text-rose-600';
+      case 'policy initiative':
+        return 'text-yellow-600';
+      default:
+        return 'text-muted-foreground';
+    }
+  };
+
+  // Helper function to get subtle background and border colors for docket type badges (copied from Dockets page)
+  const getDocketTypeBadgeColors = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'petition':
+        return 'bg-blue-50 border-blue-200';
+      case 'tariff':
+        return 'bg-green-50 border-green-200';
+      case 'complaint':
+        return 'bg-red-50 border-red-200';
+      case 'contract':
+        return 'bg-purple-50 border-purple-200';
+      case 'audit':
+        return 'bg-orange-50 border-orange-200';
+      case 'incident':
+        return 'bg-red-50 border-red-300';
+      case 'compliance':
+        return 'bg-emerald-50 border-emerald-200';
+      case 'commission instituted new case proceeding':
+        return 'bg-indigo-50 border-indigo-200';
+      case 'rulemaking':
+        return 'bg-slate-50 border-slate-200';
+      case 'exception from disclosure':
+        return 'bg-gray-50 border-gray-200';
+      case 'company workpapers':
+        return 'bg-amber-50 border-amber-200';
+      case 'analysis':
+        return 'bg-cyan-50 border-cyan-200';
+      case 'investigation':
+        return 'bg-pink-50 border-pink-200';
+      case 'office policy and procedures':
+        return 'bg-teal-50 border-teal-200';
+      case 'authorization':
+        return 'bg-lime-50 border-lime-200';
+      case 'complaint and inquiry':
+        return 'bg-rose-50 border-rose-200';
+      case 'policy initiative':
+        return 'bg-yellow-50 border-yellow-200';
+      default:
+        return 'bg-gray-50 border-gray-200';
+    }
+  };
+
+  // Helper function to get darker border colors for docket type badge hover (copied from Dockets page)
+  const getDocketTypeHoverBorderColors = (type: string) => {
+    const typeKey = type?.toLowerCase().trim();
+    switch (typeKey) {
+      case 'petition':
+        return 'group-hover:border-blue-600';
+      case 'tariff':
+        return 'group-hover:border-green-600';
+      case 'complaint':
+        return 'group-hover:border-red-600';
+      case 'contract':
+        return 'group-hover:border-purple-600';
+      case 'audit':
+        return 'group-hover:border-orange-600';
+      case 'incident':
+        return 'group-hover:border-red-600';
+      case 'compliance':
+        return 'group-hover:border-emerald-600';
+      case 'commission instituted new case proceeding':
+        return 'group-hover:border-indigo-600';
+      case 'rulemaking':
+        return 'group-hover:border-slate-600';
+      case 'exception from disclosure':
+        return 'group-hover:border-gray-600';
+      case 'company workpapers':
+        return 'group-hover:border-amber-600';
+      case 'analysis':
+        return 'group-hover:border-cyan-600';
+      case 'investigation':
+        return 'group-hover:border-pink-600';
+      case 'office policy and procedures':
+        return 'group-hover:border-teal-600';
+      case 'authorization':
+        return 'group-hover:border-lime-600';
+      case 'complaint and inquiry':
+        return 'group-hover:border-rose-600';
+      case 'policy initiative':
+        return 'group-hover:border-yellow-600';
+      default:
+        return 'group-hover:border-gray-600';
+    }
   };
 
 
@@ -305,16 +478,24 @@ const Home = () => {
                           <div className="flex items-start justify-between gap-3 mb-1 pb-2">
                             <div className="flex flex-wrap gap-1">
                               {docket.docket_type && (
-                                <Badge variant="outline" className="inline-flex items-center gap-1.5 transition-colors border-gray-300 bg-background group-hover:border-primary/30">
-                                  <FileText size={12} className="text-muted-foreground" />
+                                <Badge variant="outline" className={`inline-flex items-center gap-1.5 transition-colors ${getDocketTypeBadgeColors(docket.docket_type)} ${getDocketTypeHoverBorderColors(docket.docket_type)}`}>
+                                  {(() => {
+                                    const TypeIcon = getDocketTypeIcon(docket.docket_type);
+                                    const typeColor = getDocketTypeColor(docket.docket_type);
+                                    return <TypeIcon size={12} className={typeColor} />;
+                                  })()}
                                   {docket.docket_type}
                                 </Badge>
                               )}
+                              {docket.docket_subtype && <Badge variant="outline" className="border-gray-300 bg-background group-hover:border-primary/30 transition-colors">{docket.docket_subtype}</Badge>}
                             </div>
                             <div className="flex flex-col items-end gap-1">
                               {docket.industry && (
                                 <Badge variant="outline" className="inline-flex items-center gap-1.5 border-gray-300 bg-background group-hover:border-primary/30 transition-colors">
-                                  <Building size={12} className="text-muted-foreground" />
+                                  {(() => {
+                                    const IndustryIcon = getIndustryIcon(docket.industry);
+                                    return <IndustryIcon size={12} className={getIndustryColor(docket.industry)} />;
+                                  })()}
                                   {docket.industry}
                                 </Badge>
                               )}
