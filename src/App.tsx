@@ -5,12 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import Index from "./pages/Index";
+import Home from "./pages/Home";
 import DocketPage from "./pages/Docket";
 import DocketsPage from "./pages/Dockets";
 import OrganizationsPage from "./pages/Organizations";
 import { CommandK } from "@/components/CommandK";
 import Navbar from "@/components/Navbar";
+import AppSidebar from "@/components/AppSidebar";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -40,15 +41,18 @@ const App = () => (
         <CommandK />
         <div className="min-h-screen">
           <Navbar />
-          <Routes>
-            <Route path="/" element={<Navigate to="/dockets" replace />} />
-            <Route path="/dockets" element={<DocketsPage />} />
-            <Route path="/orgs" element={<OrganizationsPage />} />
-            <Route path="/docket/:docket_govid" element={<DocketPage />} />
-            <Route path="/org/:orgName" element={<DocketsPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AppSidebar />
+          <main className="ml-14">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/dockets" element={<DocketsPage />} />
+              <Route path="/orgs" element={<OrganizationsPage />} />
+              <Route path="/docket/:docket_govid" element={<DocketPage />} />
+              <Route path="/org/:orgName" element={<DocketsPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
         </div>
       </BrowserRouter>
     </TooltipProvider>
