@@ -99,9 +99,6 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-500 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="w-full h-14 flex items-center">
-        {/* Sidebar Trigger */}
-        <SidebarTrigger className="ml-2" />
-        
         <div className="flex items-center w-full pl-4">
           {/* Hoverable Dockito Logo */}
           <div className="group flex items-center">
