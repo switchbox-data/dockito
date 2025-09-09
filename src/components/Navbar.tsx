@@ -118,7 +118,7 @@ const Navbar = () => {
                     </span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground mx-4 flex-shrink-0" />
                     <span className="text-muted-foreground whitespace-nowrap">Doc:</span>
-                    <span className="text-foreground font-medium whitespace-nowrap max-w-[200px] truncate inline-block">{attachmentTitle || 'Document'}</span>
+                    <span className="text-foreground font-medium whitespace-nowrap max-w-[400px] truncate inline-block">{attachmentTitle || 'Document'}</span>
                   </>
                 )}
                 {location.pathname.startsWith("/docket/") && !location.pathname.includes("/attachment/") && (
