@@ -676,9 +676,27 @@ const isEndDateModified = useMemo(() => {
     <section ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="mt-6 outline-none">
       <div className="sticky top-14 z-30">
         <div className="relative border border-gray-300 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-[var(--shadow-elegant)] rounded-md mb-3">
-          <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
-            {/* Single flowing container - no justify-between so everything can be pushed */}
-            <div className="flex items-center gap-2 md:gap-3 min-w-0 overflow-x-auto">
+          <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3">
+            {/* Single flowing container */}
+            <ExpandingSearchInput
+              ref={searchRef}
+              value={query}
+              onChange={setQuery}
+              placeholder="Search filings..."
+              containerRef={containerRef}
+            />
+
+            {/* Organizations filter */}
+            <Popover open={orgOpen} onOpenChange={setOrgOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="shrink-0 justify-between border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50">
+                    <span className="inline-flex items-center gap-2">
+                      <Users size={16} className="text-muted-foreground" />
+                      {selectedOrgs.length ? `Organizations (${selectedOrgs.length})` : "Organizations"}
+                    </span>
+                    <ChevronDown size={14} />
+                </Button>
+              </PopoverTrigger>
               <ExpandingSearchInput
                 ref={searchRef}
                 value={query}

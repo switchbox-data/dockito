@@ -876,16 +876,38 @@ export default function DocketsPage() {
       )}
       <div className="sticky top-14 z-30">
         <div className="relative border border-gray-300 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-[var(--shadow-elegant)] rounded-md">
-          <div ref={scrollerRef} className="relative z-10 p-2 md:p-3 overflow-x-auto min-w-0">
-            {/* Single flowing container - no justify-between so everything can be pushed */}
-            <div className="flex items-center gap-2 md:gap-3 min-w-0 overflow-x-auto">
-              <ExpandingSearchInput
-                ref={searchRef}
-                value={search}
-                onChange={setSearch}
-                placeholder="Search docket ID, description, or petitioner"
-                containerRef={containerRef}
-              />
+          <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3">
+            <ExpandingSearchInput
+              ref={searchRef}
+              value={search}
+              onChange={setSearch}
+              placeholder="Search docket ID, description, or petitioner"
+              containerRef={containerRef}
+            />
+
+            {/* Sort section */}
+            <Button ref={sortBtnRef} variant="outline" className="shrink-0 border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
+              {sortDir === "desc" ? "↓" : "↑"} Date
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter section */}
+      <div className="sticky top-14 z-30">
+        <div className="relative border border-gray-300 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-[var(--shadow-elegant)] rounded-md">
+          <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-x-auto min-w-0">
+            {/* Industry Filter */}
+            <Popover open={industryMenuOpen} onOpenChange={setIndustryMenuOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="shrink-0 justify-between border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50">
+                  <span className="inline-flex items-center gap-2">
+                    <Factory size={16} className="text-muted-foreground" />
+                    {selectedIndustries.length ? `Industries (${selectedIndustries.length})` : "Industries"}
+                  </span>
+                  <ChevronDown size={14} />
+                </Button>
+              </PopoverTrigger>
 
               {/* Filter label - dynamic: appears only when there's space (after Sort) */}
               <span
