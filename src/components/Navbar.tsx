@@ -38,17 +38,22 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-500 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="w-full px-4 h-14 flex items-center justify-start">
-        <div className="flex items-center gap-4">
+      <div className="w-full px-4 h-14 flex items-center">
+        <div className="flex items-center w-full">
           {/* Hoverable Dockito Logo */}
-          <div className="group flex items-center overflow-hidden">
-            <DockitoLogo />
-            <span className="text-foreground font-semibold transform translate-x-[-100%] opacity-0 transition-all duration-300 ease-in-out group-hover:translate-x-2 group-hover:opacity-100">
-              dockito
-            </span>
+          <div className="group flex items-center">
+            <div className="flex items-center">
+              <DockitoLogo />
+              <div className="overflow-hidden transition-all duration-300 ease-in-out group-hover:w-20 w-0">
+                <span className="text-foreground font-semibold whitespace-nowrap ml-2">
+                  dockito
+                </span>
+              </div>
+            </div>
           </div>
           
-          <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out">
+          {/* Breadcrumb content that gets pushed */}
+          <div className="flex items-center gap-2 text-sm ml-4 transition-all duration-300 ease-in-out">
             <span className="text-muted-foreground">State:</span>
             <span className="text-foreground font-medium">New York</span>
             
