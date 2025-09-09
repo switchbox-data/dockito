@@ -45,9 +45,9 @@ const AppContent = () => {
     <SidebarProvider defaultOpen={!isMobile}>
       <div className="min-h-screen flex w-full">
         {!isMobile && <AppSidebar />}
-        <div className={`flex flex-col flex-1 ${!isMobile ? 'ml-14' : ''}`}>
+        <div className={`flex flex-col flex-1`}>
           <Navbar />
-          <main className="flex-1">
+          <main className={`flex-1 ${!isMobile ? 'ml-14' : ''}`}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/dockets" element={<DocketsPage />} />

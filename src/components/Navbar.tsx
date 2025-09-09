@@ -1,7 +1,7 @@
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSidebar, SidebarTrigger } from "@/components/ui/sidebar";
+
 import {
   Breadcrumb,
   BreadcrumbList,
