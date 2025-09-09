@@ -35,6 +35,8 @@ const AttachmentPage = () => {
   const [attachment, setAttachment] = useState<any>(null);
   const [docket, setDocket] = useState<any>(null);
   const [filing, setFiling] = useState<any>(null);
+  const [allAttachments, setAllAttachments] = useState<any[]>([]);
+  const [currentAttachmentIndex, setCurrentAttachmentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -87,6 +89,20 @@ const AttachmentPage = () => {
         if (filingError) throw filingError;
         setFiling(filingData);
         
+        // Fetch all attachments in this filing for navigation
+        const { data: allAttachmentsData, error: attachmentsError } = await supabase
+          .from('attachments')
+          .select('*')
+          .eq('parent_filling_uuid', attachmentData.parent_filling_uuid)
+          .order('created_at');
+        
+        if (attachmentsError) throw attachmentsError;
+        setAllAttachments(allAttachmentsData || []);
+        
+        // Find current attachment index
+        const currentIndex = (allAttachmentsData || []).findIndex(att => att.uuid === attachment_uuid);
+        setCurrentAttachmentIndex(currentIndex >= 0 ? currentIndex : 0);
+        
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Failed to load attachment');
@@ -120,6 +136,21 @@ const AttachmentPage = () => {
       case 'complaint and inquiry': return MessageCircle;
       case 'policy initiative': return Lightbulb;
       default: return HelpCircle;
+    }
+  };
+
+  // Navigation functions
+  const goToPrevAttachment = () => {
+    if (currentAttachmentIndex > 0) {
+      const prevAttachment = allAttachments[currentAttachmentIndex - 1];
+      navigate(`/docket/${safeDocket}/attachment/${prevAttachment.uuid}`);
+    }
+  };
+
+  const goToNextAttachment = () => {
+    if (currentAttachmentIndex < allAttachments.length - 1) {
+      const nextAttachment = allAttachments[currentAttachmentIndex + 1];
+      navigate(`/docket/${safeDocket}/attachment/${nextAttachment.uuid}`);
     }
   };
 
@@ -315,7 +346,13 @@ const AttachmentPage = () => {
                     </div>
                   )}
                   <div className="flex items-center gap-1">
-                    <span>in Docket {safeDocket}</span>
+                    <span>in </span>
+                    <button 
+                      onClick={() => navigate(`/docket/${safeDocket}`)}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      Docket {safeDocket}
+                    </button>
                   </div>
                   {filing && (
                     <>
@@ -346,11 +383,21 @@ const AttachmentPage = () => {
             <div className="relative z-10 flex items-center gap-2 md:gap-3 p-2 md:p-3">
               {/* Document Navigation */}
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={goToPrevAttachment}
+                  disabled={currentAttachmentIndex <= 0}
+                >
                   <ChevronLeft size={16} />
                   <span className="hidden sm:inline ml-1">Prev Doc</span>
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={goToNextAttachment}
+                  disabled={currentAttachmentIndex >= allAttachments.length - 1}
+                >
                   <span className="hidden sm:inline mr-1">Next Doc</span>
                   <ChevronRight size={16} />
                 </Button>
