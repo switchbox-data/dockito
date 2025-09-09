@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { Home, FolderOpen, Building, Search } from "lucide-react";
+import { Home, FolderOpen, Building, Search, Star } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCommandK } from "@/components/CommandK";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/hooks/useFavorites";
 
 const AppSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const location = useLocation();
   const { open: openCommandK } = useCommandK();
+  const { user } = useAuth();
+  const { favorites } = useFavorites();
 
   const navigationItems = [
     {
@@ -102,6 +106,31 @@ const AppSidebar = () => {
             </Link>
           );
         })}
+        
+        {/* Favorites section */}
+        {user && (
+          <>
+            <div className="h-px bg-border my-4" />
+            <Link
+              to="/favorites"
+              className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200",
+                "hover:bg-muted/90 focus-visible:outline-none",
+                isActive("/favorites") && "bg-muted/90 text-primary font-medium"
+              )}
+            >
+              <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />
+              <span 
+                className={cn(
+                  "transition-opacity duration-300 whitespace-nowrap",
+                  isExpanded ? "opacity-100" : "opacity-0"
+                )}
+              >
+                Favorites ({favorites.length})
+              </span>
+            </Link>
+          </>
+        )}
       </nav>
       </div>
     </div>

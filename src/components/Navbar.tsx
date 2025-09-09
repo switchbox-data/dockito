@@ -1,5 +1,7 @@
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSidebar, SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -8,14 +10,34 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronRight, User, LogOut } from "lucide-react";
 import DockitoLogo from "@/components/DockitoLogo";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const location = useLocation();
   const params = useParams();
+  const { user, signOut } = useAuth();
   const [attachmentTitle, setAttachmentTitle] = useState<string>("");
+  
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error('Failed to sign out');
+    } else {
+      toast.success('Signed out successfully');
+    }
+  };
   
   // Fetch attachment title when on attachment route
   useEffect(() => {
@@ -77,6 +99,9 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-500 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="w-full h-14 flex items-center">
+        {/* Sidebar Trigger */}
+        <SidebarTrigger className="ml-2" />
+        
         <div className="flex items-center w-full pl-4">
           {/* Hoverable Dockito Logo */}
           <div className="group flex items-center">
@@ -98,7 +123,7 @@ const Navbar = () => {
             <span className="text-muted-foreground whitespace-nowrap">State:</span>
             <span className="text-foreground font-medium whitespace-nowrap">New York</span>
             
-            {(location.pathname.startsWith("/org/") || location.pathname.startsWith("/docket/")) && (
+            {(location.pathname.startsWith("/org/") || location.pathname.startsWith("/docket/") || location.pathname === "/favorites") && (
               <>
                 <ChevronRight className="h-4 w-4 text-muted-foreground mx-4 flex-shrink-0" />
                 {location.pathname.startsWith("/org/") && (
@@ -108,6 +133,12 @@ const Navbar = () => {
                       {params.orgName ? decodeURIComponent(params.orgName) : 
                        location.pathname.split('/org/')[1] ? decodeURIComponent(location.pathname.split('/org/')[1]) : "Organization"}
                     </span>
+                  </>
+                )}
+                {location.pathname === "/favorites" && (
+                  <>
+                    <span className="text-muted-foreground whitespace-nowrap">Page:</span>
+                    <span className="text-foreground font-medium whitespace-nowrap">Favorites</span>
                   </>
                 )}
                 {location.pathname.includes("/attachment/") && (
@@ -131,6 +162,36 @@ const Navbar = () => {
                   </>
                 )}
               </>
+            )}
+          </div>
+          
+          {/* Auth Controls */}
+          <div className="flex items-center gap-2 pr-4">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span className="hidden sm:inline">{user.email}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button 
+                variant="default" 
+                size="sm" 
+                onClick={() => window.location.href = '/auth'}
+              >
+                Sign In
+              </Button>
             )}
           </div>
         </div>

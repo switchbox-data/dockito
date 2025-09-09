@@ -5,15 +5,20 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import Home from "./pages/Home";
 import DocketPage from "./pages/Docket";
 import DocketsPage from "./pages/Dockets";
 import OrganizationsPage from "./pages/Organizations";
 import AttachmentPage from "./pages/Attachment";
+import Auth from "./pages/Auth";
+import Favorites from "./pages/Favorites";
 import { CommandKProvider } from "@/components/CommandK";
 import Navbar from "@/components/Navbar";
 import AppSidebar from "@/components/AppSidebar";
 import NotFound from "./pages/NotFound";
+
 const queryClient = new QueryClient();
 
 // Scroll to top component
@@ -35,29 +40,37 @@ const ScrollToTop = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <CommandKProvider>
-          <ScrollToTop />
-          <div className="min-h-screen">
-            <Navbar />
-            <AppSidebar />
-            <main className="ml-14">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/dockets" element={<DocketsPage />} />
-                <Route path="/orgs" element={<OrganizationsPage />} />
-                <Route path="/docket/:docket_govid" element={<DocketPage />} />
-                <Route path="/docket/:docket_govid/attachment/:attachment_uuid" element={<AttachmentPage />} />
-                <Route path="/org/:orgName" element={<DocketsPage />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-          </div>
-        </CommandKProvider>
-      </BrowserRouter>
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <CommandKProvider>
+            <ScrollToTop />
+            <SidebarProvider>
+              <div className="min-h-screen flex w-full">
+                <AppSidebar />
+                <div className="flex flex-col flex-1">
+                  <Navbar />
+                  <main className="flex-1">
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/dockets" element={<DocketsPage />} />
+                      <Route path="/orgs" element={<OrganizationsPage />} />
+                      <Route path="/docket/:docket_govid" element={<DocketPage />} />
+                      <Route path="/docket/:docket_govid/attachment/:attachment_uuid" element={<AttachmentPage />} />
+                      <Route path="/org/:orgName" element={<DocketsPage />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/favorites" element={<Favorites />} />
+                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </main>
+                </div>
+              </div>
+            </SidebarProvider>
+          </CommandKProvider>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
