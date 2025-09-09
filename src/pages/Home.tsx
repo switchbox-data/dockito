@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, TrendingUp, Zap, Building, FileText, Calendar, User, MapPin, Heart, DollarSign, Frown, Lock, FileCheck, Flame, Gavel, Book, EyeOff, FileSpreadsheet, Microscope, Clipboard, CheckCircle, MessageCircle, Lightbulb, HelpCircle } from "lucide-react";
 import { getIndustryIcon, getIndustryColor } from "@/utils/industryIcons";
+import { cn } from "@/lib/utils";
 
 type Docket = {
   uuid: string;
@@ -458,8 +459,13 @@ const Home = () => {
               <div key={section.title} className="space-y-4">
                 {/* Section Header */}
                 <div className="flex items-center gap-3 border-b pb-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted">
-                    <IconComponent className="h-4 w-4 text-muted-foreground" />
+                  <div className={cn(
+                    "flex items-center justify-center w-8 h-8 rounded-full",
+                    section.title === "Recent Rate Cases" && "bg-green-100 text-green-700",
+                    section.title === "Major Energy Projects" && "bg-yellow-100 text-yellow-700", 
+                    section.title === "Telecommunications & Policy" && "bg-blue-100 text-blue-700"
+                  )}>
+                    <IconComponent className="h-4 w-4" />
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold">{section.title}</h3>
