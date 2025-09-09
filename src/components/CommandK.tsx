@@ -1,6 +1,8 @@
 import { useEffect, useState, createContext, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Command as CommandPrimitive } from "cmdk";
+import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { FolderOpen, Building, Home } from "lucide-react";
@@ -112,12 +114,13 @@ const CommandKInner = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <div className="flex items-center border-b px-4 py-2">
-        <CommandInput 
+      <div className="flex items-center border-b px-4 py-2" cmdk-input-wrapper="">
+        <Search className="mr-3 h-5 w-5 shrink-0 opacity-50" />
+        <CommandPrimitive.Input
           placeholder="Type a docket number, title, or organization..." 
           value={query} 
           onValueChange={setQuery}
-          className="border-0 px-0 shadow-none focus-visible:ring-0 flex-1"
+          className="flex h-12 w-full rounded-md bg-transparent py-3 text-base outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
         />
         <KeyboardShortcut keys={["mod", "k"]} className="ml-3 opacity-60 shrink-0" />
       </div>
