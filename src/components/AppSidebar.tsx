@@ -98,24 +98,27 @@ const AppSidebar = () => {
           
           if (item.isButton) {
             return (
-              <button
-                key={index}
-                onClick={item.action}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 w-full text-left",
-                  "hover:bg-muted/90 focus-visible:outline-none"
-                )}
-              >
-                <IconComponent className="h-5 w-5 flex-shrink-0" />
-                <span 
+              <div key={index}>
+                <button
+                  onClick={item.action}
                   className={cn(
-                    "transition-opacity duration-300 whitespace-nowrap",
-                    isExpanded ? "opacity-100" : "opacity-0"
+                    "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 w-full text-left",
+                    "hover:bg-muted/90 focus-visible:outline-none"
                   )}
                 >
-                  {item.label}
-                </span>
-              </button>
+                  <IconComponent className="h-5 w-5 flex-shrink-0" />
+                  <span 
+                    className={cn(
+                      "transition-opacity duration-300 whitespace-nowrap",
+                      isExpanded ? "opacity-100" : "opacity-0"
+                    )}
+                  >
+                    {item.label}
+                  </span>
+                </button>
+                {/* Separator after search */}
+                <div className="h-px bg-border my-4" />
+              </div>
             );
           }
           
