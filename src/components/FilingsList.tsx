@@ -764,7 +764,7 @@ const isEndDateModified = useMemo(() => {
                         <h3 className="text-sm font-semibold">Filing Types</h3>
                         <div className="flex items-center gap-2">
                           {selectedTypes.length > 0 && (
-                            <Button variant="outline" size="sm" onClick={() => setSelectedTypes([])}>Clear</Button>
+                            <Button variant="outline" size="sm" className="border-gray-300 hover:border-gray-300" onClick={() => setSelectedTypes([])}>Clear</Button>
                           )}
                           <Button size="sm" onClick={() => setTypeOpen(false)}>Done</Button>
                         </div>
