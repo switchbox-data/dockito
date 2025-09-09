@@ -26,8 +26,13 @@ const Navbar = () => {
     } else if (location.pathname.startsWith("/org/")) {
       const orgName = params.orgName ? decodeURIComponent(params.orgName) : "Organization";
       items.push({ label: `Organization: ${orgName}`, href: location.pathname, isLast: true });
+    } else if (location.pathname.includes("/attachment/")) {
+      // Handle attachment route: /docket/{docket_govid}/attachment/{attachment_uuid}
+      const docketId = location.pathname.split('/docket/')[1]?.split('/')[0] || "Docket";
+      items.push({ label: `Docket: ${docketId}`, href: `/docket/${docketId}`, isLast: false });
+      items.push({ label: `Doc: Loading...`, href: location.pathname, isLast: true });
     } else if (location.pathname.startsWith("/docket/")) {
-      const docketId = params.docket_govid || "Docket";
+      const docketId = params.docket_govid || location.pathname.split('/docket/')[1] || "Docket";
       items.push({ label: `Docket: ${docketId}`, href: location.pathname, isLast: true });
     }
     
@@ -72,7 +77,18 @@ const Navbar = () => {
                     </span>
                   </>
                 )}
-                {location.pathname.startsWith("/docket/") && (
+                {location.pathname.includes("/attachment/") && (
+                  <>
+                    <span className="text-muted-foreground">Docket:</span>
+                    <span className="text-foreground font-medium">
+                      {location.pathname.split('/docket/')[1]?.split('/')[0] || "Unknown"}
+                    </span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground mx-4" />
+                    <span className="text-muted-foreground">Doc:</span>
+                    <span className="text-foreground font-medium">Document</span>
+                  </>
+                )}
+                {location.pathname.startsWith("/docket/") && !location.pathname.includes("/attachment/") && (
                   <>
                     <span className="text-muted-foreground">Docket:</span>
                     <span className="text-foreground font-medium">

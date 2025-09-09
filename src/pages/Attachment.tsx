@@ -267,20 +267,6 @@ const AttachmentPage = () => {
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>State: New York</span>
-          <ChevronRight className="h-4 w-4" />
-          <button 
-            onClick={() => navigate(`/docket/${safeDocket}`)}
-            className="hover:text-foreground transition-colors"
-          >
-            Docket: {safeDocket}
-          </button>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground">Doc: {attachment.attachment_title || 'Document'}</span>
-        </nav>
-
         {/* Attachment Info Card */}
         <Card>
           <CardHeader>
