@@ -63,7 +63,12 @@ export const useFavorites = () => {
         }
 
         // Optimistic UI update for instant feedback; realtime will reconcile
-        setFavorites(prev => (prev.includes(docketGovId) ? prev : [...prev, docketGovId]));
+        console.log('useFavorites: Adding favorite optimistically', docketGovId);
+        setFavorites(prev => {
+          const newFavorites = prev.includes(docketGovId) ? prev : [...prev, docketGovId];
+          console.log('useFavorites: New favorites after add:', newFavorites);
+          return newFavorites;
+        });
         toast.success('Added to favorites');
       return true;
     } catch (err) {
@@ -91,7 +96,12 @@ export const useFavorites = () => {
       }
 
       // Optimistic UI update for instant feedback; realtime will reconcile
-      setFavorites(prev => prev.filter(id => id !== docketGovId));
+      console.log('useFavorites: Removing favorite optimistically', docketGovId);
+      setFavorites(prev => {
+        const newFavorites = prev.filter(id => id !== docketGovId);
+        console.log('useFavorites: New favorites after remove:', newFavorites);
+        return newFavorites;
+      });
       toast.success('Removed from favorites');
       return true;
     } catch (err) {

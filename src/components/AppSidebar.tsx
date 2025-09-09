@@ -19,13 +19,21 @@ const AppSidebar = () => {
 
   // Fetch top 5 favorite dockets
   useEffect(() => {
+    console.log('AppSidebar: useEffect triggered', { 
+      user: !!user, 
+      favoritesLength: favorites.length, 
+      favorites: favorites.slice(0, 5) 
+    });
+    
     const fetchTopFavorites = async () => {
       if (!user || favorites.length === 0) {
+        console.log('AppSidebar: Clearing top favorites (no user or empty favorites)');
         setTopFavoriteDockets([]);
         return;
       }
 
       try {
+        console.log('AppSidebar: Fetching docket details for favorites:', favorites.slice(0, 5));
         const { data, error } = await supabase
           .from('dockets')
           .select('docket_govid, docket_title')
@@ -41,6 +49,7 @@ const AppSidebar = () => {
           title: d.docket_title || `Docket ${d.docket_govid}`
         }));
 
+        console.log('AppSidebar: Setting top favorite dockets:', formattedDockets);
         setTopFavoriteDockets(formattedDockets);
       } catch (err) {
         console.error('Error fetching favorite dockets:', err);
