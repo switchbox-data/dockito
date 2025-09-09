@@ -146,7 +146,7 @@ export const CommandK = () => {
                 <FolderOpen className="mr-0 h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
                 <div className="flex flex-col items-start gap-1 min-w-0">
                   <span className="text-base font-semibold">{d.docket_govid}</span>
-                  <span className="text-muted-foreground text-sm line-clamp-1">{d.docket_title}</span>
+                  <span className="text-muted-foreground text-sm line-clamp-2 leading-relaxed">{d.docket_title}</span>
                 </div>
               </CommandItem>
             ))}
