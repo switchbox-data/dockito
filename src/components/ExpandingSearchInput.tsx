@@ -1,5 +1,4 @@
 import { forwardRef, useState } from "react";
-import { Command } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -26,28 +25,22 @@ export const ExpandingSearchInput = forwardRef<HTMLInputElement, ExpandingSearch
     };
 
     return (
-      <div className="relative flex items-center">
-        <Input
-          ref={ref}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className={cn(
-            "transition-all duration-300 ease-in-out border-gray-300 hover:border-gray-300 bg-white hover:bg-white pr-10",
-            isFocused 
-              ? "w-[min(40rem,75%)] min-w-[8rem] flex-shrink-0" 
-              : "w-[10rem] md:w-[16rem] min-w-[8rem] flex-shrink",
-            className
-          )}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onKeyDown={handleKeyDown}
-        />
-        <div className="absolute right-3 flex items-center gap-1 text-muted-foreground text-xs">
-          <Command size={12} />
-          <span className="font-mono">/</span>
-        </div>
-      </div>
+      <Input
+        ref={ref}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={cn(
+          "transition-all duration-300 ease-in-out border-gray-300 hover:border-gray-300 bg-white hover:bg-white",
+          isFocused 
+            ? "w-[min(40rem,75%)] min-w-[8rem] flex-shrink-0" 
+            : "w-[10rem] md:w-[16rem] min-w-[8rem] flex-shrink",
+          className
+        )}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onKeyDown={handleKeyDown}
+      />
     );
   }
 );
