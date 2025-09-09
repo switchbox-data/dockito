@@ -37,7 +37,7 @@ const Navbar = () => {
   const breadcrumbItems = getBreadcrumbItems();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-600 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <nav className="sticky top-0 z-50 border-b border-gray-500 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="w-full px-4 h-14 flex items-center justify-start">
         <div className="flex items-center gap-4">
           <DockitoLogo />
