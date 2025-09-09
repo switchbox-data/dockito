@@ -45,7 +45,7 @@ const Navbar = () => {
             <div className="flex items-center">
               <DockitoLogo />
               <div className="overflow-hidden transition-all duration-300 ease-in-out group-hover:w-20 w-0">
-                <span className="text-foreground font-semibold whitespace-nowrap ml-2">
+                <span className="text-foreground font-semibold whitespace-nowrap ml-2 mr-1">
                   dockito
                 </span>
               </div>
@@ -53,7 +53,7 @@ const Navbar = () => {
           </div>
           
           {/* Breadcrumb arrow separator */}
-          <ChevronRight className="h-4 w-4 text-muted-foreground mx-3" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground ml-2 mr-3" />
           
           {/* Breadcrumb content that aligns with main content */}
           <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out">
