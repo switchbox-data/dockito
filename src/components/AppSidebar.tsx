@@ -35,7 +35,7 @@ const AppSidebar = () => {
   return (
     <div
       className={cn(
-        "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-background/65 backdrop-blur supports-[backdrop-filter]:bg-background/65 border-r border-t border-gray-300 transition-all duration-300 ease-in-out z-40",
+        "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/75 border-r border-t border-gray-300 transition-all duration-300 ease-in-out z-40",
         isExpanded ? "w-48" : "w-14"
       )}
     >
