@@ -280,11 +280,13 @@ export default function DocketsPage() {
   const [industryMenuOpen, setIndustryMenuOpen] = useState(false);
   const [subtypeSearch, setSubtypeSearch] = useState("");
   const [petOpen, setPetOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<"date" | "filings">("date");
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
   const [dateOpen, setDateOpen] = useState(false);
   const [relationshipTypes, setRelationshipTypes] = useState<string[]>([]);
   const [relationshipOpen, setRelationshipOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -579,7 +581,7 @@ export default function DocketsPage() {
   } = useInfiniteQuery<any[], Error>({
     queryKey: [
       "dockets-list",
-      { org: lockedOrg ?? null, search: normalizedSearch, industries: selectedIndustries.join(","), docketTypes: docketTypes.join(","), docketSubtypes: docketSubtypes.join(","), petitioners: petitioners.join(","), sortDir, start: startDate?.toISOString(), end: endDate?.toISOString(), relationshipTypes: relationshipTypes.join(",") },
+      { org: lockedOrg ?? null, search: normalizedSearch, industries: selectedIndustries.join(","), docketTypes: docketTypes.join(","), docketSubtypes: docketSubtypes.join(","), petitioners: petitioners.join(","), sortBy, sortDir, start: startDate?.toISOString(), end: endDate?.toISOString(), relationshipTypes: relationshipTypes.join(",") },
     ],
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => (lastPage?.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined),
@@ -596,7 +598,7 @@ export default function DocketsPage() {
             filters: {
               startDate: startDate && !isNaN(startDate.getTime()) ? format(startOfMonth(startDate), "yyyy-MM-dd") : undefined,
               endDate: endDate && !isNaN(endDate.getTime()) ? format(endOfMonth(endDate), "yyyy-MM-dd") : undefined,
-              sortBy: 'opened_date',
+              sortBy: sortBy === "date" ? "opened_date" : "filing_count",
               sortOrder: sortDir,
               industries: selectedIndustries.length ? selectedIndustries : undefined,
               docketTypes: docketTypes.length ? docketTypes : undefined,
@@ -629,12 +631,20 @@ export default function DocketsPage() {
         return filteredDockets;
       }
       
-      // For main page, use regular query
+      // For main page, use regular query with filings count if needed
       let query = supabase
         .from("dockets")
-        .select("*")
-        .order("opened_date", { ascending: sortDir === "asc" })
-        .range(offset, offset + PAGE_SIZE - 1);
+        .select(sortBy === "filings" ? "*, filings:filing_events(count)" : "*");
+        
+      // Apply sorting
+      if (sortBy === "date") {
+        query = query.order("opened_date", { ascending: sortDir === "asc" });
+      } else {
+        // For filings count, we'll sort after getting the data since we need the count
+        query = query.order("opened_date", { ascending: false }); // default order for now
+      }
+      
+      query = query.range(offset, offset + PAGE_SIZE - 1);
 
       if (normalizedSearch) {
         query = query.or(
@@ -691,6 +701,15 @@ export default function DocketsPage() {
       // (docketTypes filtering is now handled server-side)
 
       // Client-side petitioner filtering is no longer needed since it's now handled server-side
+
+      // Apply sorting for filing count if needed
+      if (sortBy === "filings") {
+        dockets.sort((a, b) => {
+          const countA = a.filings?.[0]?.count || 0;
+          const countB = b.filings?.[0]?.count || 0;
+          return sortDir === "desc" ? countB - countA : countA - countB;
+        });
+      }
 
       return dockets;
     },
@@ -843,7 +862,7 @@ export default function DocketsPage() {
     if (e.key.toLowerCase() === 'p') { if (lockedOrg) return; e.preventDefault(); setPetOpen(true); return; }
     if (e.key.toLowerCase() === 'i') { e.preventDefault(); setIndustryMenuOpen(true); return; }
     if (e.key.toLowerCase() === 't') { e.preventDefault(); setTypeMenuOpen(true); return; }
-    if (e.key.toLowerCase() === 's') { e.preventDefault(); setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); return; }
+    if (e.key.toLowerCase() === 's') { e.preventDefault(); setSortOpen(true); return; }
     if (e.key.toLowerCase() === 'd') { e.preventDefault(); setDateOpen(true); return; }
 
     const cols = window.matchMedia('(min-width: 768px)').matches ? 2 : 1;
@@ -1231,10 +1250,98 @@ export default function DocketsPage() {
                 Sort:
               </span>
 
-              {/* Sort */}
-              <Button ref={sortBtnRef} variant="outline" className="border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50" onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}>
-                {sortDir === "desc" ? "↓" : "↑"} Date
-              </Button>
+              {/* Sort Dropdown */}
+              <Popover open={sortOpen} onOpenChange={setSortOpen}>
+                <PopoverTrigger asChild>
+                  <Button 
+                    ref={sortBtnRef} 
+                    variant="outline" 
+                    className="border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50 justify-between min-w-[120px]"
+                  >
+                    <span>
+                      {sortBy === "date" 
+                        ? (sortDir === "desc" ? "Newest" : "Oldest")
+                        : (sortDir === "desc" ? "Most filings" : "Least filings")
+                      }
+                    </span>
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-0 bg-white border border-gray-300 shadow-lg z-50" align="end">
+                  <Command>
+                    <CommandList>
+                      <CommandGroup heading="By Date">
+                        <CommandItem
+                          onSelect={() => {
+                            setSortBy("date");
+                            setSortDir("desc");
+                            setSortOpen(false);
+                          }}
+                          className={cn(
+                            "cursor-pointer hover:bg-muted/90",
+                            sortBy === "date" && sortDir === "desc" && "bg-muted text-primary font-medium"
+                          )}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span>Newest first</span>
+                            {sortBy === "date" && sortDir === "desc" && <Check className="h-4 w-4" />}
+                          </div>
+                        </CommandItem>
+                        <CommandItem
+                          onSelect={() => {
+                            setSortBy("date");
+                            setSortDir("asc");
+                            setSortOpen(false);
+                          }}
+                          className={cn(
+                            "cursor-pointer hover:bg-muted/90",
+                            sortBy === "date" && sortDir === "asc" && "bg-muted text-primary font-medium"
+                          )}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span>Oldest first</span>
+                            {sortBy === "date" && sortDir === "asc" && <Check className="h-4 w-4" />}
+                          </div>
+                        </CommandItem>
+                      </CommandGroup>
+                      <CommandGroup heading="By Activity">
+                        <CommandItem
+                          onSelect={() => {
+                            setSortBy("filings");
+                            setSortDir("desc");
+                            setSortOpen(false);
+                          }}
+                          className={cn(
+                            "cursor-pointer hover:bg-muted/90",
+                            sortBy === "filings" && sortDir === "desc" && "bg-muted text-primary font-medium"
+                          )}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span>Most filings</span>
+                            {sortBy === "filings" && sortDir === "desc" && <Check className="h-4 w-4" />}
+                          </div>
+                        </CommandItem>
+                        <CommandItem
+                          onSelect={() => {
+                            setSortBy("filings");
+                            setSortDir("asc");
+                            setSortOpen(false);
+                          }}
+                          className={cn(
+                            "cursor-pointer hover:bg-muted/90",
+                            sortBy === "filings" && sortDir === "asc" && "bg-muted text-primary font-medium"
+                          )}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span>Least filings</span>
+                            {sortBy === "filings" && sortDir === "asc" && <Check className="h-4 w-4" />}
+                          </div>
+                        </CommandItem>
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             </div>
           </div>
