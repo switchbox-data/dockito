@@ -505,10 +505,33 @@ const AttachmentPage = () => {
                 <CardTitle className="text-2xl font-bold leading-tight">
                   {attachment.attachment_title || 'Document'}
                 </CardTitle>
-                <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground flex-wrap">
+                
+                {/* Separator below title */}
+                <div className="h-px bg-border mt-4 mb-4" />
+                
+                {/* Metadata items - bigger and reorganized */}
+                <div className="space-y-3 text-base">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-muted-foreground" />
+                    <span>Docket </span>
+                    <button 
+                      onClick={() => navigate(`/docket/${safeDocket}`)}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {safeDocket}
+                    </button>
+                  </div>
+                  
+                  {filing && (
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5 text-muted-foreground" />
+                      <span>Filed on {formatDate(filing.filed_date)}</span>
+                    </div>
+                  )}
+                  
                   {filing?.organization_author_strings?.[0] && (
-                    <div className="flex items-center gap-1">
-                      <Building className="h-4 w-4" />
+                    <div className="flex items-center gap-2">
+                      <Building className="h-5 w-5 text-muted-foreground" />
                       <span>Filed by</span>
                       <Badge 
                         variant="outline" 
@@ -517,21 +540,6 @@ const AttachmentPage = () => {
                       >
                         {filing.organization_author_strings[0]}
                       </Badge>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1">
-                    <span>in </span>
-                    <button 
-                      onClick={() => navigate(`/docket/${safeDocket}`)}
-                      className="text-primary hover:underline font-medium"
-                    >
-                      Docket {safeDocket}
-                    </button>
-                  </div>
-                  {filing && (
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>on {formatDate(filing.filed_date)}</span>
                     </div>
                   )}
                 </div>
