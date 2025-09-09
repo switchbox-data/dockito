@@ -110,7 +110,7 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-500 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="w-full h-14 flex items-center">
-        <div className="flex items-center w-full pl-4">
+        <div className={`flex items-center w-full ${isMobile ? 'pl-4' : 'pl-4'}`}>
           {/* Mobile menu trigger */}
           {isMobile && (
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -119,7 +119,7 @@ const Navbar = () => {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-64">
+              <SheetContent side="left" className="p-0 w-64 bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75">
                 <AppSidebar />
               </SheetContent>
             </Sheet>
