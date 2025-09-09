@@ -46,14 +46,14 @@ export const CommandK = () => {
           .from("dockets")
           .select("docket_govid,docket_title")
           .or(`docket_govid.ilike.%${q}%,docket_title.ilike.%${q}%`)
-          .limit(10);
+          .limit(5);
 
         // Search organizations
         const { data: orgData, error: orgError } = await supabase
           .from("organizations")
           .select("name,description")
           .or(`name.ilike.%${q}%,description.ilike.%${q}%`)
-          .limit(10);
+          .limit(5);
 
         if (cancelled) return;
 
