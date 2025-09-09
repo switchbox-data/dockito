@@ -186,16 +186,6 @@ const Home = () => {
             );
           })}
         </div>
-
-        {/* Quick Links */}
-        <div className="flex justify-center gap-4">
-          <Button variant="outline" onClick={() => navigate("/dockets")}>
-            Browse All Dockets
-          </Button>
-          <Button variant="outline" onClick={() => navigate("/orgs")}>
-            View Organizations
-          </Button>
-        </div>
       </div>
     </div>
   );
