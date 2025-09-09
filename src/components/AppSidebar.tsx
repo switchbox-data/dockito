@@ -68,6 +68,10 @@ const AppSidebar = () => {
           console.log('Favorites changed:', payload);
           // The favorites will be refetched by the useFavorites hook
           // which will trigger the useEffect above to update topFavoriteDockets
+          // Use setTimeout to avoid React queue issues
+          setTimeout(() => {
+            // Force a re-render by updating a dummy state if needed
+          }, 0);
         }
       )
       .subscribe();

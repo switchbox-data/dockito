@@ -62,7 +62,7 @@ export const useFavorites = () => {
         return false;
       }
 
-      setFavorites(prev => [...prev, docketGovId]);
+      // Don't update state here - let real-time updates handle it
       toast.success('Added to favorites');
       return true;
     } catch (err) {
@@ -89,7 +89,7 @@ export const useFavorites = () => {
         return false;
       }
 
-      setFavorites(prev => prev.filter(id => id !== docketGovId));
+      // Don't update state here - let real-time updates handle it
       toast.success('Removed from favorites');
       return true;
     } catch (err) {
@@ -137,18 +137,21 @@ export const useFavorites = () => {
         (payload) => {
           console.log('Real-time favorites change:', payload);
           
-          if (payload.eventType === 'INSERT') {
-            const newFavorite = payload.new as { docket_govid: string };
-            setFavorites(prev => {
-              if (!prev.includes(newFavorite.docket_govid)) {
-                return [...prev, newFavorite.docket_govid];
-              }
-              return prev;
-            });
-          } else if (payload.eventType === 'DELETE') {
-            const removedFavorite = payload.old as { docket_govid: string };
-            setFavorites(prev => prev.filter(id => id !== removedFavorite.docket_govid));
-          }
+          // Use setTimeout to defer state updates and avoid React queue issues
+          setTimeout(() => {
+            if (payload.eventType === 'INSERT') {
+              const newFavorite = payload.new as { docket_govid: string };
+              setFavorites(prev => {
+                if (!prev.includes(newFavorite.docket_govid)) {
+                  return [...prev, newFavorite.docket_govid];
+                }
+                return prev;
+              });
+            } else if (payload.eventType === 'DELETE') {
+              const removedFavorite = payload.old as { docket_govid: string };
+              setFavorites(prev => prev.filter(id => id !== removedFavorite.docket_govid));
+            }
+          }, 0);
         }
       )
       .subscribe();
