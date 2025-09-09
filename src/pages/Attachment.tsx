@@ -375,7 +375,14 @@ const AttachmentPage = () => {
                   {filing?.organization_author_strings?.[0] && (
                     <div className="flex items-center gap-1">
                       <Building className="h-4 w-4" />
-                      <span>Filed by {filing.organization_author_strings[0]}</span>
+                      <span>Filed by</span>
+                      <Badge 
+                        variant="outline" 
+                        className="bg-background border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
+                        onClick={() => navigate(`/org/${encodeURIComponent(filing.organization_author_strings[0])}`)}
+                      >
+                        {filing.organization_author_strings[0]}
+                      </Badge>
                     </div>
                   )}
                   <div className="flex items-center gap-1">
