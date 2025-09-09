@@ -845,7 +845,10 @@ export default function DocketsPage() {
         />
       ) : (
         <header className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight">Dockets</h1>
+          <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
+            Dockets
+            <FileCheck className="h-8 w-8 text-muted-foreground" />
+          </h1>
           <p className="text-muted-foreground">New York Public Service Commission</p>
         </header>
       )}
