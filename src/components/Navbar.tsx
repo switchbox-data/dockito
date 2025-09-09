@@ -46,7 +46,7 @@ const Navbar = () => {
             
             {(location.pathname.startsWith("/org/") || location.pathname.startsWith("/docket/")) && (
               <>
-                <BreadcrumbSeparator />
+                <span className="text-muted-foreground mx-2">•</span>
                 {location.pathname.startsWith("/org/") && (
                   <>
                     <span className="text-muted-foreground">Org:</span>
