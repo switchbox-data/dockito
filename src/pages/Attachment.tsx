@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight, ChevronUp, ChevronDown, Loader2, Calendar, User, FileText, Building, ChevronLeft, 
          Heart, DollarSign, Frown, Lock, Search, Flame, FileCheck, Gavel, Book, EyeOff, 
          FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, 
-         Lightbulb, HelpCircle, ZoomIn, ZoomOut, Sidebar, Maximize, Minimize } from "lucide-react";
+         Lightbulb, HelpCircle, ZoomIn, ZoomOut, Sidebar, Maximize, Minimize, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -513,7 +513,7 @@ const AttachmentPage = () => {
               {/* Metadata items - bigger and reorganized */}
               <div className="space-y-3 text-base">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-muted-foreground" />
+                  <Folder className="h-5 w-5 text-muted-foreground" />
                   <span>Docket </span>
                   <button 
                     onClick={() => navigate(`/docket/${safeDocket}`)}
