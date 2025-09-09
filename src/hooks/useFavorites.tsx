@@ -52,18 +52,19 @@ export const useFavorites = () => {
           docket_govid: docketGovId,
         });
 
-      if (error) {
-        if (error.code === '23505') { // unique constraint violation
-          toast.error('This docket is already in your favorites');
-        } else {
-          console.error('Error adding favorite:', error);
-          toast.error('Failed to add favorite');
+        if (error) {
+          if (error.code === '23505') { // unique constraint violation
+            toast.error('This docket is already in your favorites');
+          } else {
+            console.error('Error adding favorite:', error);
+            toast.error('Failed to add favorite');
+          }
+          return false;
         }
-        return false;
-      }
 
-      // Don't update state here - let real-time updates handle it
-      toast.success('Added to favorites');
+        // Optimistic UI update for instant feedback; realtime will reconcile
+        setFavorites(prev => (prev.includes(docketGovId) ? prev : [...prev, docketGovId]));
+        toast.success('Added to favorites');
       return true;
     } catch (err) {
       console.error('Error adding favorite:', err);
@@ -89,7 +90,8 @@ export const useFavorites = () => {
         return false;
       }
 
-      // Don't update state here - let real-time updates handle it
+      // Optimistic UI update for instant feedback; realtime will reconcile
+      setFavorites(prev => prev.filter(id => id !== docketGovId));
       toast.success('Removed from favorites');
       return true;
     } catch (err) {
