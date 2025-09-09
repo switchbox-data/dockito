@@ -12,30 +12,28 @@ import { useSidebar } from "@/components/ui/sidebar";
 
 const AppSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isNotificationExpanded, setIsNotificationExpanded] = useState(false);
   const [topFavoriteDockets, setTopFavoriteDockets] = useState<Array<{govid: string, title: string}>>([]);
   const location = useLocation();
   const { open: openCommandK } = useCommandK();
   const { user } = useAuth();
   const { favorites } = useFavorites();
   const { animatingFavorite } = useSidebarNotification();
-  const { open, setOpen } = useSidebar();
   const isMobile = useIsMobile();
 
-  // Handle favorite notifications - open sidebar, then close after animation
+  // Handle favorite notifications - temporarily expand sidebar for animation
   useEffect(() => {
     if (animatingFavorite && !isMobile) {
-      setOpen(true);
-      setIsExpanded(true);
+      setIsNotificationExpanded(true);
       
-      // Close sidebar after animation completes
+      // Close notification expansion after animation completes
       const timer = setTimeout(() => {
-        setOpen(false);
-        setIsExpanded(false);
+        setIsNotificationExpanded(false);
       }, 2500);
       
       return () => clearTimeout(timer);
     }
-  }, [animatingFavorite, isMobile, setOpen]);
+  }, [animatingFavorite, isMobile]);
 
   // Fetch top 5 favorite dockets
   useEffect(() => {
@@ -102,19 +100,21 @@ const AppSidebar = () => {
     return location.pathname.startsWith(path);
   };
 
+  const shouldShowExpanded = isMobile || isExpanded || isNotificationExpanded;
+
   return (
     <div
       className={cn(
         isMobile 
           ? "h-full bg-white border-r border-gray-500" 
           : "fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/75 border-r border-t border-gray-500 transition-all duration-150 ease-in-out z-40",
-        !isMobile && (isExpanded || open ? "w-48" : "w-14")
+        !isMobile && (shouldShowExpanded ? "w-48" : "w-14")
       )}
     >
       <div
         className="h-full"
-        onMouseEnter={() => !isMobile && !animatingFavorite && setIsExpanded(true)}
-        onMouseLeave={() => !isMobile && !animatingFavorite && setIsExpanded(false)}
+        onMouseEnter={() => !isMobile && !isNotificationExpanded && setIsExpanded(true)}
+        onMouseLeave={() => !isMobile && !isNotificationExpanded && setIsExpanded(false)}
       >
       <nav className="p-2 space-y-2">
         {navigationItems.map((item, index) => {
@@ -135,7 +135,7 @@ const AppSidebar = () => {
                   <span 
                     className={cn(
                       "transition-opacity duration-150 whitespace-nowrap",
-                      (isMobile || isExpanded || open) ? "opacity-100" : "opacity-0"
+                      shouldShowExpanded ? "opacity-100" : "opacity-0"
                     )}
                   >
                     {item.label}
@@ -161,7 +161,7 @@ const AppSidebar = () => {
               <span 
                 className={cn(
                   "transition-opacity duration-150 whitespace-nowrap",
-                  (isMobile || isExpanded || open) ? "opacity-100" : "opacity-0"
+                  shouldShowExpanded ? "opacity-100" : "opacity-0"
                 )}
               >
                 {item.label}
@@ -186,7 +186,7 @@ const AppSidebar = () => {
               <span 
                 className={cn(
                   "transition-opacity duration-150 whitespace-nowrap",
-                  (isMobile || isExpanded || open) ? "opacity-100" : "opacity-0"
+                  shouldShowExpanded ? "opacity-100" : "opacity-0"
                 )}
               >
                 Favorites ({favorites.length})
@@ -194,7 +194,7 @@ const AppSidebar = () => {
             </Link>
             
             {/* Top 5 favorite dockets */}
-            {(isMobile || isExpanded || open) && topFavoriteDockets.length > 0 && (
+            {shouldShowExpanded && topFavoriteDockets.length > 0 && (
               <div className="ml-6 space-y-1 mt-2">
                 {topFavoriteDockets.map((docket) => (
                   <Link
