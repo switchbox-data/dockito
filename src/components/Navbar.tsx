@@ -1,4 +1,5 @@
 import { useLocation, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -9,11 +10,43 @@ import {
 } from "@/components/ui/breadcrumb";
 import { ChevronRight } from "lucide-react";
 import DockitoLogo from "@/components/DockitoLogo";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const location = useLocation();
   const params = useParams();
+  const [attachmentTitle, setAttachmentTitle] = useState<string>("");
   
+  // Fetch attachment title when on attachment route
+  useEffect(() => {
+    const fetchAttachmentTitle = async () => {
+      if (location.pathname.includes("/attachment/")) {
+        const attachmentUuid = location.pathname.split('/attachment/')[1];
+        if (attachmentUuid) {
+          try {
+            const { data, error } = await supabase
+              .from('attachments')
+              .select('attachment_title')
+              .eq('uuid', attachmentUuid)
+              .single();
+            
+            if (!error && data) {
+              setAttachmentTitle(data.attachment_title || 'Document');
+            } else {
+              setAttachmentTitle('Document');
+            }
+          } catch (err) {
+            setAttachmentTitle('Document');
+          }
+        }
+      } else {
+        setAttachmentTitle('');
+      }
+    };
+    
+    fetchAttachmentTitle();
+  }, [location.pathname]);
+
   const getBreadcrumbItems = () => {
     const items = [
       { label: "State: New York", href: "/dockets", isLast: false }
@@ -85,7 +118,7 @@ const Navbar = () => {
                     </span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground mx-4" />
                     <span className="text-muted-foreground">Doc:</span>
-                    <span className="text-foreground font-medium">Document</span>
+                    <span className="text-foreground font-medium">{attachmentTitle || 'Document'}</span>
                   </>
                 )}
                 {location.pathname.startsWith("/docket/") && !location.pathname.includes("/attachment/") && (
