@@ -138,7 +138,7 @@ const Navbar = () => {
           </div>
           
           {/* Breadcrumb arrow separator */}
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground mx-2" />
           
           {/* Breadcrumb content that aligns with main content */}
           <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out min-w-0 flex-1 whitespace-nowrap overflow-hidden">
