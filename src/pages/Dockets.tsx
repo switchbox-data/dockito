@@ -1410,7 +1410,7 @@ export default function DocketsPage() {
             </div>
           </div>
         </div>
-      <section aria-label="Filters" className="space-y-2">
+      <section aria-label="Filters" className="mb-4">
         {/* Active filter chips with count */}
         <div className="relative flex flex-wrap items-center gap-2 text-sm px-1">
           {/* Results count and filter badges group */}
