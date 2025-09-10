@@ -173,9 +173,8 @@ const AppSidebar = () => {
                 <button
                   onClick={item.action}
                   className={cn(
-                    "flex items-center rounded-md transition-all duration-200 w-full text-left",
-                    "hover:bg-muted/90 focus-visible:outline-none",
-                    shouldShowExpanded ? "gap-3 px-3 py-2" : "justify-center py-2 px-2"
+                    "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 w-full text-left",
+                    "hover:bg-muted/90 focus-visible:outline-none"
                   )}
                 >
                   <IconComponent className="h-5 w-5 flex-shrink-0" />
@@ -199,9 +198,8 @@ const AppSidebar = () => {
               key={item.path}
               to={item.path!}
               className={cn(
-                "flex items-center rounded-md transition-all duration-200",
+                "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",
-                shouldShowExpanded ? "gap-3 px-3 py-2" : "justify-center py-2 px-2",
                 active && "bg-muted/90 text-primary font-medium"
               )}
             >
@@ -225,9 +223,8 @@ const AppSidebar = () => {
             <Link
               to="/favorites"
               className={cn(
-                "flex items-center rounded-md transition-all duration-200",
+                "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",
-                shouldShowExpanded ? "gap-3 px-3 py-2" : "justify-center py-2 px-2",
                 isActive("/favorites") && "bg-muted/90 text-primary font-medium"
               )}
             >
