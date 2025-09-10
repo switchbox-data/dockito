@@ -871,7 +871,21 @@ export default function DocketsPage() {
   }, [lockedOrg]);
 
   const pages = (data?.pages ?? []) as Docket[][];
-  const items = pages.flat();
+  // Flatten and de-duplicate by uuid to avoid duplicate React keys when switching sorts/pages
+  const items = useMemo(() => {
+    const flat = pages.flat();
+    const map = new Map<string, Docket>();
+    flat.forEach((d) => {
+      if (d?.uuid) map.set(d.uuid, d);
+    });
+    const unique = Array.from(map.values());
+    console.log('📦 Items flattened/deduped', { total: flat.length, unique: unique.length, pages: pages.length, sortBy, sortDir });
+    return unique;
+  }, [pages, sortBy, sortDir]);
+
+  useEffect(() => {
+    console.log('📊 Query state', { isLoading, isFetching, isFetchingNextPage, pages: pages.length, hasNextPage });
+  }, [isLoading, isFetching, isFetchingNextPage, pages.length, hasNextPage]);
 
   // Petitioners that appear in the currently displayed dockets  
   const petitionerOptions = useMemo(() => {
