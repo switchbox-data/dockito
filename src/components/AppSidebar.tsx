@@ -175,7 +175,7 @@ const AppSidebar = () => {
                   className={cn(
                     "flex items-center gap-3 py-2 rounded-md transition-all duration-200 w-full text-left",
                     "hover:bg-muted/90 focus-visible:outline-none",
-                    shouldShowExpanded ? "px-3" : "px-2"
+                    shouldShowExpanded ? "px-3" : "pl-2.5 pr-2"
                   )}
                 >
                   <IconComponent className="h-5 w-5 flex-shrink-0" />
@@ -202,7 +202,7 @@ const AppSidebar = () => {
                 "flex items-center gap-3 py-2 rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",
                 active && "bg-muted/90 text-primary font-medium",
-                shouldShowExpanded ? "px-3" : "px-2"
+                shouldShowExpanded ? "px-3" : "pl-2.5 pr-2"
               )}
             >
               <IconComponent className="h-5 w-5 flex-shrink-0" />
@@ -228,7 +228,7 @@ const AppSidebar = () => {
                 "flex items-center gap-3 py-2 rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",
                 isActive("/favorites") && "bg-muted/90 text-primary font-medium",
-                shouldShowExpanded ? "px-3" : "px-2"
+                shouldShowExpanded ? "px-3" : "pl-2.5 pr-2"
               )}
             >
               <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />
