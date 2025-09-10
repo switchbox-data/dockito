@@ -63,41 +63,70 @@ export default function OrganizationsPage() {
       
       let organizations = (data ?? []) as Organization[];
 
-      // Get docket counts for each organization
-      if (organizations.length) {
-        const orgUuids = organizations.map(org => org.uuid);
-        
-        // Get docket counts
-        const { data: rels } = await supabase
-          .from("docket_petitioned_by_org")
-          .select("petitioner_uuid")
-          .in("petitioner_uuid", orgUuids);
-        
-        const docketCounts = new Map<string, number>();
-        (rels ?? []).forEach((r: any) => {
-          if (r.petitioner_uuid) {
-            docketCounts.set(r.petitioner_uuid, (docketCounts.get(r.petitioner_uuid) ?? 0) + 1);
-          }
-        });
+        // Get docket and filing counts for each organization
+        if (organizations.length) {
+          const orgUuids = organizations.map(org => org.uuid);
+          
+          // Get petitioned docket UUIDs
+          const { data: petitionedRels } = await supabase
+            .from("docket_petitioned_by_org")
+            .select("petitioner_uuid, docket_uuid")
+            .in("petitioner_uuid", orgUuids);
+          
+          const docketUuidsByOrg = new Map<string, Set<string>>();
+          (petitionedRels ?? []).forEach((r: any) => {
+            if (r.petitioner_uuid && r.docket_uuid) {
+              if (!docketUuidsByOrg.has(r.petitioner_uuid)) {
+                docketUuidsByOrg.set(r.petitioner_uuid, new Set());
+              }
+              docketUuidsByOrg.get(r.petitioner_uuid)!.add(r.docket_uuid);
+            }
+          });
 
-        // Get filing counts from fillings_on_behalf_of_org_relation table (matches org page logic)
-        const { data: filingRels } = await supabase
-          .from("fillings_on_behalf_of_org_relation")
-          .select("author_organization_uuid")
-          .in("author_organization_uuid", orgUuids);
-        
-        const filingCounts = new Map<string, number>();
-        (filingRels ?? []).forEach((r: any) => {
-          if (r.author_organization_uuid) {
-            filingCounts.set(r.author_organization_uuid, (filingCounts.get(r.author_organization_uuid) ?? 0) + 1);
-          }
-        });
+          // Get filing counts and additional docket UUIDs from filings
+          const { data: filingRels } = await supabase
+            .from("fillings_on_behalf_of_org_relation")
+            .select("author_organization_uuid, filling_uuid")
+            .in("author_organization_uuid", orgUuids);
+          
+          const filingCounts = new Map<string, number>();
+          const fillingUuidsByOrg = new Map<string, string[]>();
+          
+          (filingRels ?? []).forEach((r: any) => {
+            if (r.author_organization_uuid) {
+              filingCounts.set(r.author_organization_uuid, (filingCounts.get(r.author_organization_uuid) ?? 0) + 1);
+              
+              if (!fillingUuidsByOrg.has(r.author_organization_uuid)) {
+                fillingUuidsByOrg.set(r.author_organization_uuid, []);
+              }
+              fillingUuidsByOrg.get(r.author_organization_uuid)!.push(r.filling_uuid);
+            }
+          });
 
-        organizations = organizations.map(org => ({
-          ...org,
-          docket_count: docketCounts.get(org.uuid) ?? 0,
-          filing_count: filingCounts.get(org.uuid) ?? 0
-        }));
+          // Get dockets from filings and add to the total docket count
+          for (const [orgUuid, fillingUuids] of fillingUuidsByOrg.entries()) {
+            if (fillingUuids.length > 0) {
+              const { data: fillings } = await supabase
+                .from("fillings")
+                .select("docket_uuid")
+                .in("uuid", fillingUuids);
+              
+              (fillings ?? []).forEach((f: any) => {
+                if (f.docket_uuid) {
+                  if (!docketUuidsByOrg.has(orgUuid)) {
+                    docketUuidsByOrg.set(orgUuid, new Set());
+                  }
+                  docketUuidsByOrg.get(orgUuid)!.add(f.docket_uuid);
+                }
+              });
+            }
+          }
+
+          organizations = organizations.map(org => ({
+            ...org,
+            docket_count: docketUuidsByOrg.get(org.uuid)?.size ?? 0,
+            filing_count: filingCounts.get(org.uuid) ?? 0
+          }));
 
         // Apply sorting after getting counts
         if (sortBy === "dockets") {
