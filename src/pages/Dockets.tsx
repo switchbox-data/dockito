@@ -281,13 +281,25 @@ export default function DocketsPage() {
   const [industryMenuOpen, setIndustryMenuOpen] = useState(false);
   const [subtypeSearch, setSubtypeSearch] = useState("");
   const [petOpen, setPetOpen] = useState(false);
-  const [sortBy, setSortBy] = useState<"date" | "filings">("date");
-  const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
+  const [searchParams, setSearchParams] = useSearchParams();
   
-  // Debug logging for sort changes
+  // Initialize sort state from URL parameters
+  const [sortBy, setSortBy] = useState<"date" | "filings">(() => {
+    const urlSortBy = searchParams.get('sortBy');
+    return (urlSortBy === 'filings' || urlSortBy === 'date') ? urlSortBy : 'date';
+  });
+  const [sortDir, setSortDir] = useState<"desc" | "asc">(() => {
+    const urlSortDir = searchParams.get('sortDir');
+    return (urlSortDir === 'asc' || urlSortDir === 'desc') ? urlSortDir : 'desc';
+  });
+
+  // Update URL when sort changes
   useEffect(() => {
-    console.log('🔄 Sort changed:', { sortBy, sortDir });
-  }, [sortBy, sortDir]);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('sortBy', sortBy);
+    newParams.set('sortDir', sortDir);
+    setSearchParams(newParams, { replace: true });
+  }, [sortBy, sortDir, searchParams, setSearchParams]);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
   const [dateOpen, setDateOpen] = useState(false);
   const [relationshipTypes, setRelationshipTypes] = useState<string[]>([]);
@@ -307,7 +319,6 @@ export default function DocketsPage() {
   });
   const navigate = useNavigate();
   const { orgName } = useParams();
-  const [searchParams] = useSearchParams();
   const lockedOrg = useMemo(() => (orgName ? decodeURIComponent(orgName) : null), [orgName]);
   
   // Date slider uses month indices
@@ -328,6 +339,9 @@ export default function DocketsPage() {
     setSearch("");
     setDateRange(undefined);
     setRange(null);
+    // Reset sort state when changing organizations
+    setSortBy("date");
+    setSortDir("desc");
     // Note: relationshipTypes intentionally kept as it's org-specific setting
   }, [lockedOrg]);
 
@@ -344,6 +358,8 @@ export default function DocketsPage() {
     const types = searchParams.get('types');
     const subtypes = searchParams.get('subtypes');
     const industries = searchParams.get('industries');
+    const urlSortBy = searchParams.get('sortBy');
+    const urlSortDir = searchParams.get('sortDir');
     
     if (types) {
       setDocketTypes(types.split(',').filter(Boolean));
@@ -353,6 +369,12 @@ export default function DocketsPage() {
     }
     if (industries) {
       setSelectedIndustries(industries.split(',').filter(Boolean));
+    }
+    if (urlSortBy && (urlSortBy === 'filings' || urlSortBy === 'date')) {
+      setSortBy(urlSortBy);
+    }
+    if (urlSortDir && (urlSortDir === 'asc' || urlSortDir === 'desc')) {
+      setSortDir(urlSortDir);
     }
   }, [searchParams]);
 
