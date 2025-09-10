@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, Users, Search, FolderOpen, Building } from "lucide-react";
+import { Building2, Users, Search, FolderOpen, Building, ArrowUpDown, ChevronDown, Check } from "lucide-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,7 @@ export default function OrganizationsPage() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "dockets">("dockets");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [sortOpen, setSortOpen] = useState(false);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -175,18 +177,7 @@ export default function OrganizationsPage() {
     if (e.key === '/') { e.preventDefault(); searchRef.current?.focus(); return; }
     if (e.key.toLowerCase() === 's') { 
       e.preventDefault(); 
-      if (sortBy === "dockets") {
-        setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); 
-      } else {
-        setSortBy("dockets");
-        setSortDir("desc");
-      }
-      return; 
-    }
-    if (e.key.toLowerCase() === 'n') { 
-      e.preventDefault(); 
-      setSortBy("name");
-      setSortDir("asc");
+      setSortOpen(true);
       return; 
     }
 
@@ -223,37 +214,91 @@ export default function OrganizationsPage() {
             />
 
             {/* Sort */}
-            <div className="shrink-0 flex gap-2">
-              <Button 
-                variant={sortBy === "dockets" ? "default" : "outline"} 
-                className="border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50"
-                onClick={() => {
-                  if (sortBy === "dockets") {
-                    setSortDir((d) => (d === "desc" ? "asc" : "desc"));
-                  } else {
-                    setSortBy("dockets");
-                    setSortDir("desc");
-                  }
-                }}
-              >
-                <Users size={16} className="mr-2" />
-                Dockets {sortBy === "dockets" && (sortDir === "desc" ? "↓" : "↑")}
-              </Button>
-              <Button 
-                variant={sortBy === "name" ? "default" : "outline"} 
-                className="border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50" 
-                onClick={() => {
-                  if (sortBy === "name") {
-                    setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-                  } else {
-                    setSortBy("name");
-                    setSortDir("asc");
-                  }
-                }}
-              >
-                <Building2 size={16} className="mr-2" />
-                Name {sortBy === "name" && (sortDir === "asc" ? "↑" : "↓")}
-              </Button>
+            <div className="shrink-0">
+              <Popover open={sortOpen} onOpenChange={setSortOpen}>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50 justify-between min-w-[140px]"
+                  >
+                    <div className="flex items-center gap-2">
+                      <ArrowUpDown className="h-4 w-4" />
+                      <span>
+                        {sortBy === "name" 
+                          ? (sortDir === "asc" ? "A-Z" : "Z-A")
+                          : (sortDir === "desc" ? "Most dockets" : "Least dockets")
+                        }
+                      </span>
+                    </div>
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-0 bg-white border border-gray-300 shadow-lg z-50" align="end">
+                  <div className="p-1">
+                    <Button 
+                      variant="ghost" 
+                      className={cn(
+                        "w-full justify-between text-left h-auto p-2 font-normal",
+                        sortBy === "name" && sortDir === "asc" && "bg-muted text-primary font-medium"
+                      )}
+                      onClick={() => {
+                        setSortBy("name");
+                        setSortDir("asc");
+                        setSortOpen(false);
+                      }}
+                    >
+                      A-Z
+                      {sortBy === "name" && sortDir === "asc" && <Check className="h-4 w-4" />}
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className={cn(
+                        "w-full justify-between text-left h-auto p-2 font-normal",
+                        sortBy === "name" && sortDir === "desc" && "bg-muted text-primary font-medium"
+                      )}
+                      onClick={() => {
+                        setSortBy("name");
+                        setSortDir("desc");
+                        setSortOpen(false);
+                      }}
+                    >
+                      Z-A
+                      {sortBy === "name" && sortDir === "desc" && <Check className="h-4 w-4" />}
+                    </Button>
+                    <Separator className="my-1" />
+                    <Button 
+                      variant="ghost" 
+                      className={cn(
+                        "w-full justify-between text-left h-auto p-2 font-normal",
+                        sortBy === "dockets" && sortDir === "desc" && "bg-muted text-primary font-medium"
+                      )}
+                      onClick={() => {
+                        setSortBy("dockets");
+                        setSortDir("desc");
+                        setSortOpen(false);
+                      }}
+                    >
+                      Most dockets
+                      {sortBy === "dockets" && sortDir === "desc" && <Check className="h-4 w-4" />}
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className={cn(
+                        "w-full justify-between text-left h-auto p-2 font-normal",
+                        sortBy === "dockets" && sortDir === "asc" && "bg-muted text-primary font-medium"
+                      )}
+                      onClick={() => {
+                        setSortBy("dockets");
+                        setSortDir("asc");
+                        setSortOpen(false);
+                      }}
+                    >
+                      Least dockets
+                      {sortBy === "dockets" && sortDir === "asc" && <Check className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>
