@@ -632,17 +632,16 @@ export default function DocketsPage() {
         return filteredDockets;
       }
       
-      // For main page, use regular query with filings count if needed
-      let query = supabase
-        .from("dockets")
-        .select(sortBy === "filings" ? "*, filings:filing_events(count)" : "*");
+      // For main page, use regular query 
+      let query = supabase.from("dockets").select("*");
         
       // Apply sorting
       if (sortBy === "date") {
         query = query.order("opened_date", { ascending: sortDir === "asc" });
-      } else {
-        // For filings count, we'll sort after getting the data since we need the count
-        query = query.order("opened_date", { ascending: false }); // default order for now
+      } else if (sortBy === "filings") {
+        // For filings sorting, we need to use a custom approach
+        // We'll get the data and then do a server-side count aggregation
+        query = query.order("opened_date", { ascending: false }); // temporary order
       }
       
       query = query.range(offset, offset + PAGE_SIZE - 1);
