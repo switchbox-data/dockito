@@ -1,7 +1,23 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const navigate = useNavigate();
+
+  const handleDocketsNavigation = () => {
+    // Preserve sort parameters when navigating to dockets
+    const currentUrl = new URL(window.location.href);
+    const sortBy = currentUrl.searchParams.get('sortBy');
+    const sortDir = currentUrl.searchParams.get('sortDir');
+    
+    let targetUrl = '/dockets';
+    if (sortBy && sortDir) {
+      targetUrl += `?sortBy=${sortBy}&sortDir=${sortDir}`;
+    }
+    
+    navigate(targetUrl);
+  };
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-background">
       <section className="container text-center animate-enter space-y-6">
@@ -14,9 +30,7 @@ const Index = () => {
           </p>
         </div>
         <div>
-          <Button asChild>
-            <Link to="/dockets">Browse all NY PSC dockets</Link>
-          </Button>
+          <Button onClick={handleDocketsNavigation}>Browse all NY PSC dockets</Button>
         </div>
       </section>
     </main>

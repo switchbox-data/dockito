@@ -131,6 +131,7 @@ const AppSidebar = () => {
       icon: FolderOpen,
       label: "Dockets",
       path: "/dockets",
+      preserveSort: true,
     },
     {
       icon: Building,
@@ -194,10 +195,24 @@ const AppSidebar = () => {
             );
           }
           
+          // Generate URL with preserved sort parameters if needed
+          const getTargetUrl = () => {
+            if ((item as any).preserveSort && item.path === "/dockets") {
+              const currentUrl = new URL(window.location.href);
+              const sortBy = currentUrl.searchParams.get('sortBy');
+              const sortDir = currentUrl.searchParams.get('sortDir');
+              
+              if (sortBy && sortDir) {
+                return `${item.path}?sortBy=${sortBy}&sortDir=${sortDir}`;
+              }
+            }
+            return item.path!;
+          };
+
           return (
             <Link
               key={item.path}
-              to={item.path!}
+              to={getTargetUrl()}
               className={cn(
                 "flex items-center gap-3 py-2 rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",

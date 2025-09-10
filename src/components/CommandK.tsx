@@ -138,7 +138,17 @@ const CommandKInner = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
           </CommandItem>
           <CommandItem
             onSelect={() => {
-              navigate('/dockets');
+              // Preserve sort parameters when navigating to dockets
+              const currentUrl = new URL(window.location.href);
+              const sortBy = currentUrl.searchParams.get('sortBy');
+              const sortDir = currentUrl.searchParams.get('sortDir');
+              
+              let targetUrl = '/dockets';
+              if (sortBy && sortDir) {
+                targetUrl += `?sortBy=${sortBy}&sortDir=${sortDir}`;
+              }
+              
+              navigate(targetUrl);
               setOpen(false);
             }}
           >
