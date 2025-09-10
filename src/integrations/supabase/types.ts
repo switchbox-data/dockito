@@ -382,6 +382,39 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_dockets_with_filing_counts: {
+        Args: {
+          p_docket_subtypes?: string[]
+          p_docket_types?: string[]
+          p_end_date?: string
+          p_industries?: string[]
+          p_limit?: number
+          p_offset?: number
+          p_petitioners?: string[]
+          p_search?: string
+          p_sort_by?: string
+          p_sort_order?: string
+          p_start_date?: string
+        }
+        Returns: {
+          assigned_judge: string
+          closed_date: string
+          created_at: string
+          current_status: string
+          docket_description: string
+          docket_govid: string
+          docket_subtype: string
+          docket_title: string
+          docket_type: string
+          filing_count: number
+          hearing_officer: string
+          industry: string
+          opened_date: string
+          petitioner_strings: string[]
+          updated_at: string
+          uuid: string
+        }[]
+      }
       get_user_profile: {
         Args: { user_uuid: string }
         Returns: {
