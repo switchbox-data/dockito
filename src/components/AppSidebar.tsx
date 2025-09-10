@@ -173,8 +173,9 @@ const AppSidebar = () => {
                 <button
                   onClick={item.action}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 w-full text-left",
-                    "hover:bg-muted/90 focus-visible:outline-none"
+                    "flex items-center gap-3 py-2 rounded-md transition-all duration-200 w-full text-left",
+                    "hover:bg-muted/90 focus-visible:outline-none",
+                    shouldShowExpanded ? "px-3" : "px-2"
                   )}
                 >
                   <IconComponent className="h-5 w-5 flex-shrink-0" />
@@ -198,9 +199,10 @@ const AppSidebar = () => {
               key={item.path}
               to={item.path!}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200",
+                "flex items-center gap-3 py-2 rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",
-                active && "bg-muted/90 text-primary font-medium"
+                active && "bg-muted/90 text-primary font-medium",
+                shouldShowExpanded ? "px-3" : "px-2"
               )}
             >
               <IconComponent className="h-5 w-5 flex-shrink-0" />
@@ -223,9 +225,10 @@ const AppSidebar = () => {
             <Link
               to="/favorites"
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200",
+                "flex items-center gap-3 py-2 rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",
-                isActive("/favorites") && "bg-muted/90 text-primary font-medium"
+                isActive("/favorites") && "bg-muted/90 text-primary font-medium",
+                shouldShowExpanded ? "px-3" : "px-2"
               )}
             >
               <Star className="h-5 w-5 flex-shrink-0 text-yellow-500" />
