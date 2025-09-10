@@ -5,15 +5,22 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleDocketsNavigation = () => {
-    // Preserve sort parameters when navigating to dockets
-    const currentUrl = new URL(window.location.href);
-    const sortBy = currentUrl.searchParams.get('sortBy');
-    const sortDir = currentUrl.searchParams.get('sortDir');
+    // Use saved sort preferences when navigating to dockets
+    const getSavedSort = () => {
+      try {
+        const saved = localStorage.getItem('dockets-sort');
+        if (saved) {
+          const { sortBy, sortDir } = JSON.parse(saved);
+          return { sortBy, sortDir };
+        }
+      } catch (e) {
+        // Ignore localStorage errors
+      }
+      return { sortBy: 'date', sortDir: 'desc' };
+    };
     
-    let targetUrl = '/dockets';
-    if (sortBy && sortDir) {
-      targetUrl += `?sortBy=${sortBy}&sortDir=${sortDir}`;
-    }
+    const saved = getSavedSort();
+    const targetUrl = `/dockets?sortBy=${saved.sortBy}&sortDir=${saved.sortDir}`;
     
     navigate(targetUrl);
   };

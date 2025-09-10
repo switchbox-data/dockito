@@ -283,22 +283,55 @@ export default function DocketsPage() {
   const [petOpen, setPetOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   
-  // Initialize sort state from URL parameters
+  // Helper functions for localStorage persistence
+  const getSavedSort = () => {
+    try {
+      const saved = localStorage.getItem('dockets-sort');
+      if (saved) {
+        const { sortBy, sortDir } = JSON.parse(saved);
+        return { sortBy, sortDir };
+      }
+    } catch (e) {
+      // Ignore localStorage errors
+    }
+    return { sortBy: 'date', sortDir: 'desc' };
+  };
+
+  const saveSortToStorage = (sortBy: string, sortDir: string) => {
+    try {
+      localStorage.setItem('dockets-sort', JSON.stringify({ sortBy, sortDir }));
+    } catch (e) {
+      // Ignore localStorage errors
+    }
+  };
+  
+  // Initialize sort state from URL parameters or localStorage
   const [sortBy, setSortBy] = useState<"date" | "filings">(() => {
     const urlSortBy = searchParams.get('sortBy');
-    return (urlSortBy === 'filings' || urlSortBy === 'date') ? urlSortBy : 'date';
+    if (urlSortBy === 'filings' || urlSortBy === 'date') {
+      return urlSortBy;
+    }
+    // Fallback to saved preferences
+    const saved = getSavedSort();
+    return saved.sortBy === 'filings' ? 'filings' : 'date';
   });
   const [sortDir, setSortDir] = useState<"desc" | "asc">(() => {
     const urlSortDir = searchParams.get('sortDir');
-    return (urlSortDir === 'asc' || urlSortDir === 'desc') ? urlSortDir : 'desc';
+    if (urlSortDir === 'asc' || urlSortDir === 'desc') {
+      return urlSortDir;
+    }
+    // Fallback to saved preferences
+    const saved = getSavedSort();
+    return saved.sortDir === 'asc' ? 'asc' : 'desc';
   });
 
-  // Update URL when sort changes
+  // Update URL and localStorage when sort changes
   useEffect(() => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set('sortBy', sortBy);
     newParams.set('sortDir', sortDir);
     setSearchParams(newParams, { replace: true });
+    saveSortToStorage(sortBy, sortDir);
   }, [sortBy, sortDir, searchParams, setSearchParams]);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
   const [dateOpen, setDateOpen] = useState(false);

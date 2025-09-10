@@ -195,16 +195,24 @@ const AppSidebar = () => {
             );
           }
           
-          // Generate URL with preserved sort parameters if needed
+          // Generate URL with saved sort preferences for dockets
           const getTargetUrl = () => {
             if ((item as any).preserveSort && item.path === "/dockets") {
-              const currentUrl = new URL(window.location.href);
-              const sortBy = currentUrl.searchParams.get('sortBy');
-              const sortDir = currentUrl.searchParams.get('sortDir');
+              const getSavedSort = () => {
+                try {
+                  const saved = localStorage.getItem('dockets-sort');
+                  if (saved) {
+                    const { sortBy, sortDir } = JSON.parse(saved);
+                    return { sortBy, sortDir };
+                  }
+                } catch (e) {
+                  // Ignore localStorage errors
+                }
+                return { sortBy: 'date', sortDir: 'desc' };
+              };
               
-              if (sortBy && sortDir) {
-                return `${item.path}?sortBy=${sortBy}&sortDir=${sortDir}`;
-              }
+              const saved = getSavedSort();
+              return `${item.path}?sortBy=${saved.sortBy}&sortDir=${saved.sortDir}`;
             }
             return item.path!;
           };
