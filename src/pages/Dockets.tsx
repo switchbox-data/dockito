@@ -1410,7 +1410,9 @@ export default function DocketsPage() {
             </div>
           </div>
         </div>
-      <section aria-label="Filters" className="mb-4">
+      {/* Filter badges section - only show when filters are active */}
+      {(selectedIndustries.length > 0 || docketTypes.length > 0 || docketSubtypes.length > 0 || petitioners.length > 0 || normalizedSearch || relationshipTypes.length > 0 || isStartDateModified || isEndDateModified) && (
+        <section aria-label="Filters" className="mb-4">
         {/* Active filter chips with count */}
         <div className="relative flex flex-wrap items-center gap-2 text-sm px-1">
           {/* Results count and filter badges group */}
@@ -1605,7 +1607,8 @@ export default function DocketsPage() {
             </Button>
           )}
         </div>
-      </section>
+        </section>
+      )}
 
       <section aria-label="Results" className="space-y-4">
         {showCardSkeletons ? (
