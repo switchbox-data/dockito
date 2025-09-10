@@ -26,7 +26,7 @@ import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { ExpandingSearchInput } from "@/components/ExpandingSearchInput";
 import { useResponsiveLabels } from "@/hooks/use-responsive-labels";
 
-import { X } from "lucide-react";
+import { X, Menu } from "lucide-react";
 
 const PAGE_SIZE = 50;
 
@@ -1258,12 +1258,15 @@ export default function DocketsPage() {
                     variant="outline" 
                     className="border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50 justify-between min-w-[120px]"
                   >
-                    <span>
-                      {sortBy === "date" 
-                        ? (sortDir === "desc" ? "Newest" : "Oldest")
-                        : (sortDir === "desc" ? "Most filings" : "Least filings")
-                      }
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <Menu className="h-4 w-4" />
+                      <span>
+                        {sortBy === "date" 
+                          ? (sortDir === "desc" ? "Newest" : "Oldest")
+                          : (sortDir === "desc" ? "Most filings" : "Least filings")
+                        }
+                      </span>
+                    </div>
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
