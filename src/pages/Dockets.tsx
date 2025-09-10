@@ -283,6 +283,11 @@ export default function DocketsPage() {
   const [petOpen, setPetOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"date" | "filings">("date");
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
+  
+  // Debug logging for sort changes
+  useEffect(() => {
+    console.log('🔄 Sort changed:', { sortBy, sortDir });
+  }, [sortBy, sortDir]);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>();
   const [dateOpen, setDateOpen] = useState(false);
   const [relationshipTypes, setRelationshipTypes] = useState<string[]>([]);
@@ -582,12 +587,36 @@ export default function DocketsPage() {
   } = useInfiniteQuery<any[], Error>({
     queryKey: [
       "dockets-list",
-      { org: lockedOrg ?? null, search: normalizedSearch, industries: selectedIndustries.join(","), docketTypes: docketTypes.join(","), docketSubtypes: docketSubtypes.join(","), petitioners: petitioners.join(","), sortBy, sortDir, start: startDate?.toISOString(), end: endDate?.toISOString(), relationshipTypes: relationshipTypes.join(",") },
+      { 
+        org: lockedOrg ?? null, 
+        search: normalizedSearch, 
+        industries: selectedIndustries.join(","), 
+        docketTypes: docketTypes.join(","), 
+        docketSubtypes: docketSubtypes.join(","), 
+        petitioners: petitioners.join(","), 
+        sortBy, 
+        sortDir, 
+        start: startDate?.toISOString(), 
+        end: endDate?.toISOString(), 
+        relationshipTypes: relationshipTypes.join(","),
+        queryType: sortBy === "filings" ? "filing-count" : "regular" // Add this to ensure cache invalidation
+      },
     ],
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => (lastPage?.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined),
     queryFn: async ({ pageParam }) => {
       const offset = pageParam as number;
+      
+      console.log('🔍 Dockets query starting:', { 
+        sortBy, 
+        sortDir, 
+        offset, 
+        lockedOrg,
+        normalizedSearch,
+        selectedIndustries: selectedIndustries.length,
+        docketTypes: docketTypes.length,
+        petitioners: petitioners.length
+      });
       
       // For organization pages, use the edge function with server-side pagination
       if (lockedOrg) {
@@ -634,6 +663,20 @@ export default function DocketsPage() {
       
       // For main page, use different approaches based on sorting
       if (sortBy === "filings") {
+        console.log('📊 Using filing count query with params:', {
+          p_offset: offset,
+          p_limit: PAGE_SIZE,
+          p_sort_by: 'filing_count',
+          p_sort_order: sortDir,
+          p_search: normalizedSearch || null,
+          p_industries: selectedIndustries.length ? selectedIndustries : null,
+          p_docket_types: docketTypes.length ? docketTypes : null,
+          p_docket_subtypes: docketSubtypes.length ? docketSubtypes : null,
+          p_petitioners: petitioners.length ? petitioners : null,
+          p_start_date: startDate && !isNaN(startDate.getTime()) ? format(startOfMonth(startDate), "yyyy-MM-dd") : null,
+          p_end_date: endDate && !isNaN(endDate.getTime()) ? format(endOfMonth(endDate), "yyyy-MM-dd") : null
+        });
+        
         // Use our custom database function for filing-based sorting
         const { data, error } = await supabase.rpc('get_dockets_with_filing_counts', {
           p_offset: offset,
@@ -649,14 +692,21 @@ export default function DocketsPage() {
           p_end_date: endDate && !isNaN(endDate.getTime()) ? format(endOfMonth(endDate), "yyyy-MM-dd") : null
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Filing count query error:', error);
+          throw error;
+        }
+        console.log('✅ Filing count query success:', data?.length, 'results');
         return data || [];
       }
+      
+      console.log('📅 Using date-based query');
       
       // For date-based sorting, use regular query 
       let query = supabase.from("dockets").select("*");
         
       // Apply date sorting
+      console.log('🔧 Applying date sort:', { sortDir });
       query = query.order("opened_date", { ascending: sortDir === "asc" });
       
       query = query.range(offset, offset + PAGE_SIZE - 1);
@@ -679,8 +729,12 @@ export default function DocketsPage() {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Date query error:', error);
+        throw error;
+      }
       
+      console.log('✅ Date query success:', data?.length, 'results');
       let dockets = (data ?? []) as any[];
 
       // Attach petitioners via relation table
@@ -711,7 +765,8 @@ export default function DocketsPage() {
         });
         dockets = dockets.map((d: any) => ({ ...d, petitioner_strings: namesByDocket.get(d.uuid) ?? [] }));
       }
-
+      
+      console.log('🏁 Query completed, returning', dockets.length, 'dockets');
       return dockets;
     },
     enabled: !!(range && months.length),
@@ -1258,6 +1313,10 @@ export default function DocketsPage() {
                 currentSortBy={sortBy}
                 currentSortDir={sortDir}
                 onSortChange={(newSortBy, newSortDir) => {
+                  console.log('🎯 SortDropdown onSortChange called:', { 
+                    from: { sortBy, sortDir }, 
+                    to: { newSortBy, newSortDir } 
+                  });
                   setSortBy(newSortBy as "date" | "filings");
                   setSortDir(newSortDir);
                 }}
