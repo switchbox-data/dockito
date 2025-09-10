@@ -5,24 +5,8 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleDocketsNavigation = () => {
-    // Use saved sort preferences when navigating to dockets
-    const getSavedSort = () => {
-      try {
-        const saved = localStorage.getItem('dockets-sort');
-        if (saved) {
-          const { sortBy, sortDir } = JSON.parse(saved);
-          return { sortBy, sortDir };
-        }
-      } catch (e) {
-        // Ignore localStorage errors
-      }
-      return { sortBy: 'date', sortDir: 'desc' };
-    };
-    
-    const saved = getSavedSort();
-    const targetUrl = `/dockets?sortBy=${saved.sortBy}&sortDir=${saved.sortDir}`;
-    
-    navigate(targetUrl);
+    // Home page should always start with default sort (fresh browsing session)
+    navigate('/dockets?sortBy=date&sortDir=desc');
   };
 
   return (
