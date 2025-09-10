@@ -138,7 +138,7 @@ const Navbar = () => {
           </div>
           
           {/* Breadcrumb arrow separator */}
-          <ChevronRight className="h-4 w-4 text-muted-foreground mx-4" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground mx-2" />
           
           {/* Breadcrumb content that aligns with main content */}
           <div className="flex items-center gap-2 text-sm transition-all duration-300 ease-in-out min-w-0 flex-1 whitespace-nowrap overflow-hidden">
@@ -147,7 +147,7 @@ const Navbar = () => {
             
             {(location.pathname.startsWith("/org/") || location.pathname.startsWith("/docket/") || location.pathname === "/favorites") && (
               <>
-                <ChevronRight className="h-4 w-4 text-muted-foreground mx-4 flex-shrink-0" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground mx-2 flex-shrink-0" />
                 {location.pathname.startsWith("/org/") && (
                   <>
                     <span className="text-muted-foreground whitespace-nowrap">Org:</span>
@@ -169,7 +169,7 @@ const Navbar = () => {
                     <span className="text-foreground font-medium whitespace-nowrap">
                       {location.pathname.split('/docket/')[1]?.split('/')[0] || "Unknown"}
                     </span>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground mx-4 flex-shrink-0" />
+                    <ChevronRight className="h-4 w-4 text-muted-foreground mx-2 flex-shrink-0" />
                     <span className="text-muted-foreground whitespace-nowrap">Doc:</span>
                     <span className="text-foreground font-medium whitespace-nowrap max-w-[400px] truncate inline-block">{attachmentTitle || 'Document'}</span>
                   </>
