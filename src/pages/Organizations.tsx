@@ -235,6 +235,9 @@ export default function OrganizationsPage() {
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-0 bg-white border border-gray-300 shadow-lg z-50" align="end">
                   <div className="p-1">
+                    <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                      By Name
+                    </div>
                     <Button 
                       variant="ghost" 
                       className={cn(
@@ -266,6 +269,9 @@ export default function OrganizationsPage() {
                       {sortBy === "name" && sortDir === "desc" && <Check className="h-4 w-4" />}
                     </Button>
                     <Separator className="my-1" />
+                    <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                      By Activity
+                    </div>
                     <Button 
                       variant="ghost" 
                       className={cn(
