@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, Users, Search, FolderOpen, Building } from "lucide-react";
+import { Building2, Users, Search, FolderOpen, Building, FileText } from "lucide-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,13 +17,14 @@ type Organization = {
   uuid: string;
   name: string;
   docket_count?: number;
+  filing_count?: number;
 };
 
 const sanitize = (s: string) => s.replace(/[,%]/g, " ").trim();
 
 export default function OrganizationsPage() {
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<"name" | "dockets">("dockets");
+  const [sortBy, setSortBy] = useState<"name" | "dockets" | "filings">("dockets");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [sortOpen, setSortOpen] = useState(false);
 
@@ -65,27 +66,54 @@ export default function OrganizationsPage() {
       // Get docket counts for each organization
       if (organizations.length) {
         const orgUuids = organizations.map(org => org.uuid);
+        
+        // Get docket counts
         const { data: rels } = await supabase
           .from("docket_petitioned_by_org")
           .select("petitioner_uuid")
           .in("petitioner_uuid", orgUuids);
         
-        const counts = new Map<string, number>();
+        const docketCounts = new Map<string, number>();
         (rels ?? []).forEach((r: any) => {
           if (r.petitioner_uuid) {
-            counts.set(r.petitioner_uuid, (counts.get(r.petitioner_uuid) ?? 0) + 1);
+            docketCounts.set(r.petitioner_uuid, (docketCounts.get(r.petitioner_uuid) ?? 0) + 1);
+          }
+        });
+
+        // Get filing counts from organization_author_strings in fillings table
+        const { data: filings } = await supabase
+          .from("fillings")
+          .select("organization_author_strings");
+        
+        const filingCounts = new Map<string, number>();
+        (filings ?? []).forEach((f: any) => {
+          if (f.organization_author_strings && Array.isArray(f.organization_author_strings)) {
+            f.organization_author_strings.forEach((orgName: string) => {
+              // Find the organization UUID by name
+              const org = organizations.find(o => o.name === orgName);
+              if (org) {
+                filingCounts.set(org.uuid, (filingCounts.get(org.uuid) ?? 0) + 1);
+              }
+            });
           }
         });
 
         organizations = organizations.map(org => ({
           ...org,
-          docket_count: counts.get(org.uuid) ?? 0
+          docket_count: docketCounts.get(org.uuid) ?? 0,
+          filing_count: filingCounts.get(org.uuid) ?? 0
         }));
 
         // Apply sorting after getting counts
         if (sortBy === "dockets") {
           organizations.sort((a, b) => {
             const countDiff = (b.docket_count ?? 0) - (a.docket_count ?? 0);
+            if (sortDir === "asc") return -countDiff;
+            return countDiff;
+          });
+        } else if (sortBy === "filings") {
+          organizations.sort((a, b) => {
+            const countDiff = (b.filing_count ?? 0) - (a.filing_count ?? 0);
             if (sortDir === "asc") return -countDiff;
             return countDiff;
           });
@@ -98,10 +126,11 @@ export default function OrganizationsPage() {
       } else {
         organizations = organizations.map(org => ({
           ...org,
-          docket_count: 0
+          docket_count: 0,
+          filing_count: 0
         }));
 
-        // Sort by name when no docket data
+        // Sort by name when no data
         if (sortBy === "name") {
           organizations.sort((a, b) => {
             const nameCompare = a.name.localeCompare(b.name);
@@ -221,7 +250,7 @@ export default function OrganizationsPage() {
                 currentSortBy={sortBy}
                 currentSortDir={sortDir}
                 onSortChange={(newSortBy, newSortDir) => {
-                  setSortBy(newSortBy as "name" | "dockets");
+                  setSortBy(newSortBy as "name" | "dockets" | "filings");
                   setSortDir(newSortDir);
                 }}
                 groups={[
@@ -236,7 +265,9 @@ export default function OrganizationsPage() {
                     heading: "By Activity", 
                     options: [
                       { value: "most-dockets", label: "Most dockets", sortBy: "dockets", sortDir: "desc" },
-                      { value: "least-dockets", label: "Least dockets", sortBy: "dockets", sortDir: "asc" }
+                      { value: "least-dockets", label: "Least dockets", sortBy: "dockets", sortDir: "asc" },
+                      { value: "most-filings", label: "Most filings", sortBy: "filings", sortDir: "desc" },
+                      { value: "least-filings", label: "Least filings", sortBy: "filings", sortDir: "asc" }
                     ]
                   }
                 ]}
@@ -303,11 +334,17 @@ export default function OrganizationsPage() {
                            <h3 className="font-medium leading-snug text-foreground">{org.name}</h3>
                          </div>
                        </div>
-                      
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Users size={14} />
-                        <span>{org.docket_count} docket{org.docket_count !== 1 ? 's' : ''} petitioned</span>
-                      </div>
+                       
+                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                         <div className="flex items-center gap-2">
+                           <FolderOpen size={14} />
+                           <span>{org.docket_count} docket{org.docket_count !== 1 ? 's' : ''}</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                           <FileText size={14} />
+                           <span>{org.filing_count} filing{org.filing_count !== 1 ? 's' : ''}</span>
+                         </div>
+                       </div>
                     </CardContent>
                   </Card>
                 </Link>
