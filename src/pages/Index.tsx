@@ -6,9 +6,9 @@ const Index = () => {
 
   const handleDocketsNavigation = () => {
     // Home page should always start with default sort (fresh browsing session)
+    try { localStorage.removeItem('dockets-sort'); } catch {}
     navigate('/dockets?sortBy=date&sortDir=desc');
   };
-
   return (
     <main className="min-h-screen flex items-center justify-center bg-background">
       <section className="container text-center animate-enter space-y-6">
