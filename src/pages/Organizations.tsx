@@ -80,21 +80,16 @@ export default function OrganizationsPage() {
           }
         });
 
-        // Get filing counts from organization_author_strings in fillings table
-        const { data: filings } = await supabase
-          .from("fillings")
-          .select("organization_author_strings");
+        // Get filing counts from fillings_on_behalf_of_org_relation table (matches org page logic)
+        const { data: filingRels } = await supabase
+          .from("fillings_on_behalf_of_org_relation")
+          .select("author_organization_uuid")
+          .in("author_organization_uuid", orgUuids);
         
         const filingCounts = new Map<string, number>();
-        (filings ?? []).forEach((f: any) => {
-          if (f.organization_author_strings && Array.isArray(f.organization_author_strings)) {
-            f.organization_author_strings.forEach((orgName: string) => {
-              // Find the organization UUID by name
-              const org = organizations.find(o => o.name === orgName);
-              if (org) {
-                filingCounts.set(org.uuid, (filingCounts.get(org.uuid) ?? 0) + 1);
-              }
-            });
+        (filingRels ?? []).forEach((r: any) => {
+          if (r.author_organization_uuid) {
+            filingCounts.set(r.author_organization_uuid, (filingCounts.get(r.author_organization_uuid) ?? 0) + 1);
           }
         });
 
