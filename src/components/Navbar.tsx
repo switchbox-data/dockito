@@ -129,7 +129,7 @@ const Navbar = () => {
           <div className="group flex items-center">
             <div className="flex items-center">
               <DockitoLogo />
-              <div className="overflow-hidden transition-all duration-300 ease-in-out w-0 group-hover:w-16">
+              <div className="overflow-hidden transition-all duration-300 ease-in-out w-0 group-hover:w-20">
                 <span className="text-foreground font-semibold whitespace-nowrap ml-2">
                   dockito
                 </span>
