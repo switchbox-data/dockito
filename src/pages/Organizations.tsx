@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, Users, Search, FolderOpen, Building, ArrowUpDown, ChevronDown, Check } from "lucide-react";
+import { Building2, Users, Search, FolderOpen, Building } from "lucide-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { SortDropdown } from "@/components/SortDropdown";
 
 const PAGE_SIZE = 30;
 
@@ -215,96 +215,33 @@ export default function OrganizationsPage() {
 
             {/* Sort */}
             <div className="shrink-0">
-              <Popover open={sortOpen} onOpenChange={setSortOpen}>
-                <PopoverTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    className="border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50 justify-between min-w-[140px]"
-                  >
-                    <div className="flex items-center gap-2">
-                      <ArrowUpDown className="h-4 w-4" />
-                      <span>
-                        {sortBy === "name" 
-                          ? (sortDir === "asc" ? "A-Z" : "Z-A")
-                          : (sortDir === "desc" ? "Most dockets" : "Least dockets")
-                        }
-                      </span>
-                    </div>
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-48 p-0 bg-white border border-gray-300 shadow-lg z-50" align="end">
-                  <div className="p-1">
-                    <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                      By Name
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      className={cn(
-                        "w-full justify-between text-left h-auto p-2 font-normal",
-                        sortBy === "name" && sortDir === "asc" && "bg-muted text-primary font-medium"
-                      )}
-                      onClick={() => {
-                        setSortBy("name");
-                        setSortDir("asc");
-                        setSortOpen(false);
-                      }}
-                    >
-                      A-Z
-                      {sortBy === "name" && sortDir === "asc" && <Check className="h-4 w-4" />}
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      className={cn(
-                        "w-full justify-between text-left h-auto p-2 font-normal",
-                        sortBy === "name" && sortDir === "desc" && "bg-muted text-primary font-medium"
-                      )}
-                      onClick={() => {
-                        setSortBy("name");
-                        setSortDir("desc");
-                        setSortOpen(false);
-                      }}
-                    >
-                      Z-A
-                      {sortBy === "name" && sortDir === "desc" && <Check className="h-4 w-4" />}
-                    </Button>
-                    <Separator className="my-1" />
-                    <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                      By Activity
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      className={cn(
-                        "w-full justify-between text-left h-auto p-2 font-normal",
-                        sortBy === "dockets" && sortDir === "desc" && "bg-muted text-primary font-medium"
-                      )}
-                      onClick={() => {
-                        setSortBy("dockets");
-                        setSortDir("desc");
-                        setSortOpen(false);
-                      }}
-                    >
-                      Most dockets
-                      {sortBy === "dockets" && sortDir === "desc" && <Check className="h-4 w-4" />}
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      className={cn(
-                        "w-full justify-between text-left h-auto p-2 font-normal",
-                        sortBy === "dockets" && sortDir === "asc" && "bg-muted text-primary font-medium"
-                      )}
-                      onClick={() => {
-                        setSortBy("dockets");
-                        setSortDir("asc");
-                        setSortOpen(false);
-                      }}
-                    >
-                      Least dockets
-                      {sortBy === "dockets" && sortDir === "asc" && <Check className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
+              <SortDropdown
+                isOpen={sortOpen}
+                onOpenChange={setSortOpen}
+                currentSortBy={sortBy}
+                currentSortDir={sortDir}
+                onSortChange={(newSortBy, newSortDir) => {
+                  setSortBy(newSortBy as "name" | "dockets");
+                  setSortDir(newSortDir);
+                }}
+                groups={[
+                  {
+                    heading: "By Name",
+                    options: [
+                      { value: "a-z", label: "A-Z", sortBy: "name", sortDir: "asc" },
+                      { value: "z-a", label: "Z-A", sortBy: "name", sortDir: "desc" }
+                    ]
+                  },
+                  {
+                    heading: "By Activity", 
+                    options: [
+                      { value: "most-dockets", label: "Most dockets", sortBy: "dockets", sortDir: "desc" },
+                      { value: "least-dockets", label: "Least dockets", sortBy: "dockets", sortDir: "asc" }
+                    ]
+                  }
+                ]}
+                buttonMinWidth="min-w-[140px]"
+              />
             </div>
           </div>
         </div>

@@ -25,6 +25,7 @@ import { DocketCardSkeleton } from "@/components/DocketCardSkeleton";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { ExpandingSearchInput } from "@/components/ExpandingSearchInput";
 import { useResponsiveLabels } from "@/hooks/use-responsive-labels";
+import { SortDropdown } from "@/components/SortDropdown";
 
 import { X } from "lucide-react";
 
@@ -1251,100 +1252,32 @@ export default function DocketsPage() {
               </span>
 
               {/* Sort Dropdown */}
-              <Popover open={sortOpen} onOpenChange={setSortOpen}>
-                <PopoverTrigger asChild>
-                  <Button 
-                    ref={sortBtnRef} 
-                    variant="outline" 
-                    className="border-gray-300 hover:border-gray-400 bg-white hover:bg-muted/50 justify-between min-w-[120px]"
-                  >
-                    <div className="flex items-center gap-2">
-                      <ArrowUpDown className="h-4 w-4" />
-                      <span>
-                        {sortBy === "date" 
-                          ? (sortDir === "desc" ? "Newest" : "Oldest")
-                          : (sortDir === "desc" ? "Most filings" : "Least filings")
-                        }
-                      </span>
-                    </div>
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-48 p-0 bg-white border border-gray-300 shadow-lg z-50" align="end">
-                  <Command>
-                    <CommandList>
-                      <CommandGroup heading="By Date">
-                        <CommandItem
-                          onSelect={() => {
-                            setSortBy("date");
-                            setSortDir("desc");
-                            setSortOpen(false);
-                          }}
-                          className={cn(
-                            "cursor-pointer hover:bg-muted/90",
-                            sortBy === "date" && sortDir === "desc" && "bg-muted text-primary font-medium"
-                          )}
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <span>Newest first</span>
-                            {sortBy === "date" && sortDir === "desc" && <Check className="h-4 w-4" />}
-                          </div>
-                        </CommandItem>
-                        <CommandItem
-                          onSelect={() => {
-                            setSortBy("date");
-                            setSortDir("asc");
-                            setSortOpen(false);
-                          }}
-                          className={cn(
-                            "cursor-pointer hover:bg-muted/90",
-                            sortBy === "date" && sortDir === "asc" && "bg-muted text-primary font-medium"
-                          )}
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <span>Oldest first</span>
-                            {sortBy === "date" && sortDir === "asc" && <Check className="h-4 w-4" />}
-                          </div>
-                        </CommandItem>
-                      </CommandGroup>
-                      <CommandGroup heading="By Activity">
-                        <CommandItem
-                          onSelect={() => {
-                            setSortBy("filings");
-                            setSortDir("desc");
-                            setSortOpen(false);
-                          }}
-                          className={cn(
-                            "cursor-pointer hover:bg-muted/90",
-                            sortBy === "filings" && sortDir === "desc" && "bg-muted text-primary font-medium"
-                          )}
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <span>Most filings</span>
-                            {sortBy === "filings" && sortDir === "desc" && <Check className="h-4 w-4" />}
-                          </div>
-                        </CommandItem>
-                        <CommandItem
-                          onSelect={() => {
-                            setSortBy("filings");
-                            setSortDir("asc");
-                            setSortOpen(false);
-                          }}
-                          className={cn(
-                            "cursor-pointer hover:bg-muted/90",
-                            sortBy === "filings" && sortDir === "asc" && "bg-muted text-primary font-medium"
-                          )}
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <span>Least filings</span>
-                            {sortBy === "filings" && sortDir === "asc" && <Check className="h-4 w-4" />}
-                          </div>
-                        </CommandItem>
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <SortDropdown
+                isOpen={sortOpen}
+                onOpenChange={setSortOpen}
+                currentSortBy={sortBy}
+                currentSortDir={sortDir}
+                onSortChange={(newSortBy, newSortDir) => {
+                  setSortBy(newSortBy as "date" | "filings");
+                  setSortDir(newSortDir);
+                }}
+                groups={[
+                  {
+                    heading: "By Date",
+                    options: [
+                      { value: "newest", label: "Newest", sortBy: "date", sortDir: "desc" },
+                      { value: "oldest", label: "Oldest", sortBy: "date", sortDir: "asc" }
+                    ]
+                  },
+                  {
+                    heading: "By Activity", 
+                    options: [
+                      { value: "most-filings", label: "Most filings", sortBy: "filings", sortDir: "desc" },
+                      { value: "least-filings", label: "Least filings", sortBy: "filings", sortDir: "asc" }
+                    ]
+                  }
+                ]}
+              />
             </div>
             </div>
           </div>
