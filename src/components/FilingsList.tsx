@@ -940,7 +940,7 @@ const isEndDateModified = useMemo(() => {
           const isOpen = openIds.has(f.uuid);
           const isSelected = selectedIndex === idx;
           return (
-            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className={cn("rounded-lg border p-3 transition-colors hover:border-primary/30 group bg-white/95", isSelected ? "bg-muted" : "")}>
+            <article ref={(el: HTMLDivElement | null) => { filingRefs.current[idx] = el; }} key={f.uuid} className={cn("rounded-lg border bg-card text-card-foreground shadow-sm p-3 transition-colors hover:border-primary/30 group bg-white/95", isSelected ? "bg-muted" : "")}>
               <div className="relative">
                 <button
                 className={cn(
