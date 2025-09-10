@@ -175,7 +175,7 @@ const AppSidebar = () => {
                   className={cn(
                     "flex items-center rounded-md transition-all duration-200 w-full text-left",
                     "hover:bg-muted/90 focus-visible:outline-none",
-                    shouldShowExpanded ? "gap-3 px-3 py-2" : "justify-center py-2"
+                    shouldShowExpanded ? "gap-3 px-3 py-2" : "justify-center py-2 px-2"
                   )}
                 >
                   <IconComponent className="h-5 w-5 flex-shrink-0" />
@@ -201,7 +201,7 @@ const AppSidebar = () => {
               className={cn(
                 "flex items-center rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",
-                shouldShowExpanded ? "gap-3 px-3 py-2" : "justify-center py-2",
+                shouldShowExpanded ? "gap-3 px-3 py-2" : "justify-center py-2 px-2",
                 active && "bg-muted/90 text-primary font-medium"
               )}
             >
@@ -227,7 +227,7 @@ const AppSidebar = () => {
               className={cn(
                 "flex items-center rounded-md transition-all duration-200",
                 "hover:bg-muted/90 focus-visible:outline-none",
-                shouldShowExpanded ? "gap-3 px-3 py-2" : "justify-center py-2",
+                shouldShowExpanded ? "gap-3 px-3 py-2" : "justify-center py-2 px-2",
                 isActive("/favorites") && "bg-muted/90 text-primary font-medium"
               )}
             >
