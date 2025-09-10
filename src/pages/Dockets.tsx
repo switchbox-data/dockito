@@ -632,17 +632,32 @@ export default function DocketsPage() {
         return filteredDockets;
       }
       
-      // For main page, use regular query 
+      // For main page, use different approaches based on sorting
+      if (sortBy === "filings") {
+        // Use our custom database function for filing-based sorting
+        const { data, error } = await supabase.rpc('get_dockets_with_filing_counts', {
+          p_offset: offset,
+          p_limit: PAGE_SIZE,
+          p_sort_by: 'filing_count',
+          p_sort_order: sortDir,
+          p_search: normalizedSearch || null,
+          p_industries: selectedIndustries.length ? selectedIndustries : null,
+          p_docket_types: docketTypes.length ? docketTypes : null,
+          p_docket_subtypes: docketSubtypes.length ? docketSubtypes : null,
+          p_petitioners: petitioners.length ? petitioners : null,
+          p_start_date: startDate && !isNaN(startDate.getTime()) ? format(startOfMonth(startDate), "yyyy-MM-dd") : null,
+          p_end_date: endDate && !isNaN(endDate.getTime()) ? format(endOfMonth(endDate), "yyyy-MM-dd") : null
+        });
+        
+        if (error) throw error;
+        return data || [];
+      }
+      
+      // For date-based sorting, use regular query 
       let query = supabase.from("dockets").select("*");
         
-      // Apply sorting
-      if (sortBy === "date") {
-        query = query.order("opened_date", { ascending: sortDir === "asc" });
-      } else if (sortBy === "filings") {
-        // For filings sorting, we need to use a custom approach
-        // We'll get the data and then do a server-side count aggregation
-        query = query.order("opened_date", { ascending: false }); // temporary order
-      }
+      // Apply date sorting
+      query = query.order("opened_date", { ascending: sortDir === "asc" });
       
       query = query.range(offset, offset + PAGE_SIZE - 1);
 
@@ -695,20 +710,6 @@ export default function DocketsPage() {
           namesByDocket.set(r.docket_uuid, arr);
         });
         dockets = dockets.map((d: any) => ({ ...d, petitioner_strings: namesByDocket.get(d.uuid) ?? [] }));
-      }
-
-      // Apply client-side filters that couldn't be done in the query
-      // (docketTypes filtering is now handled server-side)
-
-      // Client-side petitioner filtering is no longer needed since it's now handled server-side
-
-      // Apply sorting for filing count if needed
-      if (sortBy === "filings") {
-        dockets.sort((a, b) => {
-          const countA = a.filings?.[0]?.count || 0;
-          const countB = b.filings?.[0]?.count || 0;
-          return sortDir === "desc" ? countB - countA : countA - countB;
-        });
       }
 
       return dockets;
