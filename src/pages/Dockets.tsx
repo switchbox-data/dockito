@@ -1444,7 +1444,7 @@ export default function DocketsPage() {
               </span>
             )}
             {selectedIndustries.map((ind) => (
-            <Badge key={`ind-${ind}`} variant="secondary" className="px-2 py-1">
+            <Badge key={`ind-${ind}`} variant="secondary" className="px-2 py-1 border border-border">
               <div className="flex items-center gap-1.5 mr-1">
                 <Factory size={12} className="text-muted-foreground" />
                 <span>Industry: {ind}</span>
@@ -1460,7 +1460,7 @@ export default function DocketsPage() {
             </Badge>
           ))}
           {docketTypes.map((t) => (
-            <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1">
+            <Badge key={`type-${t}`} variant="secondary" className="px-2 py-1 border border-border">
               <div className="flex items-center gap-1.5 mr-1">
                 <Shapes size={12} className="text-muted-foreground" />
                 <span>Type: {t}</span>
@@ -1476,7 +1476,7 @@ export default function DocketsPage() {
             </Badge>
            ))}
           {docketSubtypes.map((st) => (
-            <Badge key={`subtype-${st}`} variant="secondary" className="px-2 py-1">
+            <Badge key={`subtype-${st}`} variant="secondary" className="px-2 py-1 border border-border">
               <div className="flex items-center gap-1.5 mr-1">
                 <Shapes size={12} className="text-muted-foreground" />
                 <span>Subtype: {st}</span>
@@ -1493,7 +1493,7 @@ export default function DocketsPage() {
           ))}
           {lockedOrg ? null : (
             petitioners.map((p) => (
-              <Badge key={`pet-${p}`} variant="secondary" className="px-2 py-1">
+              <Badge key={`pet-${p}`} variant="secondary" className="px-2 py-1 border border-border">
                 <div className="flex items-center gap-1.5 mr-1">
                   <Users size={12} className="text-muted-foreground" />
                   <span>Petitioner: {p}</span>
@@ -1510,7 +1510,7 @@ export default function DocketsPage() {
             ))
           )}
           {lockedOrg && relationshipTypes.includes("petitioned") && (
-            <Badge variant="secondary" className="px-2 py-1">
+            <Badge variant="secondary" className="px-2 py-1 border border-border">
               <span className="mr-1">Showing: Petitioned dockets</span>
               <button
                 type="button"
@@ -1523,7 +1523,7 @@ export default function DocketsPage() {
             </Badge>
           )}
           {lockedOrg && relationshipTypes.includes("filed") && (
-            <Badge variant="secondary" className="px-2 py-1">
+            <Badge variant="secondary" className="px-2 py-1 border border-border">
               <span className="mr-1">Showing: Filed dockets</span>
               <button
                 type="button"
@@ -1536,7 +1536,7 @@ export default function DocketsPage() {
             </Badge>
           )}
           {isStartDateModified && (
-            <Badge variant="secondary" className="px-2 py-1">
+            <Badge variant="secondary" className="px-2 py-1 border border-border">
               <div className="flex items-center gap-1.5 mr-1">
                 <CalendarIcon size={12} className="text-muted-foreground" />
                 <span>Started after: {startDate ? format(startDate, "MMM yyyy") : "–"}</span>
@@ -1552,7 +1552,7 @@ export default function DocketsPage() {
             </Badge>
           )}
           {isEndDateModified && (
-            <Badge variant="secondary" className="px-2 py-1">
+            <Badge variant="secondary" className="px-2 py-1 border border-border">
               <div className="flex items-center gap-1.5 mr-1">
                 <CalendarIcon size={12} className="text-muted-foreground" />
                 <span>Started before: {endDate ? format(endDate, "MMM yyyy") : "–"}</span>
@@ -1568,7 +1568,7 @@ export default function DocketsPage() {
             </Badge>
           )}
           {normalizedSearch && (
-            <Badge variant="secondary" className="px-2 py-1">
+            <Badge variant="secondary" className="px-2 py-1 border border-border">
               <div className="flex items-center gap-1.5 mr-1">
                 <Search size={12} className="text-muted-foreground" />
                 <span>Search: {normalizedSearch}</span>
