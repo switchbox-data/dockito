@@ -15,6 +15,7 @@ import DocketsPage from "./pages/Dockets";
 import OrganizationsPage from "./pages/Organizations";
 import AttachmentPage from "./pages/Attachment";
 import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
 import Favorites from "./pages/Favorites";
 import { CommandKProvider } from "@/components/CommandK";
 import Navbar from "@/components/Navbar";
@@ -58,6 +59,7 @@ const AppContent = () => {
               <Route path="/docket/:docket_govid/attachment/:attachment_uuid" element={<AttachmentPage />} />
               <Route path="/org/:orgName" element={<DocketsPage />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="/favorites" element={<Favorites />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
