@@ -1617,8 +1617,6 @@ export default function DocketsPage() {
               <DocketCardSkeleton key={i} />
             ))}
           </div>
-        ) : showNoDockets ? (
-          <div className="text-muted-foreground">No dockets found.</div>
         ) : (
 
           <div className="grid gap-4 md:grid-cols-2">
