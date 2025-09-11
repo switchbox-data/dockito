@@ -1172,7 +1172,7 @@ export default function DocketsPage() {
                       <h3 className="text-sm font-semibold">Docket Types</h3>
                       <div className="flex items-center gap-2">
                         {(docketTypes.length > 0 || docketSubtypes.length > 0) && (
-                          <Button variant="outline" size="sm" className="border-gray-300 hover:border-gray-300" onClick={() => { setDocketTypes([]); setDocketSubtypes([]); setSubtypeSearch(""); }}>Clear types</Button>
+                          <Button variant="outline" size="sm" className="border-gray-300 hover:border-gray-300" onClick={() => { setDocketTypes([]); setDocketSubtypes([]); setSubtypeSearch(""); }}>Clear all</Button>
                         )}
                         <Button size="sm" onClick={() => setTypeMenuOpen(false)}>Done</Button>
                       </div>
