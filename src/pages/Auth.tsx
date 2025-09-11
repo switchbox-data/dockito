@@ -10,7 +10,7 @@ import { AlertCircle, Mail, Lock, User, Chrome, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 const AuthPage = () => {
-  const { user, signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
+  const { user, signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -19,11 +19,12 @@ const AuthPage = () => {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [resetEmail, setResetEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('signin');
   const [showResetForm, setShowResetForm] = useState(false);
   const [showResetSuccess, setShowResetSuccess] = useState(false);
-
   // Check if coming from password reset
   useEffect(() => {
     const isReset = searchParams.get('reset');
@@ -126,28 +127,92 @@ const AuthPage = () => {
     setIsLoading(false);
   };
 
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPassword || !confirmPassword) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters');
+      return;
+    }
+
+    setIsLoading(true);
+    const { error } = await updatePassword(newPassword);
+    if (error) {
+      toast.error('Failed to update password: ' + error.message);
+    } else {
+      toast.success('Password updated! Please sign in.');
+      setShowResetSuccess(false);
+      setActiveTab('signin');
+      setEmail('');
+      setPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      navigate('/auth', { replace: true });
+    }
+    setIsLoading(false);
+  };
   if (showResetSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">Password Reset</CardTitle>
+            <CardTitle className="text-2xl font-bold">Set New Password</CardTitle>
             <CardDescription>
-              You can now set a new password
+              Create a strong password for your Dockito account
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-              <p className="text-green-800">
-                You've been redirected from the password reset email. You can now sign in with your new password.
-              </p>
-            </div>
-            <Button 
-              onClick={() => setShowResetSuccess(false)}
-              className="w-full"
-            >
-              Continue to Sign In
-            </Button>
+          <CardContent>
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="new-password">New Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="new-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="pl-10"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pl-10"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Updating...' : 'Update Password'}
+              </Button>
+              <div className="text-center">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-sm"
+                  onClick={() => setShowResetSuccess(false)}
+                >
+                  Back to Sign In
+                </Button>
+              </div>
+            </form>
           </CardContent>
         </Card>
       </div>
