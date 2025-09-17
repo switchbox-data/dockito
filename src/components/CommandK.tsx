@@ -2,7 +2,7 @@ import { useEffect, useState, createContext, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Command as CommandPrimitive } from "cmdk";
-import { Search } from "lucide-react";
+import { Search, ArrowUp, ArrowDown, CornerDownLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { FolderOpen, Building, Home } from "lucide-react";
@@ -215,6 +215,29 @@ const CommandKInner = ({ open, setOpen }: { open: boolean; setOpen: (open: boole
           </CommandGroup>
         )}
       </CommandList>
+      
+      {/* Keyboard shortcuts footer */}
+      <div className="border-t bg-muted/30 px-4 py-2">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <ArrowUp className="h-3 w-3" />
+                <ArrowDown className="h-3 w-3" />
+              </div>
+              <span>Navigate</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CornerDownLeft className="h-3 w-3" />
+              <span>Select</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <kbd className="px-1.5 py-0.5 text-xs bg-background border rounded">esc</kbd>
+            <span>Close</span>
+          </div>
+        </div>
+      </div>
     </CommandDialog>
   );
 };
