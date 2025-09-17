@@ -18,7 +18,7 @@ const KeyboardShortcut = ({ keys = ["mod", "k"], className = "" }: { keys?: stri
     <div className={`inline-flex items-center gap-1 ${className}`}>
       {keys.map((key, index) => (
         <span key={index} className="inline-flex items-center gap-1">
-          <kbd className="inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5 text-xs font-medium bg-muted border border-border rounded shadow-sm">
+          <kbd className="inline-flex items-center justify-center min-w-[2rem] h-7 px-2 text-xs font-medium bg-background border border-border rounded-md shadow-sm text-foreground">
             {getKeyDisplay(key)}
           </kbd>
           {index < keys.length - 1 && (
