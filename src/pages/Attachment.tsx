@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight, ChevronUp, ChevronDown, Loader2, Calendar, User, FileText, Building, ChevronLeft, 
          Heart, DollarSign, Frown, Lock, Search, Flame, FileCheck, Gavel, Book, EyeOff, 
          FileSpreadsheet, TrendingUp, Microscope, Clipboard, CheckCircle, MessageCircle, 
-         Lightbulb, HelpCircle, ZoomIn, ZoomOut, Sidebar, Maximize, Minimize, Folder } from "lucide-react";
+         Lightbulb, HelpCircle, ZoomIn, ZoomOut, Sidebar, Maximize, Minimize, Folder, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -291,6 +291,17 @@ const AttachmentPage = () => {
         console.error('Failed to exit fullscreen:', err);
       }
     }
+  };
+
+  const downloadPDF = () => {
+    if (!attachment || !blobUrl) return;
+    
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = attachment.attachment_title || 'document.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Listen for fullscreen changes
@@ -642,6 +653,18 @@ const AttachmentPage = () => {
                 <span className="hidden md:inline ml-1">
                   {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
                 </span>
+              </Button>
+
+              {/* Download PDF */}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={downloadPDF}
+                disabled={!blobUrl || !!loadErr}
+                aria-label="Download PDF"
+              >
+                <Download size={16} />
+                <span className="hidden md:inline ml-1">Download</span>
               </Button>
             </div>
           </div>
