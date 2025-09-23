@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Loader2, Expand } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Loader2, Expand, Download } from "lucide-react";
 import { Attachment } from "@/data/mock";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -200,6 +200,17 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
     setPage(target);
   };
 
+  const downloadPDF = () => {
+    if (!current || !blobUrl) return;
+    
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = current.attachment_title || 'document.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const go = (p: number) => {
     scrollToPage(p);
   };
@@ -278,6 +289,16 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
               >
                 <Expand size={16} />
               </Button>
+              {blobUrl && !loadErr && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={downloadPDF}
+                  aria-label="Download PDF"
+                >
+                  <Download size={16} />
+                </Button>
+              )}
               <div className="mx-1 h-5 w-px bg-border" />
               <Button variant="outline" size="sm" onClick={() => setIndex(i => (i - 1 + attachments.length) % attachments.length)} aria-label="Previous attachment">
                 <ChevronLeft size={16} />
