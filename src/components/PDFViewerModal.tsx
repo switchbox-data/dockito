@@ -289,16 +289,15 @@ export const PDFViewerModal = ({ open, onOpenChange, attachments, startIndex = 0
               >
                 <Expand size={16} />
               </Button>
-              {blobUrl && !loadErr && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={downloadPDF}
-                  aria-label="Download PDF"
-                >
-                  <Download size={16} />
-                </Button>
-              )}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={downloadPDF}
+                disabled={!blobUrl || !!loadErr}
+                aria-label="Download PDF"
+              >
+                <Download size={16} />
+              </Button>
               <div className="mx-1 h-5 w-px bg-border" />
               <Button variant="outline" size="sm" onClick={() => setIndex(i => (i - 1 + attachments.length) % attachments.length)} aria-label="Previous attachment">
                 <ChevronLeft size={16} />
